@@ -1,0 +1,50 @@
+<h2 class="text-center m-5">Gitlab's Issue List</h2>
+
+<div class="row">
+    <div class="col-md-2">
+        <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Issue Number: </mat-label>
+            <input #input matInput id="issue_number" type="text" placeholder="Enter number issue here"
+                (keyup.enter)="onSearch(input.value, test_status.value)">
+        </mat-form-field>
+    </div>
+    <div class="col-md-2">
+        <mat-form-field>
+            <mat-label>Test status</mat-label>
+            <mat-select #test_status>
+                <mat-option>None</mat-option>
+                <mat-option *ngFor="let status of testStatus" [value]="status">{{status.value}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+    </div>
+    <div class="col-md-1" style="margin: 10px;">
+        <button mat-raised-button color="primary" (click)="onSearch(input.value, test_status.value)"
+            id="issue_number">Search</button>
+    </div>
+</div>
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Issue number</th>
+            <th>Project</th>
+            <th>Path</th>
+            <th>Test status</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr *ngFor="let issue of issues$ | async">
+            <td>{{issue.issue_number}}</td>
+            <td>{{issue.project}}</td>
+            <td (click)="onClick($event)" title="Click to copy">{{issue.path}}</td>
+            <mat-select matNativeControl (change)="onChange($event)" [value]="issue.test_state" [id]="issue.ID">
+                <mat-option value="Finish">Finish</mat-option>
+                <mat-option value="Working">Working</mat-option>
+                <mat-option value="Created">Created</mat-option>
+                <mat-option value="Done">Done</mat-option>
+                <mat-option value="Old">Old</mat-option>
+            </mat-select>
+        </tr>
+    </tbody>
+</table>
