@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Issue } from '../issue';
 import { Observable } from 'rxjs';
 import { IssueService } from '../issue.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 interface status {
   value: string;
@@ -15,7 +16,7 @@ interface status {
 
 export class IssueComponent implements OnInit {
   issues$: Observable<Issue[]> = new Observable();
-  constructor(private issueService: IssueService) { }
+  constructor(private issueService: IssueService, private _snackBar: MatSnackBar) { }
 
   testStatus: status[] = [
     { value: 'Finish' },
@@ -44,6 +45,9 @@ export class IssueComponent implements OnInit {
     inp.value = that.textContent
     inp.select();
     document.execCommand('copy', false);
+    this._snackBar.open(inp.value, '', {
+      duration: 1000
+    });
     inp.remove();
   }
 
