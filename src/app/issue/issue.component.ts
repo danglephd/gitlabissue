@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Issue } from '../issue';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { IssueService } from '../issue.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Sort } from '@angular/material/sort';
 
 interface status {
   value: string;
@@ -32,6 +33,29 @@ export class IssueComponent implements OnInit {
 
   private fetchIssues(): void {
     this.issues$ = this.issueService.getIssues();
+  }
+
+  private compare(a: number | string, b: number | string, isAsc: boolean) {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
+  sortData(sort: Sort) {
+    console.log('>>>>sortData', sort);
+    if (!sort.active || sort.direction === '') {
+      // console.log('>>>>sortData', sort);
+      return;
+    }
+    this.issues$.pipe(map(data => data.sort((a, b) => {
+      const isAsc = sort.direction === 'asc';
+      switch (sort.active) {
+        case 'issue_number':
+          return this.compare(a.issue_number, b.issue_number, isAsc);
+        case 'project':
+          return this.compare(a.project, b.project, isAsc);
+        default:
+          return 0;
+      }
+    }))).subscribe();
   }
 
   onChange(event: any) {
