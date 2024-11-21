@@ -23,11 +23,11 @@
             id="issue_number">Search</button>
     </div>
 </div>
-<table class="table table-striped table-bordered">
+<table matSort (matSortChange)="sortData($event)" class="table table-striped table-bordered">
     <thead>
         <tr>
-            <th>Issue number</th>
-            <th>Project</th>
+            <th mat-sort-header="issue_number">Issue number</th>
+            <th mat-sort-header="project">Project</th>
             <th>Path</th>
             <th>Test status</th>
         </tr>
