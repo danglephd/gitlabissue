@@ -17,7 +17,10 @@ interface status {
 
 export class IssueComponent implements OnInit {
   issues$: Observable<Issue[]> = new Observable();
-  
+  inp_issueno: string = '';
+  sel_status: string = '';
+  isLoading = true;
+
   constructor(private issueService: IssueService, private _snackBar: MatSnackBar) { }
 
   testStatus: status[] = [
@@ -43,7 +46,6 @@ export class IssueComponent implements OnInit {
   sortData(sort: Sort) {
     console.log('>>>>sortData', sort);
     if (!sort.active || sort.direction === '') {
-      // console.log('>>>>sortData', sort);
       return;
     }
     this.issues$.pipe(map(data => data.sort((a, b) => {
@@ -60,7 +62,9 @@ export class IssueComponent implements OnInit {
   }
 
   onReset() {
-    console.log(">>>onReset");
+    this.inp_issueno = '';
+    this.sel_status = 'None';
+    this.fetchIssues();
   }
 
   onChange(event: any) {
@@ -98,7 +102,6 @@ export class IssueComponent implements OnInit {
   }
 
   onSearch(issue_number: string, test_status: any) {
-    // console.log('>>>>onSearch', issue_number, test_status);
     if (test_status === undefined) {
       this.issues$ = this.issueService.getIssuesByNumber(issue_number);
     } else if (issue_number === undefined || issue_number === '') {
