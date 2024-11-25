@@ -22,6 +22,9 @@
         <button mat-raised-button color="primary" (click)="onSearch(input.value, test_status.value)"
             id="issue_number">Search</button>
     </div>
+    <div class="col-md-1" style="margin: 10px;">
+        <button mat-raised-button class="reset" (click)="onReset()">Reset</button>
+    </div>
 </div>
 <table matSort (matSortChange)="sortData($event)" class="table table-striped table-bordered">
     <thead>
@@ -29,6 +32,7 @@
             <th mat-sort-header="issue_number">Issue number</th>
             <th mat-sort-header="project">Project</th>
             <th>Path</th>
+            <th>URL</th>
             <th>Test status</th>
         </tr>
     </thead>
@@ -38,7 +42,8 @@
             <td>{{issue.issue_number}}</td>
             <td>{{issue.project}}</td>
             <td (click)="onClick($event)" title="Click to copy">{{issue.path}}</td>
-            <mat-select matNativeControl (change)="onChange($event)" [value]="issue.test_state" [id]="issue.ID">
+            <td (click)="onClick2($event)" title="Click to copy">{{issue.issue_url}}</td>
+            <mat-select matNativeControl (selectionChange)="onChange($event)" [value]="issue.test_state" [id]="issue.ID">
                 <mat-option value="Finish">Finish</mat-option>
                 <mat-option value="Working">Working</mat-option>
                 <mat-option value="Created">Created</mat-option>
