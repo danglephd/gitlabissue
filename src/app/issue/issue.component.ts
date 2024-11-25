@@ -66,10 +66,12 @@ export class IssueComponent implements OnInit {
     let that = event.target
     let inp = document.createElement('input');
     document.body.appendChild(inp)
-    inp.value = that.textContent
+    let value = that.textContent
+    let folderPath = value.substring(0, value.lastIndexOf("Testcase") - 1);
+    inp.value = folderPath;
     inp.select();
     document.execCommand('copy', false);
-    this._snackBar.open(inp.value, '', {
+    this._snackBar.open(`Copied "${folderPath}"`, '', {
       duration: 1000
     });
     inp.remove();
