@@ -5,13 +5,13 @@
         <mat-form-field appearance="fill">
             <mat-label>Issue Number: </mat-label>
             <input #input matInput id="issue_number" type="text" placeholder="Enter number issue here"
-                (keyup.enter)="onSearch(input.value, test_status.value)">
+                (keyup.enter)="onSearch(input.value, test_status.value)" [(ngModel)]="inp_issueno">
         </mat-form-field>
     </div>
     <div class="col-md-2">
         <mat-form-field appearance="fill">
             <mat-label>Test status</mat-label>
-            <mat-select #test_status>
+            <mat-select #test_status [(ngModel)]="sel_status">
                 <mat-option>None</mat-option>
                 <mat-option *ngFor="let status of testStatus" [value]="status">{{status.value}}</mat-option>
             </mat-select>
@@ -43,7 +43,8 @@
             <td>{{issue.project}}</td>
             <td (click)="onClick($event)" title="Click to copy">{{issue.path}}</td>
             <td (click)="onClick2($event)" title="Click to copy">{{issue.issue_url}}</td>
-            <mat-select matNativeControl (selectionChange)="onChange($event)" [value]="issue.test_state" [id]="issue.ID">
+            <mat-select matNativeControl (selectionChange)="onChange($event)" [value]="issue.test_state"
+                [id]="issue.ID">
                 <mat-option value="Finish">Finish</mat-option>
                 <mat-option value="Working">Working</mat-option>
                 <mat-option value="Created">Created</mat-option>
@@ -53,3 +54,8 @@
         </tr>
     </tbody>
 </table>
+
+<!-- <div *ngIf="isLoading" style="display: flex; justify-content: center; align-items: center; background: white;">
+    <mat-progress-spinner color="primary" mode="indeterminate">
+    </mat-progress-spinner>
+</div> -->
