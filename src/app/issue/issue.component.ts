@@ -102,8 +102,6 @@ export class IssueComponent implements OnInit {
   }
 
   onSearch(issue_number: string, test_status: any) {
-    console.log('>>>onSearch', issue_number, test_status);
-    
     if (test_status === undefined || test_status === "None" || test_status === "") {
       this.issues$ = this.issueService.getIssuesByNumber(issue_number);
     } else if (issue_number === undefined || issue_number === '') {
