@@ -17,6 +17,7 @@ interface status {
 
 export class IssueComponent implements OnInit {
   issues$: Observable<Issue[]> = new Observable();
+  
   constructor(private issueService: IssueService, private _snackBar: MatSnackBar) { }
 
   testStatus: status[] = [
@@ -58,8 +59,12 @@ export class IssueComponent implements OnInit {
     }))).subscribe();
   }
 
+  onReset() {
+    console.log(">>>onReset");
+  }
+
   onChange(event: any) {
-    this.issueService.updateIssue(event.target.id, event.target.value);
+    this.issueService.updateIssue(event.source._id, event.value);
   }
 
   onClick(event: any) {
@@ -68,6 +73,21 @@ export class IssueComponent implements OnInit {
     document.body.appendChild(inp)
     let value = that.textContent
     let folderPath = value.substring(0, value.lastIndexOf("Testcase") - 1);
+    inp.value = folderPath;
+    inp.select();
+    document.execCommand('copy', false);
+    this._snackBar.open(`Copied "${folderPath}"`, '', {
+      duration: 1000
+    });
+    inp.remove();
+  }
+
+  onClick2(event: any) {
+    let that = event.target
+    let inp = document.createElement('input');
+    document.body.appendChild(inp)
+    let value = that.textContent
+    let folderPath = value
     inp.value = folderPath;
     inp.select();
     document.execCommand('copy', false);
