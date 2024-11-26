@@ -64,7 +64,7 @@ export class IssueComponent implements OnInit {
   onReset() {
     this.inp_issueno = '';
     this.sel_status = 'None';
-    this.fetchIssues();
+    // this.fetchIssues();
   }
 
   onChange(event: any) {
