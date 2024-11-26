@@ -43,7 +43,7 @@
             <td>{{issue.project}}</td>
             <td (click)="onClick($event)" title="Click to copy">{{issue.path}}</td>
             <td (click)="onClick2($event)" title="Click to copy">
-                <a href={{issue.issue_url}}  target="_blank">
+                <a href={{issue.issue_url}} target="_blank">
                     {{issue.issue_url}}
                 </a>
             </td>
@@ -59,7 +59,7 @@
     </tbody>
 </table>
 
-<!-- <div *ngIf="isLoading" style="display: flex; justify-content: center; align-items: center; background: white;">
+<mat-card *ngIf="isLoading" class="mat-card-style">
     <mat-progress-spinner color="primary" mode="indeterminate">
     </mat-progress-spinner>
-</div> -->
+</mat-card>
