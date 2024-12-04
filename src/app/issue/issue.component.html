@@ -39,7 +39,9 @@
     </thead>
 
     <tbody>
-        <tr *ngFor="let issue of issues$ | async">
+        <!-- <tr *ngFor="let issue of issues$ | async" > -->
+        <!-- <tr mat-row *ngFor="let issue of issues$ | async" [ngStyle]="{'background': '#f00'}"> -->
+        <tr mat-row *ngFor="let issue of issues$ | async" [ngStyle]="{'background':changeBackground(issue.duedate)}">
             <td>{{issue.issue_number}}</td>
             <td>{{issue.project}}</td>
             <td (click)="onClick($event)" title="Click to copy">{{issue.path}}</td>
