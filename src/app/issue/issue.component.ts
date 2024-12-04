@@ -19,7 +19,7 @@ export class IssueComponent implements OnInit {
   issues$: Observable<Issue[]> = new Observable();
   inp_issueno: string = '';
   sel_status: string = '';
-  isLoading = true;
+  oneDay = 24 * 60 * 60 * 1000;
 
   constructor(private issueService: IssueService, private _snackBar: MatSnackBar) { }
 
@@ -32,7 +32,6 @@ export class IssueComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.isLoading = true;
     this.fetchIssues();
   }
 
@@ -70,6 +69,25 @@ export class IssueComponent implements OnInit {
 
   onChange(event: any) {
     this.issueService.updateIssue(event.source._id, event.value);
+  }
+
+  changeBackground(value: any) {
+    let today = new Date();
+    let firstDate = Date.parse(value);
+    const diffDays = Math.round(Math.abs((firstDate - today.getTime()) / this.oneDay)); 
+    let color = '#BEED6B';
+
+    // console.log('>>>changeBackground ', diffDays);
+    
+    if(diffDays < 0 || value == " " || value == ""){
+      color = "None";
+    } else if (diffDays >= 0 && diffDays <= 7 ){
+      color = "#EDCB6B";
+    } else{
+      color = "#BEED6B";
+    }
+
+    return color;
   }
 
   onClick(event: any) {
