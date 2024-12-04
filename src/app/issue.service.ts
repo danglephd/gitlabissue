@@ -20,9 +20,23 @@ export class IssueService {
     return (valueA < valueB) ? -1 : (valueA > valueB) ? 1 : 0;
   }
 
+  private sortByTime = (a:Issue, b:Issue) => {
+    if(a.duedate === " " || a.duedate === ""){
+      return 1;
+    }
+    
+    if(b.duedate === " " || b.duedate === ""){
+      return -1;
+    }
+  
+    let valueA = Date.parse(a.duedate);
+    let valueB = Date.parse(b.duedate);
+    return (valueA < valueB) ? -1 : (valueA > valueB) ? 1 : 0;
+  }
+
   private refreshIssues() {
     this.httpClient.get<Issue[]>(`${this.url}/issues`)
-      .pipe(map(data => data.sort(this.sortByNumber)))
+      // .pipe(map(data => data.sort(this.sortByNumber)))
       .subscribe(issues => {
         this.issues$.next(issues);
       });
@@ -35,7 +49,7 @@ export class IssueService {
 
   getIssuesByNumber(issue_number: string): Subject<Issue[]> {
     this.httpClient.get<Issue[]>(`${this.url}/issues/${issue_number}`)
-      .pipe(map(data => data.sort(this.sortByNumber)))
+      .pipe(map(data => data.sort(this.sortByTime)))
       .subscribe(issues => {
         this.issues$.next(issues);
       });
@@ -47,7 +61,7 @@ export class IssueService {
       status: test_status
     };
     this.httpClient.post<Issue[]>(`${this.url}/issues/status`, body)
-      .pipe(map(data => data.sort(this.sortByNumber)))
+      .pipe(map(data => data.sort(this.sortByTime)))
       .subscribe(issues => {
         this.issues$.next(issues);
       });
