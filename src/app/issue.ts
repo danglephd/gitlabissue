@@ -4,5 +4,6 @@ export interface Issue {
     issue_url: string;
     test_state: string;
     issue_number: string;
+    duedate: string;
     ID: string;
 }
