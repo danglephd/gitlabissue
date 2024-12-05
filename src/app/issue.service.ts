@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Issue } from './issue';
-import { Observable, Subject, map, tap, toArray } from 'rxjs';
+import { Observable, Subject, map, pipe, tap, toArray } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +36,7 @@ export class IssueService {
 
   private refreshIssues() {
     this.httpClient.get<Issue[]>(`${this.url}/issues`)
-      // .pipe(map(data => data.sort(this.sortByNumber)))
+      .pipe(map(data => data.filter( value => value.test_state !== "Old" && value.test_state !== "Done" )))
       .subscribe(issues => {
         this.issues$.next(issues);
       });
