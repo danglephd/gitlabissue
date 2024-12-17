@@ -75,24 +75,28 @@ export class IssueComponent implements OnInit {
     let today = new Date();
     let duedate = Date.parse(value.duedate);
     let status = value.test_state;
-    const diffDays = Math.round(Math.abs((duedate - today.getTime()) / this.oneDay)); 
+    const diffDays = Math.round(Math.abs((duedate - today.getTime()) / this.oneDay));
     let color = '#BEED6B';
 
-    if (status == "Done" || status == "Old"){
+    if (status == "Done" || status == "Old") {
       return "None";
     }
     // console.log('>>>changeBackground ', diffDays);
-    
-    if(diffDays < 0 || value.duedate == " " || value.duedate == ""){
+
+    if (diffDays < -7 || value.duedate == " " || value.duedate == "") {
       color = "None";
-    } else if (diffDays >= 0 && diffDays <= 7 ){
-      if (status == "Done" || status == "Old"){
+    } else if (diffDays >= 0 && diffDays <= 7) {
+      if (status == "Done" || status == "Old") {
         color = "None";
-      }else{
-        color = "#EDCB6B";
+      } else {
+        color = "#EDCB6B"; //Expired!!
       }
-    } else{
-      color = "#BEED6B";
+    } else { 
+      if(diffDays >= -7 ){
+        color = "#EDCB6B"; //Expired!!
+      }else{
+        color = "#BEED6B";
+      }
     }
 
     return color;
@@ -132,7 +136,7 @@ export class IssueComponent implements OnInit {
     if (test_status === undefined || test_status === "None" || test_status === "") {
       if (issue_number === undefined || issue_number === '') {
         this.issues$ = this.issueService.getIssues();
-      }else{
+      } else {
         this.issues$ = this.issueService.getIssuesByNumber(issue_number);
       }
     } else if (issue_number === undefined || issue_number === '') {
