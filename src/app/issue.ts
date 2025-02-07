@@ -1,4 +1,6 @@
 export interface Issue {
+    proj_url_mypc: string;
+    proj_url_company: string;
     project: string;
     path: string;
     issue_url: string;
