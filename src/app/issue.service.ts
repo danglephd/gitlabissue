@@ -34,9 +34,39 @@ export class IssueService {
     return (valueA < valueB) ? -1 : (valueA > valueB) ? 1 : 0;
   }
 
+  private updateGDriveValue(data: Issue[]) {
+    data.forEach(element => {
+      switch (element.project) {
+        case "xm-web":
+          element.proj_url_company = "https://drive.google.com/drive/u/1/folders/1-4LxFb0nZ7TPGa4XO5db2xE7_fB2D_pQ";
+          element.proj_url_mypc = "https://drive.google.com/drive/u/1/folders/1-3f4fI891vqfITEOP0seIKp0dZfzIfrM";
+          break;
+        case "xm-api":
+          element.proj_url_company = "https://drive.google.com/drive/u/1/folders/1B84We-1nziArtSClXv79tPAxOGaCg_6y";
+          element.proj_url_mypc = "https://drive.google.com/drive/u/1/folders/1-j4cjtVnCYhStgR_bcLu1CDi5fbewhEC";
+          break;
+        case "erp-web":
+          element.proj_url_company = "https://drive.google.com/drive/u/1/folders/1-pCA_yrx3AMqe0uvazAOUBqX4mt_eGJa";
+          element.proj_url_mypc = "https://drive.google.com/drive/u/1/folders/15aNUv7XJeuS755wE6t5lkJ0ZX4X-uTo8";
+          break;
+        case "erp-server":
+          element.proj_url_company = "https://drive.google.com/drive/u/1/folders/1AohlxBRxuybnV3bVt5u4ycRFbYnQmzd7";
+          element.proj_url_mypc = "https://drive.google.com/drive/u/1/folders/13gh2XVoqhKoXPFPnvaLLFRrzigdCYRBr";
+          break;
+          
+        default:
+          element.proj_url_company = "https://null";
+          element.proj_url_mypc = "https://nan";
+          break;
+      }
+    });
+    return data;
+  }
+
   private refreshIssues() {
     this.httpClient.get<Issue[]>(`${this.url}/issues`)
       .pipe(map(data => data.filter( value => value.test_state !== "Old" && value.test_state !== "Done" )))
+      .pipe(map(data => this.updateGDriveValue(data)))
       .subscribe(issues => {
         this.issues$.next(issues);
       });
@@ -50,6 +80,7 @@ export class IssueService {
   getIssuesByNumber(issue_number: string): Subject<Issue[]> {
     this.httpClient.get<Issue[]>(`${this.url}/issues/${issue_number}`)
       .pipe(map(data => data.sort(this.sortByTime)))
+      .pipe(map(data => this.updateGDriveValue(data)))
       .subscribe(issues => {
         this.issues$.next(issues);
       });
@@ -62,6 +93,7 @@ export class IssueService {
     };
     this.httpClient.post<Issue[]>(`${this.url}/issues/status`, body)
       .pipe(map(data => data.sort(this.sortByTime)))
+      .pipe(map(data => this.updateGDriveValue(data)))
       .subscribe(issues => {
         this.issues$.next(issues);
       });
@@ -74,6 +106,7 @@ export class IssueService {
       issue_number: issue_number
     };
     this.httpClient.post<Issue[]>(`${this.url}/issues`, body)
+      .pipe(map(data => this.updateGDriveValue(data)))
       .subscribe(issues => {
         this.issues$.next(issues);
       });
