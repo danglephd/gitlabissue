@@ -31,6 +31,7 @@
         <tr>
             <th mat-sort-header="issue_number">Issue number</th>
             <th mat-sort-header="project">Project</th>
+            <th>Google</th>
             <th>Path</th>
             <th>URL</th>
             <th>Test status</th>
@@ -43,7 +44,18 @@
         <!-- <tr mat-row *ngFor="let issue of issues$ | async" [ngStyle]="{'background': '#f00'}"> -->
         <tr mat-row *ngFor="let issue of issues$ | async" [ngStyle]="{'background':changeBackground(issue)}">
             <td>{{issue.issue_number}}</td>
-            <td>{{issue.project}}</td>
+            <td>
+                {{issue.project}}
+            </td>
+            <td>
+                <a href={{issue.proj_url_company}} target="_blank" title="Company Laptop">
+                    C
+                </a>
+                /
+                <a href={{issue.proj_url_mypc}} target="_blank" title="My Laptop">
+                    M
+                </a>
+            </td>
             <td (click)="onClick($event)" title="Click to copy">{{issue.path}}</td>
             <td (click)="onClick2($event)" title="Click to copy">
                 <a href={{issue.issue_url}} target="_blank">
