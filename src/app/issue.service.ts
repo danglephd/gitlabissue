@@ -49,6 +49,10 @@ export class IssueService {
           element.proj_url_company = "https://drive.google.com/drive/u/1/folders/1-pCA_yrx3AMqe0uvazAOUBqX4mt_eGJa";
           element.proj_url_mypc = "https://drive.google.com/drive/u/1/folders/15aNUv7XJeuS755wE6t5lkJ0ZX4X-uTo8";
           break;
+        case "erp-web-demo":
+          element.proj_url_company = "https://drive.google.com/drive/u/1/folders/10xTCk6P5P36p47YiAQ6roLpvlbOyp6g8";
+          element.proj_url_mypc = "https://drive.google.com/drive/u/1/folders/1ZGAIUvwLKKujLeetQXWvCTxwAxMaIm8y";
+          break;
         case "erp-server":
           element.proj_url_company = "https://drive.google.com/drive/u/1/folders/1AohlxBRxuybnV3bVt5u4ycRFbYnQmzd7";
           element.proj_url_mypc = "https://drive.google.com/drive/u/1/folders/13gh2XVoqhKoXPFPnvaLLFRrzigdCYRBr";
