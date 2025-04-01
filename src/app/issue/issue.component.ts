@@ -20,6 +20,7 @@ export class IssueComponent implements OnInit {
   sel_status: string = '';
   oneDay = 24 * 60 * 60 * 1000;
   isSidebarOpen = false;
+  isSidebarCollapsed = false;
   isMobile = false;
 
   constructor(private issueService: IssueService, private _snackBar: MatSnackBar) {
@@ -31,6 +32,7 @@ export class IssueComponent implements OnInit {
     this.isMobile = window.innerWidth <= 768;
     if (!this.isMobile) {
       this.isSidebarOpen = true;
+      this.isSidebarCollapsed = false;
     }
   }
 
@@ -161,7 +163,7 @@ export class IssueComponent implements OnInit {
       this.issues$ = this.issueService.getIssuesByNumberAndStatus(issue_number, test_status.value);
     }
     
-    // Hide sidebar after search on mobile
+    // Hide sidebar only on mobile after search
     if (this.isMobile) {
       this.isSidebarOpen = false;
     }

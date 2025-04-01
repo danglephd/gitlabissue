@@ -1,10 +1,12 @@
 <div class="app-container">
-    <div class="sidebar" [class.sidebar-open]="isSidebarOpen">
+    <div class="sidebar" [class.sidebar-open]="isSidebarOpen" [class.collapsed]="isSidebarCollapsed">
         <div class="sidebar-header">
             <h2>Search Filters</h2>
-            <button mat-icon-button class="close-button" (click)="toggleSidebar()" *ngIf="isMobile">
-                <mat-icon>close</mat-icon>
-            </button>
+            <div>
+                <button mat-icon-button class="close-button" (click)="toggleSidebar()" *ngIf="isMobile">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
         </div>
         <div class="search-form">
             <mat-form-field appearance="fill">
@@ -27,7 +29,7 @@
         </div>
     </div>
 
-    <div class="main-content">
+    <div class="main-content" [class.expanded]="isSidebarCollapsed">
         <div class="header">
             <button mat-icon-button class="menu-button" (click)="toggleSidebar()" *ngIf="isMobile">
                 <mat-icon>menu</mat-icon>
@@ -42,7 +44,6 @@
                         <th mat-sort-header="project">Project</th>
                         <th>Google</th>
                         <th>Path</th>
-                        <th>URL</th>
                         <th>Test status</th>
                         <th>Due date</th>
                     </tr>
@@ -50,23 +51,21 @@
 
                 <tbody>
                     <tr mat-row *ngFor="let issue of issues$ | async" [ngStyle]="{'background':changeBackground(issue)}">
-                        <td>{{issue.issue_number}}</td>
+                        <td>
+                            <a href={{issue.issue_url}} target="_blank">
+                                {{issue.issue_number}}
+                            </a>
+                        </td>
                         <td>{{issue.project}}</td>
                         <td>
                             <a href={{issue.proj_url_company}} target="_blank" title="Company Laptop">
                                 C
                             </a>
-                            /
                             <a href={{issue.proj_url_mypc}} target="_blank" title="My Laptop">
                                 M
                             </a>
                         </td>
-                        <td class="hide-mobile" (click)="onClick($event)" title="Click to copy">{{issue.path}}</td>
-                        <td (click)="onClick2($event)" title="Click to copy">
-                            <a href={{issue.issue_url}} target="_blank">
-                                {{issue.issue_url}}
-                            </a>
-                        </td>
+                        <td (click)="onClick($event)" title="Click to copy">{{issue.path}}</td>
                         <td>
                             <mat-select matNativeControl (selectionChange)="onChange($event)" [value]="issue.test_state"
                                 [id]="issue.ID">
