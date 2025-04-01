@@ -1,79 +1,89 @@
-<h1 class="text-center m-5">Gitlab's Issue List</h1>
+<div class="app-container">
+    <div class="sidebar" [class.sidebar-open]="isSidebarOpen">
+        <div class="sidebar-header">
+            <h2>Search Filters</h2>
+            <button mat-icon-button class="close-button" (click)="toggleSidebar()" *ngIf="isMobile">
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+        <div class="search-form">
+            <mat-form-field appearance="fill">
+                <mat-label>Issue Number: </mat-label>
+                <input #input matInput id="issue_number" type="text" placeholder="Enter number issue here"
+                    (keyup.enter)="onSearch(input.value, test_status.value)" [(ngModel)]="inp_issueno">
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Test status</mat-label>
+                <mat-select #test_status [(ngModel)]="sel_status">
+                    <mat-option>None</mat-option>
+                    <mat-option *ngFor="let status of testStatus" [value]="status">{{status.value}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <div class="button-group">
+                <button mat-raised-button color="primary" (click)="onSearch(input.value, test_status.value)"
+                    id="issue_number">Search</button>
+                <button mat-raised-button class="reset" (click)="onReset()">Reset</button>
+            </div>
+        </div>
+    </div>
 
-<div class="row">
-    <div class="col-md-2">
-        <mat-form-field appearance="fill">
-            <mat-label>Issue Number: </mat-label>
-            <input #input matInput id="issue_number" type="text" placeholder="Enter number issue here"
-                (keyup.enter)="onSearch(input.value, test_status.value)" [(ngModel)]="inp_issueno">
-        </mat-form-field>
-    </div>
-    <div class="col-md-2">
-        <mat-form-field appearance="fill">
-            <mat-label>Test status</mat-label>
-            <mat-select #test_status [(ngModel)]="sel_status">
-                <mat-option>None</mat-option>
-                <mat-option *ngFor="let status of testStatus" [value]="status">{{status.value}}</mat-option>
-            </mat-select>
-        </mat-form-field>
+    <div class="main-content">
+        <div class="header">
+            <button mat-icon-button class="menu-button" (click)="toggleSidebar()" *ngIf="isMobile">
+                <mat-icon>menu</mat-icon>
+            </button>
+            <h1>Gitlab's Issue List</h1>
+        </div>
+        <div class="table-container">
+            <table matSort (matSortChange)="sortData($event)" class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th mat-sort-header="issue_number">Issue number</th>
+                        <th mat-sort-header="project">Project</th>
+                        <th>Google</th>
+                        <th>Path</th>
+                        <th>URL</th>
+                        <th>Test status</th>
+                        <th>Due date</th>
+                    </tr>
+                </thead>
 
-    </div>
-    <div class="col-md-1" style="margin: 10px;">
-        <button mat-raised-button color="primary" (click)="onSearch(input.value, test_status.value)"
-            id="issue_number">Search</button>
-    </div>
-    <div class="col-md-1" style="margin: 10px;">
-        <button mat-raised-button class="reset" (click)="onReset()">Reset</button>
+                <tbody>
+                    <tr mat-row *ngFor="let issue of issues$ | async" [ngStyle]="{'background':changeBackground(issue)}">
+                        <td>{{issue.issue_number}}</td>
+                        <td>{{issue.project}}</td>
+                        <td>
+                            <a href={{issue.proj_url_company}} target="_blank" title="Company Laptop">
+                                C
+                            </a>
+                            /
+                            <a href={{issue.proj_url_mypc}} target="_blank" title="My Laptop">
+                                M
+                            </a>
+                        </td>
+                        <td class="hide-mobile" (click)="onClick($event)" title="Click to copy">{{issue.path}}</td>
+                        <td (click)="onClick2($event)" title="Click to copy">
+                            <a href={{issue.issue_url}} target="_blank">
+                                {{issue.issue_url}}
+                            </a>
+                        </td>
+                        <td>
+                            <mat-select matNativeControl (selectionChange)="onChange($event)" [value]="issue.test_state"
+                                [id]="issue.ID">
+                                <mat-option value="Finish">Finish</mat-option>
+                                <mat-option value="Working">Working</mat-option>
+                                <mat-option value="Created">Created</mat-option>
+                                <mat-option value="Done">Done</mat-option>
+                                <mat-option value="Old">Old</mat-option>
+                            </mat-select>
+                        </td>
+                        <td>{{issue.duedate}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-<table matSort (matSortChange)="sortData($event)" class="table table-striped table-bordered">
-    <thead>
-        <tr>
-            <th mat-sort-header="issue_number">Issue number</th>
-            <th mat-sort-header="project">Project</th>
-            <th>Google</th>
-            <th>Path</th>
-            <th>URL</th>
-            <th>Test status</th>
-            <th>Due date</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        <!-- <tr *ngFor="let issue of issues$ | async" > -->
-        <!-- <tr mat-row *ngFor="let issue of issues$ | async" [ngStyle]="{'background': '#f00'}"> -->
-        <tr mat-row *ngFor="let issue of issues$ | async" [ngStyle]="{'background':changeBackground(issue)}">
-            <td>{{issue.issue_number}}</td>
-            <td>
-                {{issue.project}}
-            </td>
-            <td>
-                <a href={{issue.proj_url_company}} target="_blank" title="Company Laptop">
-                    C
-                </a>
-                /
-                <a href={{issue.proj_url_mypc}} target="_blank" title="My Laptop">
-                    M
-                </a>
-            </td>
-            <td (click)="onClick($event)" title="Click to copy">{{issue.path}}</td>
-            <td (click)="onClick2($event)" title="Click to copy">
-                <a href={{issue.issue_url}} target="_blank">
-                    {{issue.issue_url}}
-                </a>
-            </td>
-            <mat-select matNativeControl (selectionChange)="onChange($event)" [value]="issue.test_state"
-                [id]="issue.ID">
-                <mat-option value="Finish">Finish</mat-option>
-                <mat-option value="Working">Working</mat-option>
-                <mat-option value="Created">Created</mat-option>
-                <mat-option value="Done">Done</mat-option>
-                <mat-option value="Old">Old</mat-option>
-            </mat-select>
-            <td>{{issue.duedate}}</td>
-        </tr>
-    </tbody>
-</table>
 
 <!-- <mat-card *ngIf="isLoading" class="mat-card-style">
     <mat-progress-spinner color="primary" mode="indeterminate">
