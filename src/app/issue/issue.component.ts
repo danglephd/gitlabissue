@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { Issue } from '../issue';
 import { Observable, map } from 'rxjs';
 import { IssueService } from '../issue.service';
@@ -14,14 +14,29 @@ interface status {
   templateUrl: './issue.component.html',
   styleUrls: ['./issue.component.css']
 })
-
 export class IssueComponent implements OnInit {
   issues$: Observable<Issue[]> = new Observable();
   inp_issueno: string = '';
   sel_status: string = '';
   oneDay = 24 * 60 * 60 * 1000;
+  isSidebarOpen = false;
+  isMobile = false;
 
-  constructor(private issueService: IssueService, private _snackBar: MatSnackBar) { }
+  constructor(private issueService: IssueService, private _snackBar: MatSnackBar) {
+    this.checkScreenSize();
+  }
+
+  @HostListener('window:resize')
+  checkScreenSize() {
+    this.isMobile = window.innerWidth <= 768;
+    if (!this.isMobile) {
+      this.isSidebarOpen = true;
+    }
+  }
+
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
 
   testStatus: status[] = [
     { value: 'Finish' },
@@ -144,6 +159,11 @@ export class IssueComponent implements OnInit {
     }
     else {
       this.issues$ = this.issueService.getIssuesByNumberAndStatus(issue_number, test_status.value);
+    }
+    
+    // Hide sidebar after search on mobile
+    if (this.isMobile) {
+      this.isSidebarOpen = false;
     }
   }
 }
