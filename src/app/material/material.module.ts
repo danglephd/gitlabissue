@@ -10,7 +10,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatSortModule} from '@angular/material/sort';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatCardModule} from '@angular/material/card';
-
+import {MatIconModule} from '@angular/material/icon';
 const material = [
   MatSlideToggleModule,
   MatInputModule,
@@ -20,7 +20,8 @@ const material = [
   MatSnackBarModule,
   MatSortModule,
   MatProgressSpinnerModule,
-  MatCardModule
+  MatCardModule,
+  MatIconModule
 ];
 
 @NgModule({
