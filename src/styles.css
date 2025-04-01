@@ -3,3 +3,13 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.container-md {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Adjust table container padding instead */
+.table-container {
+  padding: 0 16px;
+}

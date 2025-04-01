@@ -88,19 +88,24 @@ export class IssueComponent implements OnInit {
     this.issueService.updateIssue(event.source._id, event.value);
   }
 
-  changeBackground(value: any) {
-    let today = new Date();
-    let duedate = Date.parse(value.duedate);
-    let status = value.test_state;
-    const diffDays = Math.round(Math.abs((duedate - today.getTime()) / this.oneDay));
-    let color = '#BEED6B';
+  changeBackground(value: Issue): string {
+    // Nếu không có due date hoặc due date rỗng, không thay đổi màu nền
+    if (!value.duedate || value.duedate.trim() === "") {
+      return "None";
+    }
 
+    let status = value.test_state;
     if (status == "Done" || status == "Old") {
       return "None";
     }
-    // console.log('>>>changeBackground ', diffDays);
 
-    if (diffDays < -7 || value.duedate == " " || value.duedate == "") {
+    let today = new Date();
+    let duedate = Date.parse(value.duedate);
+    const diffDays = Math.round(Math.abs((duedate - today.getTime()) / this.oneDay));
+    let color = '#BEED6B';
+    console.log('>>>changeBackground ', diffDays);
+
+    if (diffDays < -7) {
       color = "None";
     } else if (diffDays >= 0 && diffDays <= 7) {
       if (status == "Done" || status == "Old") {
