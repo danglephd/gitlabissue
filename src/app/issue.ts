@@ -8,4 +8,5 @@ export interface Issue {
     issue_number: string;
     duedate: string;
     ID: string;
+    id: string;
 }
