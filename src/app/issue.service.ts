@@ -101,6 +101,7 @@ export class IssueService {
       .subscribe(issues => {
         this.issues$.next(issues);
       });
+      
     return this.issues$;
   }
 
@@ -123,5 +124,9 @@ export class IssueService {
     };
 
     return this.httpClient.put(`${this.url}/issues/${_id}`, body, { responseType: 'text' }).subscribe(x => console.log(x));
+  }
+
+  deleteIssue(id: string): Observable<any> {
+    return this.httpClient.delete(`${this.url}/issues/${id}`);
   }
 }

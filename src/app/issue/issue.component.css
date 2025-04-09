@@ -197,6 +197,16 @@
   text-overflow: ellipsis;
 }
 
+/* Path column hover effect */
+.table td:nth-child(4) {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.table td:nth-child(4):hover {
+  background-color: #f0f7ff;
+}
+
 .table tr:hover {
   background-color: #f8f9fa;
 }
@@ -351,4 +361,15 @@
   .toggle-button {
     display: block;
   }
+}
+
+/* Snackbar styles */
+.success-snackbar {
+  background: #4caf50;
+  color: white;
+}
+
+.error-snackbar {
+  background: #f44336;
+  color: white;
 }

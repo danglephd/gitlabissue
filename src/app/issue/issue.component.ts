@@ -84,8 +84,8 @@ export class IssueComponent implements OnInit {
     // this.fetchIssues();
   }
 
-  onChange(event: any) {
-    this.issueService.updateIssue(event.source._id, event.value);
+  onChange(event: any, issue: Issue) {
+    this.issueService.updateIssue(issue.id, event.value);
   }
 
   changeBackground(value: Issue): string {
@@ -125,33 +125,28 @@ export class IssueComponent implements OnInit {
   }
 
   onClick(event: any) {
-    let that = event.target
-    let inp = document.createElement('input');
-    document.body.appendChild(inp)
-    let value = that.textContent
-    let folderPath = value.substring(0, value.lastIndexOf("Testcase") - 1);
-    inp.value = folderPath;
-    inp.select();
-    document.execCommand('copy', false);
-    this._snackBar.open(`Copied "${folderPath}"`, '', {
-      duration: 1000
-    });
-    inp.remove();
-  }
-
-  onClick2(event: any) {
-    let that = event.target
-    let inp = document.createElement('input');
-    document.body.appendChild(inp)
-    let value = that.textContent
-    let folderPath = value
-    inp.value = folderPath;
-    inp.select();
-    document.execCommand('copy', false);
-    this._snackBar.open(`Copied "${folderPath}"`, '', {
-      duration: 1000
-    });
-    inp.remove();
+    const path = event.target.textContent;
+    const folderPath = path.substring(0, path.lastIndexOf("Testcase") - 1);
+    
+    // Use modern Clipboard API
+    navigator.clipboard.writeText(folderPath)
+      .then(() => {
+        this._snackBar.open(`Copied "${folderPath}"`, '', {
+          duration: 1000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          panelClass: ['success-snackbar']
+        });
+      })
+      .catch((err) => {
+        console.error('Failed to copy text: ', err);
+        this._snackBar.open('Failed to copy path', '', {
+          duration: 2000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          panelClass: ['error-snackbar']
+        });
+      });
   }
 
   onSearch(issue_number: string, test_status: any) {
@@ -171,6 +166,33 @@ export class IssueComponent implements OnInit {
     // Hide sidebar only on mobile after search
     if (this.isMobile) {
       this.isSidebarOpen = false;
+    }
+  }
+
+  onDelete(event: any, issue: Issue) {
+    if (confirm(`Are you sure you want to delete issue ${issue.issue_number}?`)) {
+      this.issueService.deleteIssue(issue.id)
+        .subscribe({
+          next: () => {
+            this._snackBar.open(`Issue ${issue.issue_number} deleted successfully`, '', {
+              duration: 2000,
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              panelClass: ['success-snackbar']
+            });
+            // Refresh the issues list
+            this.fetchIssues();
+          },
+          error: (error: Error) => {
+            console.error('Failed to delete issue:', error);
+            this._snackBar.open(`Failed to delete issue ${issue.issue_number}`, '', {
+              duration: 3000,
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              panelClass: ['error-snackbar']
+            });
+          }
+        });
     }
   }
 }
