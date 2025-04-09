@@ -22,6 +22,8 @@ export class IssueComponent implements OnInit {
   isSidebarOpen = false;
   isSidebarCollapsed = false;
   isMobile = false;
+  isLoading = false;
+  noData = false;
 
   constructor(private issueService: IssueService, private _snackBar: MatSnackBar) {
     this.checkScreenSize();
@@ -49,11 +51,18 @@ export class IssueComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.isLoading = true;
     this.fetchIssues();
   }
 
   private fetchIssues(): void {
-    this.issues$ = this.issueService.getIssues();
+    this.issues$ = this.issueService.getIssues().pipe(
+      map((issues: Issue[]) => {
+        this.isLoading = false;
+        this.noData = issues.length === 0;
+        return issues;
+      })
+    );
   }
 
   private compare(a: number | string, b: number | string, isAsc: boolean) {
@@ -103,7 +112,6 @@ export class IssueComponent implements OnInit {
     let duedate = Date.parse(value.duedate);
     const diffDays = Math.round(Math.abs((duedate - today.getTime()) / this.oneDay));
     let color = '#BEED6B';
-    console.log('>>>changeBackground ', diffDays);
 
     if (diffDays < -7) {
       color = "None";
@@ -150,17 +158,43 @@ export class IssueComponent implements OnInit {
   }
 
   onSearch(issue_number: string, test_status: any) {
+    this.isLoading = true;
+    this.noData = false;
+
     if (test_status === undefined || test_status === "None" || test_status === "") {
       if (issue_number === undefined || issue_number === '') {
-        this.issues$ = this.issueService.getIssues();
+        this.issues$ = this.issueService.getIssues().pipe(
+          map((issues: Issue[]) => {
+            this.isLoading = false;
+            this.noData = issues.length === 0;
+            return issues;
+          })
+        );
       } else {
-        this.issues$ = this.issueService.getIssuesByNumber(issue_number);
+        this.issues$ = this.issueService.getIssuesByNumber(issue_number).pipe(
+          map((issues: Issue[]) => {
+            this.isLoading = false;
+            this.noData = issues.length === 0;
+            return issues;
+          })
+        );
       }
     } else if (issue_number === undefined || issue_number === '') {
-      this.issues$ = this.issueService.getIssuesByStatus(test_status.value);
-    }
-    else {
-      this.issues$ = this.issueService.getIssuesByNumberAndStatus(issue_number, test_status.value);
+      this.issues$ = this.issueService.getIssuesByStatus(test_status.value).pipe(
+        map((issues: Issue[]) => {
+          this.isLoading = false;
+          this.noData = issues.length === 0;
+          return issues;
+        })
+      );
+    } else {
+      this.issues$ = this.issueService.getIssuesByNumberAndStatus(issue_number, test_status.value).pipe(
+        map((issues: Issue[]) => {
+          this.isLoading = false;
+          this.noData = issues.length === 0;
+          return issues;
+        })
+      );
     }
     
     // Hide sidebar only on mobile after search
@@ -180,8 +214,8 @@ export class IssueComponent implements OnInit {
               verticalPosition: 'bottom',
               panelClass: ['success-snackbar']
             });
-            // Refresh the issues list
-            this.fetchIssues();
+            // Refresh data based on current filters
+            this.onSearch(this.inp_issueno, this.sel_status);
           },
           error: (error: Error) => {
             console.error('Failed to delete issue:', error);
