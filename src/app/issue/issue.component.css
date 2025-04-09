@@ -402,3 +402,30 @@
 .loading-container mat-spinner {
   margin-bottom: 1rem;
 }
+
+/* Center all content vertically in table cells */
+.table td, .table th {
+  vertical-align: middle !important;
+  height: 48px; /* Fixed height for consistent row height */
+}
+
+/* Center links vertically */
+.table td a {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* Center mat-select vertically */
+.table td mat-select {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* Ensure Google column links are centered */
+td a[href*="drive.google.com"] {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 4px;
+}
