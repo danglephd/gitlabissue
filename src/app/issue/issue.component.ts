@@ -132,15 +132,75 @@ export class IssueComponent implements OnInit {
     return color;
   }
 
-  onClick(event: any) {
-    const path = event.target.textContent;
+  private copyToClipboard(text: string): Promise<void> {
+    // Try using the modern Clipboard API first
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+
+    // Fallback for older browsers
+    return new Promise((resolve, reject) => {
+      try {
+        // Create a temporary textarea element
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        
+        // Make it invisible
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        
+        // Select and copy
+        textArea.focus();
+        textArea.select();
+        const success = document.execCommand('copy');
+        textArea.remove();
+
+        if (success) {
+          resolve();
+        } else {
+          reject(new Error('Failed to copy text'));
+        }
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
+  onClick(event: MouseEvent) {
+    // Ensure we have the target element
+    const target = event.target as HTMLElement;
+    if (!target) return;
+
+    const path = target.textContent;
+    if (!path) {
+      this._snackBar.open('No path to copy', '', {
+        duration: 2000,
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
+    // Extract folder path (everything before "Testcase")
     const folderPath = path.substring(0, path.lastIndexOf("Testcase") - 1);
-    
-    // Use modern Clipboard API
-    navigator.clipboard.writeText(folderPath)
+    if (!folderPath) {
+      this._snackBar.open('Invalid path format', '', {
+        duration: 2000,
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
+    // Use copyToClipboard helper method
+    this.copyToClipboard(folderPath.trim())
       .then(() => {
         this._snackBar.open(`Copied "${folderPath}"`, '', {
-          duration: 1000,
+          duration: 2000,
           horizontalPosition: 'center',
           verticalPosition: 'bottom',
           panelClass: ['success-snackbar']
