@@ -7,8 +7,8 @@ import { Observable, Subject, map, pipe, tap, toArray, catchError, throwError } 
   providedIn: 'root'
 })
 export class IssueService {
-  // private url = 'http://localhost:3000';
-  private url = 'http://www.nodeserver9.com';
+  private url = 'http://localhost:3000';
+  // private url = 'http://www.nodeserver9.com';
 
   private issues$: Subject<Issue[]> = new Subject();
 
