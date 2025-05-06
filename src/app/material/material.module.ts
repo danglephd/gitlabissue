@@ -11,6 +11,9 @@ import {MatSortModule} from '@angular/material/sort';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
+import { MatDialogModule } from '@angular/material/dialog';
+
+
 const material = [
   MatSlideToggleModule,
   MatInputModule,
@@ -21,7 +24,8 @@ const material = [
   MatSortModule,
   MatProgressSpinnerModule,
   MatCardModule,
-  MatIconModule
+  MatIconModule,
+  MatDialogModule
 ];
 
 @NgModule({

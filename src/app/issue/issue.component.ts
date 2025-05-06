@@ -274,6 +274,9 @@ export class IssueComponent implements OnInit {
               verticalPosition: 'bottom',
               panelClass: ['success-snackbar']
             });
+            this.issues$ = this.issues$.pipe(
+              map(issues => issues.filter(i => i.id !== issue.id))
+            );
             // Refresh data based on current filters
             this.onSearch(this.inp_issueno, this.sel_status);
           },
