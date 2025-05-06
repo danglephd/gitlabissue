@@ -144,6 +144,8 @@
   position: relative;
   min-height: 0;
   max-height: calc(100vh - 160px);
+  overflow-x: auto;
+  width: 100%;
 }
 
 /* Table styles */
@@ -151,6 +153,11 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
+}
+
+table {
+  width: 100%; /* Bảng chiếm toàn bộ chiều rộng container */
+  border-collapse: collapse;
 }
 
 /* Column widths */
@@ -187,6 +194,14 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+th.mat-header-cell {
+  background-color: #f5f5f5; /* Màu nền header */
+  font-weight: bold; /* Chữ đậm */
+  text-align: left; /* Căn trái */
+  padding: 8px; /* Khoảng cách trong header */
+  border-bottom: 1px solid #ddd; /* Đường viền dưới */
+}
+
 /* Cell styles */
 .table td {
   padding: 12px 16px;
@@ -195,6 +210,11 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+td.mat-cell {
+  padding: 8px; /* Khoảng cách trong ô */
+  border-bottom: 1px solid #ddd; /* Đường viền dưới */
 }
 
 /* Path column hover effect */
@@ -209,6 +229,10 @@
 
 .table tr:hover {
   background-color: #f8f9fa;
+}
+
+tr.mat-row:hover {
+  background-color: #f9f9f9; /* Màu nền khi hover */
 }
 
 /* Link styles */
@@ -428,4 +452,36 @@ td a[href*="drive.google.com"] {
   display: inline-flex;
   align-items: center;
   margin: 0 4px;
+}
+
+/* Đảm bảo bảng vừa với container */
+.table-container {
+  overflow-x: auto;
+  width: 100%;
+}
+
+table {
+  width: 100%; /* Bảng chiếm toàn bộ chiều rộng container */
+  border-collapse: collapse;
+}
+
+th.mat-header-cell {
+  background-color: #f5f5f5; /* Màu nền header */
+  font-weight: bold; /* Chữ đậm */
+  text-align: left; /* Căn trái */
+  padding: 8px; /* Khoảng cách trong header */
+  border-bottom: 1px solid #ddd; /* Đường viền dưới */
+}
+
+td.mat-cell {
+  padding: 8px; /* Khoảng cách trong ô */
+  border-bottom: 1px solid #ddd; /* Đường viền dưới */
+}
+
+tr.mat-row:hover {
+  background-color: #f9f9f9; /* Màu nền khi hover */
+}
+
+.mat-paginator {
+  margin-top: 16px; /* Khoảng cách giữa bảng và phân trang */
 }

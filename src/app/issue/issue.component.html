@@ -37,55 +37,76 @@
             <h1>Gitlab's Issue List</h1>
         </div>
         <div class="table-container">
-            <table matSort (matSortChange)="sortData($event)" class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th mat-sort-header="issue_number">Iss. no</th>
-                        <th>Action</th>
-                        <th mat-sort-header="project">Project</th>
-                        <th>Google</th>
-                        <th>Path</th>
-                        <th>Test status</th>
-                        <th>Due date</th>
-                    </tr>
-                </thead>
+            <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+                <!-- Cột Issue Number -->
+                <ng-container matColumnDef="issue_number">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Iss No. </th>
+                    <td mat-cell *matCellDef="let issue">
+                        <a href="{{issue.issue_url}}" target="_blank" title="Open Issue">
+                            {{ issue.issue_number }}
+                        </a>
+                    </td>
+                </ng-container>
 
-                <tbody>
-                    <tr mat-row *ngFor="let issue of issues$ | async" [ngStyle]="{'background':changeBackground(issue)}">
-                        <td>
-                            <a href={{issue.issue_url}} target="_blank">
-                                {{issue.issue_number}}
-                            </a>
-                        </td>
-                        <td>
-                            <button mat-icon-button color="warn" (click)="onDelete($event, issue)" title="Delete issue">
-                                <mat-icon>delete</mat-icon>
-                            </button>
-                        </td>
-                        <td>{{issue.project}}</td>
-                        <td>
-                            <a href={{issue.proj_url_company}} target="_blank" title="Company Laptop">
-                                C
-                            </a>
-                            /
-                            <a href={{issue.proj_url_mypc}} target="_blank" title="My Laptop">
-                                M
-                            </a>
-                        </td>
-                        <td (click)="onClick($event)" title="Click to copy">{{issue.path}}</td>
-                        <td>
-                            <mat-select matNativeControl (selectionChange)="onChange($event, issue)" [value]="issue.test_state">
-                                <mat-option value="Finish">Finish</mat-option>
-                                <mat-option value="Working">Working</mat-option>
-                                <mat-option value="Created">Created</mat-option>
-                                <mat-option value="Done">Done</mat-option>
-                                <mat-option value="Old">Old</mat-option>
-                            </mat-select>
-                        </td>
-                        <td>{{issue.duedate}}</td>
-                    </tr>
-                </tbody>
+                <!-- Cột Project -->
+                <ng-container matColumnDef="project">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Project </th>
+                    <td mat-cell *matCellDef="let issue"> {{ issue.project }} </td>
+                </ng-container>
+
+                <!-- Cột Actions -->
+                <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef> Actions </th>
+                    <td mat-cell *matCellDef="let issue">
+                        <button mat-icon-button color="warn" (click)="onDelete($event, issue)" title="Delete issue">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+
+                <!-- Cột Links -->
+                <ng-container matColumnDef="links">
+                    <th mat-header-cell *matHeaderCellDef> Links </th>
+                    <td mat-cell *matCellDef="let issue">
+                        <a href="{{issue.proj_url_company}}" target="_blank" title="Company Laptop">C</a> /
+                        <a href="{{issue.proj_url_mypc}}" target="_blank" title="My Laptop">M</a>
+                    </td>
+                </ng-container>
+
+                <!-- Cột Path -->
+                <ng-container matColumnDef="path">
+                    <th mat-header-cell *matHeaderCellDef> Path </th>
+                    <td mat-cell *matCellDef="let issue" (click)="onClick($event)" title="Click to copy">
+                        {{ issue.path }}
+                    </td>
+                </ng-container>
+
+                <!-- Cột Test State -->
+                <ng-container matColumnDef="test_state">
+                    <th mat-header-cell *matHeaderCellDef> Test State </th>
+                    <td mat-cell *matCellDef="let issue">
+                        <mat-select matNativeControl (selectionChange)="onChange($event, issue)" [value]="issue.test_state">
+                            <mat-option value="Finish">Finish</mat-option>
+                            <mat-option value="Working">Working</mat-option>
+                            <mat-option value="Created">Created</mat-option>
+                            <mat-option value="Done">Done</mat-option>
+                            <mat-option value="Old">Old</mat-option>
+                        </mat-select>
+                    </td>
+                </ng-container>
+
+                <!-- Cột Due Date -->
+                <ng-container matColumnDef="duedate">
+                    <th mat-header-cell *matHeaderCellDef> Due Date </th>
+                    <td mat-cell *matCellDef="let issue"> {{ issue.duedate }} </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
+
+            <!-- Phân trang -->
+            <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
 
             <div *ngIf="isLoading" class="loading-container">
                 <mat-spinner diameter="40"></mat-spinner>

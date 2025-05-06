@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild } from '@angular/core';
 import { Issue } from '../issue';
 import { Observable, map } from 'rxjs';
 import { IssueService } from '../issue.service';
@@ -6,6 +6,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Sort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 
 interface status {
   value: string;
@@ -26,6 +29,11 @@ export class IssueComponent implements OnInit {
   isMobile = false;
   isLoading = false;
   noData = false;
+  displayedColumns: string[] = ['issue_number', 'actions', 'project', 'links', 'path', 'test_state', 'duedate']; // Các cột hiển thị
+  dataSource = new MatTableDataSource<Issue>(); // Dữ liệu cho bảng
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator; // Tham chiếu đến MatPaginator
+  @ViewChild(MatSort) sort!: MatSort; // Tham chiếu đến MatSort
 
   constructor(private issueService: IssueService, private _snackBar: MatSnackBar, private dialog: MatDialog) {
     this.checkScreenSize();
@@ -58,13 +66,13 @@ export class IssueComponent implements OnInit {
   }
 
   private fetchIssues(): void {
-    this.issues$ = this.issueService.getIssues().pipe(
-      map((issues: Issue[]) => {
-        this.isLoading = false;
-        this.noData = issues.length === 0;
-        return issues;
-      })
-    );
+    this.issueService.getIssues().subscribe((issues: Issue[]) => {
+      this.isLoading = false;
+      this.noData = issues.length === 0;
+      this.dataSource.data = issues; // Gán dữ liệu cho MatTableDataSource
+      this.dataSource.paginator = this.paginator; // Kết nối MatPaginator
+      this.dataSource.sort = this.sort; // Kết nối MatSort
+    });
   }
 
   private compare(a: number | string, b: number | string, isAsc: boolean) {
@@ -298,5 +306,14 @@ export class IssueComponent implements OnInit {
           });
       }
     });
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 }
