@@ -4,6 +4,8 @@ import { Observable, map } from 'rxjs';
 import { IssueService } from '../issue.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Sort } from '@angular/material/sort';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
 interface status {
   value: string;
@@ -25,7 +27,7 @@ export class IssueComponent implements OnInit {
   isLoading = false;
   noData = false;
 
-  constructor(private issueService: IssueService, private _snackBar: MatSnackBar) {
+  constructor(private issueService: IssueService, private _snackBar: MatSnackBar, private dialog: MatDialog) {
     this.checkScreenSize();
   }
 
@@ -264,32 +266,34 @@ export class IssueComponent implements OnInit {
   }
 
   onDelete(event: any, issue: Issue) {
-    if (confirm(`Are you sure you want to delete issue ${issue.issue_number}?`)) {
-      this.issueService.deleteIssue(issue.id)
-        .subscribe({
-          next: () => {
-            this._snackBar.open(`Issue ${issue.issue_number} deleted successfully`, '', {
-              duration: 2000,
-              horizontalPosition: 'center',
-              verticalPosition: 'bottom',
-              panelClass: ['success-snackbar']
-            });
-            this.issues$ = this.issues$.pipe(
-              map(issues => issues.filter(i => i.id !== issue.id))
-            );
-            // Refresh data based on current filters
-            this.onSearch(this.inp_issueno, this.sel_status);
-          },
-          error: (error: Error) => {
-            console.error('Failed to delete issue:', error);
-            this._snackBar.open(`Failed to delete issue ${issue.issue_number}`, '', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'bottom',
-              panelClass: ['error-snackbar']
-            });
-          }
-        });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: { message: `Are you sure you want to delete issue ${issue.issue_number}?` }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.issueService.deleteIssue(issue.id)
+          .subscribe({
+            next: () => {
+              this._snackBar.open(`Issue ${issue.issue_number} deleted successfully`, '', {
+                duration: 2000,
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                panelClass: ['success-snackbar']
+              });
+              this.onSearch(this.inp_issueno, this.sel_status);
+            },
+            error: (error: Error) => {
+              console.error('Failed to delete issue:', error);
+              this._snackBar.open(`Failed to delete issue ${issue.issue_number}`, '', {
+                duration: 3000,
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                panelClass: ['error-snackbar']
+              });
+            }
+          });
+      }
+    });
   }
 }

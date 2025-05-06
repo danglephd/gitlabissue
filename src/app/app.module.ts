@@ -13,6 +13,7 @@ import { IssueComponent } from './issue/issue.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MaterialModule} from './material/material.module'
 import { FormsModule } from '@angular/forms';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { FormsModule } from '@angular/forms';
     EmployeeFormComponent,
     AddEmployeeComponent,
     EditEmployeeComponent,
-    IssueComponent
+    IssueComponent,
+    ConfirmDialogComponent
   ],
   imports: [
     BrowserModule,
