@@ -10,7 +10,6 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { IssueRealtimeDbService } from '../issue.realtimedb.service';
 
-
 interface status {
   value: string;
 }
@@ -30,11 +29,11 @@ export class IssueComponent implements OnInit {
   isMobile = false;
   isLoading = false;
   noData = false;
-  displayedColumns: string[] = ['issue_number', 'actions', 'project', 'links', 'path', 'test_state', 'duedate']; // Các cột hiển thị
-  dataSource = new MatTableDataSource<Issue>(); // Dữ liệu cho bảng
+  displayedColumns: string[] = ['issue_number', 'actions', 'project', 'links', 'path', 'test_state', 'duedate'];
+  dataSource = new MatTableDataSource<Issue>();
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator; // Tham chiếu đến MatPaginator
-  @ViewChild(MatSort) sort!: MatSort; // Tham chiếu đến MatSort
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(private issueService: IssueRealtimeDbService, private _snackBar: MatSnackBar, private dialog: MatDialog) {
     this.checkScreenSize();
@@ -70,9 +69,9 @@ export class IssueComponent implements OnInit {
     this.issueService.getIssues().subscribe((issues: Issue[]) => {
       this.isLoading = false;
       this.noData = issues.length === 0;
-      this.dataSource.data = issues; // Gán dữ liệu cho MatTableDataSource
-      this.dataSource.paginator = this.paginator; // Kết nối MatPaginator
-      this.dataSource.sort = this.sort; // Kết nối MatSort
+      this.dataSource.data = issues;
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
     });
   }
 
@@ -81,7 +80,6 @@ export class IssueComponent implements OnInit {
   }
 
   sortData(sort: Sort) {
-    console.log('>>>>sortData', sort);
     if (!sort.active || sort.direction === '') {
       return;
     }
@@ -101,7 +99,6 @@ export class IssueComponent implements OnInit {
   onReset() {
     this.inp_issueno = '';
     this.sel_status = 'None';
-    // this.fetchIssues();
   }
 
   onChange(event: any, issue: Issue) {
@@ -109,7 +106,6 @@ export class IssueComponent implements OnInit {
   }
 
   changeBackground(value: Issue): string {
-    // Nếu không có due date hoặc due date rỗng, không thay đổi màu nền
     if (!value.duedate || value.duedate.trim() === "") {
       return "None";
     }
@@ -130,12 +126,12 @@ export class IssueComponent implements OnInit {
       if (status == "Done" || status == "Old") {
         color = "None";
       } else {
-        color = "#EDCB6B"; //Expired!!
+        color = "#EDCB6B";
       }
-    } else { 
-      if(diffDays >= -7 ){
-        color = "#EDCB6B"; //Expired!!
-      }else{
+    } else {
+      if (diffDays >= -7) {
+        color = "#EDCB6B";
+      } else {
         color = "#BEED6B";
       }
     }
@@ -144,25 +140,19 @@ export class IssueComponent implements OnInit {
   }
 
   private copyToClipboard(text: string): Promise<void> {
-    // Try using the modern Clipboard API first
     if (navigator.clipboard && window.isSecureContext) {
       return navigator.clipboard.writeText(text);
     }
 
-    // Fallback for older browsers
     return new Promise((resolve, reject) => {
       try {
-        // Create a temporary textarea element
         const textArea = document.createElement('textarea');
         textArea.value = text;
-        
-        // Make it invisible
         textArea.style.position = 'fixed';
         textArea.style.left = '-999999px';
         textArea.style.top = '-999999px';
         document.body.appendChild(textArea);
-        
-        // Select and copy
+
         textArea.focus();
         textArea.select();
         const success = document.execCommand('copy');
@@ -180,7 +170,6 @@ export class IssueComponent implements OnInit {
   }
 
   onClick(event: MouseEvent) {
-    // Ensure we have the target element
     const target = event.target as HTMLElement;
     if (!target) return;
 
@@ -195,7 +184,6 @@ export class IssueComponent implements OnInit {
       return;
     }
 
-    // Extract folder path (everything before "Testcase")
     const folderPath = path.substring(0, path.lastIndexOf("Testcase") - 1);
     if (!folderPath) {
       this._snackBar.open('Invalid path format', '', {
@@ -207,7 +195,6 @@ export class IssueComponent implements OnInit {
       return;
     }
 
-    // Use copyToClipboard helper method
     this.copyToClipboard(folderPath.trim())
       .then(() => {
         this._snackBar.open(`Copied "${folderPath}"`, '', {
@@ -217,8 +204,7 @@ export class IssueComponent implements OnInit {
           panelClass: ['success-snackbar']
         });
       })
-      .catch((err) => {
-        console.error('Failed to copy text: ', err);
+      .catch(() => {
         this._snackBar.open('Failed to copy path', '', {
           duration: 2000,
           horizontalPosition: 'center',
@@ -234,79 +220,62 @@ export class IssueComponent implements OnInit {
 
     if (test_status === undefined || test_status === "None" || test_status === "") {
       if (issue_number === undefined || issue_number === '') {
-        this.issues$ = this.issueService.getIssues().pipe(
-          map((issues: Issue[]) => {
-            this.isLoading = false;
-            this.noData = issues.length === 0;
-            return issues;
-          })
-        );
+        this.issues$ = this.issueService.getIssues();
       } else {
-        this.issues$ = this.issueService.getIssuesByNumber(issue_number).pipe(
-          map((issues: Issue[]) => {
-            this.isLoading = false;
-            this.noData = issues.length === 0;
-            return issues;
-          })
-        );
+        this.issues$ = this.issueService.getIssuesByNumber(issue_number);
       }
     } else if (issue_number === undefined || issue_number === '') {
-      this.issues$ = this.issueService.getIssuesByStatus(test_status.value).pipe(
-        map((issues: Issue[]) => {
-          this.isLoading = false;
-          this.noData = issues.length === 0;
-          return issues;
-        })
-      );
-    // } else {
-    //   this.issues$ = this.issueService.getIssuesByNumberAndStatus(issue_number, test_status.value).pipe(
-    //     map((issues: Issue[]) => {
-    //       this.isLoading = false;
-    //       this.noData = issues.length === 0;
-    //       return issues;
-    //     })
-    //   );
+      this.issues$ = this.issueService.getIssuesByStatus(test_status.value);
+    } else {
+      this.issues$ = this.issueService.getIssuesByNumberAndStatus(issue_number, test_status.value);
     }
-    
-    // Hide sidebar only on mobile after search
+
+    this.issues$.subscribe({
+      next: (issues) => {
+        this.isLoading = false;
+        this.noData = issues.length === 0;
+        this.dataSource.data = issues;
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    });
+
     if (this.isMobile) {
       this.isSidebarOpen = false;
     }
   }
 
   onDelete(event: any, issue: Issue) {
-    const issuePath = issue.path; // Assuming `issue.path` contains the full path
+    const issuePath = issue.path;
     const match = issuePath.match(/Testcase-\d+-\d+/);
     const issue_string = match ? match[0] : issue.issue_number.toString();
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: { message: `Are you sure you want to delete issue ${issue_string}?` }
     });
 
-    // dialogRef.afterClosed().subscribe(result => {
-    //   if (result) {
-    //     this.issueService.deleteIssue(issue.id)
-    //       .subscribe({
-    //         next: () => {
-    //           this._snackBar.open(`Issue ${issue.issue_number} deleted successfully`, '', {
-    //             duration: 2000,
-    //             horizontalPosition: 'center',
-    //             verticalPosition: 'bottom',
-    //             panelClass: ['success-snackbar']
-    //           });
-    //           this.onSearch(this.inp_issueno, this.sel_status);
-    //         },
-    //         error: (error: Error) => {
-    //           console.error('Failed to delete issue:', error);
-    //           this._snackBar.open(`Failed to delete issue ${issue.issue_number}`, '', {
-    //             duration: 3000,
-    //             horizontalPosition: 'center',
-    //             verticalPosition: 'bottom',
-    //             panelClass: ['error-snackbar']
-    //           });
-    //         }
-    //       });
-    //   }
-    // });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.issueService.deleteIssue(issue.id)
+          .then(() => {
+            this._snackBar.open(`Issue ${issue.issue_number} deleted successfully`, '', {
+              duration: 2000,
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              panelClass: ['success-snackbar']
+            });
+            this.onSearch(this.inp_issueno, this.sel_status);
+          })
+          .catch(() => {
+            this._snackBar.open(`Failed to delete issue ${issue.issue_number}`, '', {
+              duration: 3000,
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              panelClass: ['error-snackbar']
+            });
+          });
+      }
+    });
   }
 
   applyFilter(event: Event) {
