@@ -17,8 +17,8 @@
             <mat-form-field appearance="fill">
                 <mat-label>Test status</mat-label>
                 <mat-select #test_status [(ngModel)]="sel_status">
-                    <mat-option>None</mat-option>
-                    <mat-option *ngFor="let status of testStatus" [value]="status">{{status.value}}</mat-option>
+                    <mat-option value="None">None</mat-option>
+                    <mat-option *ngFor="let status of testStatus" [value]="status.value">{{ status.value }}</mat-option>
                 </mat-select>
             </mat-form-field>
             <div class="button-group">

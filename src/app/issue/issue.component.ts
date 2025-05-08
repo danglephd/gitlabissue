@@ -62,7 +62,21 @@ export class IssueComponent implements OnInit {
 
   ngOnInit(): void {
     this.isLoading = true;
-    this.fetchIssues();
+
+    // Lấy giá trị từ localStorage khi tải lại trang
+    const savedIssueNumber = localStorage.getItem('issue_number');
+    const savedStatus = localStorage.getItem('sel_status');
+
+    if (savedIssueNumber) {
+      this.inp_issueno = savedIssueNumber;
+    }
+
+    if (savedStatus) {
+      this.sel_status = savedStatus;
+    }
+
+    // Gọi onSearch với giá trị hiện tại của inp_issueno và sel_status
+    this.onSearch(this.inp_issueno, this.getStatus(this.sel_status));
   }
 
   private fetchIssues(): void {
@@ -99,6 +113,10 @@ export class IssueComponent implements OnInit {
   onReset() {
     this.inp_issueno = '';
     this.sel_status = 'None';
+
+    // Xóa giá trị Issue Number và Status khỏi localStorage
+    localStorage.removeItem('issue_number');
+    localStorage.removeItem('sel_status');
   }
 
   onChange(event: any, issue: Issue) {
@@ -235,6 +253,15 @@ export class IssueComponent implements OnInit {
         this.isLoading = false;
         this.noData = issues.length === 0;
         this.dataSource.data = issues;
+
+        // Chỉ lưu vào localStorage nếu có dữ liệu trả về
+        if (issues.length > 0) {
+          localStorage.setItem('issue_number', issue_number);
+          // Lưu giá trị Issue Number và Status vào localStorage nếu có dữ liệu trả về
+          if (test_status && test_status.value) {
+            localStorage.setItem('sel_status', test_status.value);
+          }
+        }
       },
       error: () => {
         this.isLoading = false;
@@ -264,7 +291,7 @@ export class IssueComponent implements OnInit {
               verticalPosition: 'bottom',
               panelClass: ['success-snackbar']
             });
-            this.onSearch(this.inp_issueno, this.sel_status);
+            this.onSearch(this.inp_issueno, this.getStatus(this.sel_status));
           })
           .catch(() => {
             this._snackBar.open(`Failed to delete issue ${issue.issue_number}`, '', {
@@ -285,5 +312,14 @@ export class IssueComponent implements OnInit {
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+  }
+
+  /**
+   * Hàm trả về đối tượng status tương ứng với giá trị chuỗi đầu vào.
+   * @param value Chuỗi giá trị của status.
+   * @returns Đối tượng status hoặc null nếu không tìm thấy.
+   */
+  private getStatus(value: string): status | null {
+    return this.testStatus.find(status => status.value === value) || { value: 'None' };
   }
 }
