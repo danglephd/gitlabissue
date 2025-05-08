@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Issue } from './issue';
 import { Observable, Subject, map, pipe, tap, toArray, catchError, throwError } from 'rxjs';
+import { updateGDriveValue } from './shared/utils'; // Import hàm dùng chung
+
 
 @Injectable({
   providedIn: 'root'
@@ -34,39 +36,6 @@ export class IssueService {
     return (valueA < valueB) ? -1 : (valueA > valueB) ? 1 : 0;
   }
 
-  private updateGDriveValue(data: Issue[]) {
-    data.forEach(element => {
-      switch (element.project) {
-        case "xm-web":
-          element.proj_url_company = "https://drive.google.com/drive/u/1/folders/1-4LxFb0nZ7TPGa4XO5db2xE7_fB2D_pQ";
-          element.proj_url_mypc = "https://drive.google.com/drive/u/1/folders/1-3f4fI891vqfITEOP0seIKp0dZfzIfrM";
-          break;
-        case "xm-api":
-          element.proj_url_company = "https://drive.google.com/drive/u/1/folders/1B84We-1nziArtSClXv79tPAxOGaCg_6y";
-          element.proj_url_mypc = "https://drive.google.com/drive/u/1/folders/1-j4cjtVnCYhStgR_bcLu1CDi5fbewhEC";
-          break;
-        case "erp-web":
-          element.proj_url_company = "https://drive.google.com/drive/u/1/folders/1-pCA_yrx3AMqe0uvazAOUBqX4mt_eGJa";
-          element.proj_url_mypc = "https://drive.google.com/drive/u/1/folders/15aNUv7XJeuS755wE6t5lkJ0ZX4X-uTo8";
-          break;
-        case "erp-web-demo":
-          element.proj_url_company = "https://drive.google.com/drive/u/1/folders/10xTCk6P5P36p47YiAQ6roLpvlbOyp6g8";
-          element.proj_url_mypc = "https://drive.google.com/drive/u/1/folders/1ZGAIUvwLKKujLeetQXWvCTxwAxMaIm8y";
-          break;
-        case "erp-server":
-          element.proj_url_company = "https://drive.google.com/drive/u/1/folders/1AohlxBRxuybnV3bVt5u4ycRFbYnQmzd7";
-          element.proj_url_mypc = "https://drive.google.com/drive/u/1/folders/13gh2XVoqhKoXPFPnvaLLFRrzigdCYRBr";
-          break;
-          
-        default:
-          element.proj_url_company = "https://null";
-          element.proj_url_mypc = "https://nan";
-          break;
-      }
-    });
-    return data;
-  }
-
   private refreshIssues() {
     this.httpClient.get<Issue[]>(`${this.url}/issues`)
       .pipe(
@@ -76,7 +45,7 @@ export class IssueService {
           }
           return data.filter(value => value.test_state !== "Old" && value.test_state !== "Done");
         }),
-        map(data => this.updateGDriveValue(data)),
+        map(data => updateGDriveValue(data)),
         catchError(error => {
           // console.error('Error refreshing issues:', error);
           this.issues$.next([]); // Emit empty array on error
@@ -102,7 +71,7 @@ export class IssueService {
           }
           return data.sort(this.sortByTime);
         }),
-        map(data => this.updateGDriveValue(data)),
+        map(data => updateGDriveValue(data)),
         catchError(error => {
           // console.error('Error fetching issues by number:', error);
           this.issues$.next([]); // Emit empty array on error
@@ -127,7 +96,7 @@ export class IssueService {
           }
           return data.sort(this.sortByTime);
         }),
-        map(data => this.updateGDriveValue(data)),
+        map(data => updateGDriveValue(data)),
         catchError(error => {
           // console.error('Error fetching issues by status:', error);
           this.issues$.next([]); // Emit empty array on error
@@ -152,7 +121,7 @@ export class IssueService {
           if (!data || data.length === 0) {
             throw new Error('No data found');
           }
-          return this.updateGDriveValue(data);
+          return updateGDriveValue(data);
         }),
         catchError(error => {
           // console.error('Error fetching issues by number and status:', error);
