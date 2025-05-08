@@ -248,8 +248,8 @@ export class IssueComponent implements OnInit {
 
   onDelete(event: any, issue: Issue) {
     const issuePath = issue.path;
-    const match = issuePath.match(/Testcase-\d+-\d+/);
-    const issue_string = match ? match[0] : issue.issue_number.toString();
+    const match = issuePath.match(/Testcase-(\d+)-(\d+)/);
+    const issue_string = match ? `${match[1]}-${match[2]}` : issue.issue_number.toString();
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: { message: `Are you sure you want to delete issue ${issue_string}?` }
     });
