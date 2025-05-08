@@ -11,5 +11,5 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 /* Adjust table container padding instead */
 .table-container {
-  padding: 0 16px;
+  padding: 0 8px;
 }
