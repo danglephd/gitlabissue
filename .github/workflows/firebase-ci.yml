@@ -95,7 +95,7 @@ jobs:
       with:
         args: login:ci
       env:
-        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }} # Token Firebase được lưu trong GitHub Secrets
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GITLAB_ISSUES }} # Token Firebase được lưu trong GitHub Secrets
 
     # 9. Triển khai lên Firebase Hosting
     - name: Deploy to Firebase Hosting
