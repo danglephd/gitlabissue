@@ -15,7 +15,19 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    # 2. Tạo environment.ts
+    # 2. Debug thư mục hiện tại
+    - name: Debug current directory
+      run: |
+        pwd
+        ls -la
+
+    # 3. Setup Node.js
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16 # Sử dụng phiên bản Node.js phù hợp với Angular
+
+    # 4. Tạo environment.ts
     - name: Create environment.ts
       env:
         FIREBASE_API_KEY: ${{ vars.FIREBASE_API_KEY }}
@@ -26,35 +38,45 @@ jobs:
         FIREBASE_MESSAGING_SENDER_ID: ${{ vars.FIREBASE_MESSAGING_SENDER_ID }}
         FIREBASE_APP_ID: ${{ vars.FIREBASE_APP_ID }}
       run: |
-        mkdir -p src/environments # Tạo thư mục nếu chưa tồn tại
-        echo "export const environment = {" > src/environments/environment.ts
-        echo "  production: true," >> src/environments/environment.ts
-        echo "  firebase: {" >> src/environments/environment.ts
-        echo "    apiKey: '${FIREBASE_API_KEY}'," >> src/environments/environment.ts
-        echo "    authDomain: '${FIREBASE_AUTH_DOMAIN}'," >> src/environments/environment.ts
-        echo "    databaseURL: '${FIREBASE_DATABASE_URL}'," >> src/environments/environment.ts
-        echo "    projectId: '${FIREBASE_PROJECT_ID}'," >> src/environments/environment.ts
-        echo "    storageBucket: '${FIREBASE_STORAGE_BUCKET}'," >> src/environments/environment.ts
-        echo "    messagingSenderId: '${FIREBASE_MESSAGING_SENDER_ID}'," >> src/environments/environment.ts
-        echo "    appId: '${FIREBASE_APP_ID}'" >> src/environments/environment.ts
-        echo "  }" >> src/environments/environment.ts
-        echo "};" >> src/environments/environment.ts
+        # Tạo thư mục và kiểm tra
+        mkdir -p src/environments
+        ls -la src/environments
+        
+        # Tạo file environment.ts
+        cat > src/environments/environment.ts << EOL
+        export const environment = {
+          production: true,
+          firebase: {
+            apiKey: '${FIREBASE_API_KEY}',
+            authDomain: '${FIREBASE_AUTH_DOMAIN}',
+            databaseURL: '${FIREBASE_DATABASE_URL}',
+            projectId: '${FIREBASE_PROJECT_ID}',
+            storageBucket: '${FIREBASE_STORAGE_BUCKET}',
+            messagingSenderId: '${FIREBASE_MESSAGING_SENDER_ID}',
+            appId: '${FIREBASE_APP_ID}'
+          }
+        };
+        EOL
+        
+        # Kiểm tra nội dung file
+        echo "Checking environment.ts content:"
+        cat src/environments/environment.ts
 
-    # 3. Setup Node.js
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 16 # Sử dụng phiên bản Node.js phù hợp với Angular
-
-    # 4. Install dependencies
+    # 5. Install dependencies
     - name: Install dependencies
       run: npm install --legacy-peer-deps
 
-    # 5. Build Angular project
+    # 6. Build Angular project
     - name: Build Angular project
       run: npm run build1
 
-    # 6. Deploy to Firebase
+    # 7. Kiểm tra build output
+    - name: Check build output
+      run: |
+        echo "Checking build output directory:"
+        ls -la dist/gitlabissue
+
+    # 8. Deploy to Firebase
     - name: Deploy to Firebase
       uses: w9jds/firebase-action@v2.2.1
       with:
