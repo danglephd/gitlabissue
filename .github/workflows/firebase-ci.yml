@@ -11,9 +11,12 @@ jobs:
     environment: Firebase # Liên kết với Environment "Firebase"
 
     steps:
-    # 1. Tạo environment.ts
+    # 1. Checkout mã nguồn
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # 2. Tạo environment.ts
     - name: Create environment.ts
-      working-directory: ./gitlabissue
       env:
         FIREBASE_API_KEY: ${{ vars.FIREBASE_API_KEY }}
         FIREBASE_AUTH_DOMAIN: ${{ vars.FIREBASE_AUTH_DOMAIN }}
@@ -37,25 +40,20 @@ jobs:
         echo "  }" >> src/environments/environment.ts
         echo "};"
 
-    # 2. Verify environment.ts
+    # 3. Verify environment.ts
     - name: Verify environment.ts
-      working-directory: ./gitlabissue
       run: |
         if [ ! -f src/environments/environment.ts ]; then
           echo "File src/environments/environment.ts does not exist. Stopping workflow."
           exit 1
         fi
 
-    # 3. Debug Environment Variables
+    # 4. Debug Environment Variables
     - name: Debug Environment Variables
       env:
         FIREBASE_API_KEY: ${{ vars.FIREBASE_API_KEY }}
       run: |
         echo "FIREBASE_API_KEY=${FIREBASE_API_KEY}"
-
-    # 4. Checkout mã nguồn
-    - name: Checkout repository
-      uses: actions/checkout@v3
 
     # 5. Thiết lập Node.js
     - name: Setup Node.js
@@ -65,12 +63,10 @@ jobs:
 
     # 6. Cài đặt các phụ thuộc
     - name: Install dependencies
-      working-directory: ./gitlabissue
       run: npm install --legacy-peer-deps
 
     # 7. Build dự án Angular
     - name: Build Angular project
-      working-directory: ./gitlabissue
       run: npm run build1
       
     # 8. Đăng nhập Firebase CLI
