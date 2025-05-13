@@ -1,0 +1,45 @@
+name: Deploy to Firebase Hosting
+
+on:
+  push:
+    branches:
+      - main # Triển khai khi có thay đổi trên nhánh `main`
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Checkout mã nguồn
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # 2. Thiết lập Node.js
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16 # Sử dụng phiên bản Node.js phù hợp với Angular
+
+    # 3. Cài đặt các phụ thuộc
+    - name: Install dependencies
+      run: npm install
+
+    # 4. Build dự án Angular
+    - name: Build Angular project
+      run: npm run build1 -- --prod
+
+    # 5. Đăng nhập Firebase CLI
+    - name: Firebase CLI Login
+      uses: w9jds/firebase-action@v2.2.1
+      with:
+        args: login:ci
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }} # Token Firebase được lưu trong GitHub Secrets
+
+    # 6. Triển khai lên Firebase Hosting
+    - name: Deploy to Firebase Hosting
+      uses: w9jds/firebase-action@v2.2.1
+      with:
+        args: deploy --only hosting:projp21-17b04-2e509
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
