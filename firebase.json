@@ -1,7 +1,7 @@
 {
   "hosting": {
     "site": "projp21-17b04-2e509",
-    "public": "dist/gitlabissue",
+    "public": "dist/",
     "ignore": [
       "firebase.json",
       "**/.*",
