@@ -97,15 +97,7 @@ jobs:
           exit 1
         fi
 
-    # 9. Đăng nhập Firebase CLI
-    - name: Firebase CLI Login
-      uses: w9jds/firebase-action@v2.2.1
-      with:
-        args: login:ci
-      env:
-        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-
-    # 10. Triển khai lên Firebase Hosting
+    # 9. Triển khai lên Firebase Hosting
     - name: Deploy to Firebase Hosting
       uses: w9jds/firebase-action@v2.2.1
       with:
