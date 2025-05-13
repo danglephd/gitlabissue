@@ -8,6 +8,7 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment: Firebase # Liên kết với Environment "Firebase"
 
     steps:
     # 1. Tạo environment.ts
@@ -28,7 +29,7 @@ jobs:
         echo "export const environment = {" > src/environments/environment.ts
         echo "  production: true," >> src/environments/environment.ts
         echo "  firebase: {" >> src/environments/environment.ts
-        echo "    apiKey: '${{secrets.FIREBASE_API_KEY}}'," >> src/environments/environment.ts
+        echo "    apiKey: '${FIREBASE_API_KEY}'," >> src/environments/environment.ts
         echo "    authDomain: '${FIREBASE_AUTH_DOMAIN}'," >> src/environments/environment.ts
         echo "    databaseURL: '${FIREBASE_DATABASE_URL}'," >> src/environments/environment.ts
         echo "    projectId: '${FIREBASE_PROJECT_ID}'," >> src/environments/environment.ts
@@ -38,25 +39,32 @@ jobs:
         echo "  }" >> src/environments/environment.ts
         echo "};"
 
-    # 2. Checkout mã nguồn
+    # 2. Debug Environment Variables
+    - name: Debug Environment Variables
+      env:
+        FIREBASE_API_KEY: ${{ vars.FIREBASE_API_KEY }}
+      run: |
+        echo "FIREBASE_API_KEY=${FIREBASE_API_KEY}"
+
+    # 3. Checkout mã nguồn
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    # 3. Thiết lập Node.js
+    # 4. Thiết lập Node.js
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: 16 # Sử dụng phiên bản Node.js phù hợp với Angular
 
-    # 4. Cài đặt các phụ thuộc
+    # 5. Cài đặt các phụ thuộc
     - name: Install dependencies
       run: npm install --legacy-peer-deps
 
-    # 5. Build dự án Angular
+    # 6. Build dự án Angular
     - name: Build Angular project
       run: npm run build -- --configuration production
 
-    # 6. Đăng nhập Firebase CLI
+    # 7. Đăng nhập Firebase CLI
     - name: Firebase CLI Login
       uses: w9jds/firebase-action@v2.2.1
       with:
@@ -64,7 +72,7 @@ jobs:
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }} # Token Firebase được lưu trong GitHub Secrets
 
-    # 7. Triển khai lên Firebase Hosting
+    # 8. Triển khai lên Firebase Hosting
     - name: Deploy to Firebase Hosting
       uses: w9jds/firebase-action@v2.2.1
       with:
