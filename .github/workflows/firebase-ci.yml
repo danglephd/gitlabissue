@@ -13,7 +13,6 @@ jobs:
     steps:
     # 1. Tạo environment.ts
     - name: Create environment.ts
-      working-directory: ./gitlabissue
       env:
         FIREBASE_API_KEY: ${{ vars.FIREBASE_API_KEY }}
         FIREBASE_AUTH_DOMAIN: ${{ vars.FIREBASE_AUTH_DOMAIN }}
@@ -39,7 +38,6 @@ jobs:
 
     # 2. Verify environment.ts
     - name: Verify environment.ts
-      working-directory: ./gitlabissue
       run: |
         if [ ! -f src/environments/environment.ts ]; then
           echo "File src/environments/environment.ts does not exist. Stopping workflow."
@@ -65,7 +63,6 @@ jobs:
 
     # 6. Cài đặt các phụ thuộc
     - name: Install dependencies
-      working-directory: ./gitlabissue
       run: npm install --legacy-peer-deps
 
     # 7. Build dự án Angular
