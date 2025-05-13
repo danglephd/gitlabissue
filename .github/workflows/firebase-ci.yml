@@ -95,7 +95,18 @@ jobs:
       with:
         args: login:ci
       env:
-        FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GITLAB_ISSUES }} # Token Firebase được lưu trong GitHub Secrets
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
+    # 8.1. Debug Firebase Token
+    - name: Debug Firebase Token
+      run: |
+        if [ -n "$FIREBASE_TOKEN" ]; then
+          echo "FIREBASE_TOKEN is set and starts with: ${FIREBASE_TOKEN:0:10}..."
+        else
+          echo "FIREBASE_TOKEN is not set"
+        fi
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
     # 9. Triển khai lên Firebase Hosting
     - name: Deploy to Firebase Hosting
