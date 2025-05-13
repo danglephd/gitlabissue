@@ -36,32 +36,40 @@ jobs:
         echo "  }" >> src/environments/environment.ts
         echo "};"
 
-    # 2. Debug Environment Variables
+    # 2. Verify environment.ts
+    - name: Verify environment.ts
+      run: |
+        if [ ! -f src/environments/environment.ts ]; then
+          echo "File src/environments/environment.ts does not exist. Stopping workflow."
+          exit 1
+        fi
+
+    # 3. Debug Environment Variables
     - name: Debug Environment Variables
       env:
         FIREBASE_API_KEY: ${{ vars.FIREBASE_API_KEY }}
       run: |
         echo "FIREBASE_API_KEY=${FIREBASE_API_KEY}"
 
-    # 3. Checkout mã nguồn
+    # 4. Checkout mã nguồn
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    # 4. Thiết lập Node.js
+    # 5. Thiết lập Node.js
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: 16 # Sử dụng phiên bản Node.js phù hợp với Angular
 
-    # 5. Cài đặt các phụ thuộc
+    # 6. Cài đặt các phụ thuộc
     - name: Install dependencies
       run: npm install --legacy-peer-deps
 
-    # 6. Build dự án Angular
+    # 7. Build dự án Angular
     - name: Build Angular project
-      run: npm run build -- --configuration production
-
-    # 7. Đăng nhập Firebase CLI
+      run: npm run build1
+      
+    # 8. Đăng nhập Firebase CLI
     - name: Firebase CLI Login
       uses: w9jds/firebase-action@v2.2.1
       with:
@@ -69,7 +77,7 @@ jobs:
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }} # Token Firebase được lưu trong GitHub Secrets
 
-    # 8. Triển khai lên Firebase Hosting
+    # 9. Triển khai lên Firebase Hosting
     - name: Deploy to Firebase Hosting
       uses: w9jds/firebase-action@v2.2.1
       with:
