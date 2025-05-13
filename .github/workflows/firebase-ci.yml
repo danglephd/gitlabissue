@@ -26,7 +26,7 @@ jobs:
 
     # 4. Build dự án Angular
     - name: Build Angular project
-      run: npm run build1 -- --prod
+      run: npm run build -- --prod
 
     # 5. Đăng nhập Firebase CLI
     - name: Firebase CLI Login
