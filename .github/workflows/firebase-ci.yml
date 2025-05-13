@@ -67,6 +67,7 @@ jobs:
 
     # 7. Build dự án Angular
     - name: Build Angular project
+      working-directory: ./gitlabissue
       run: npm run build1
       
     # 8. Đăng nhập Firebase CLI
