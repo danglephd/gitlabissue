@@ -74,7 +74,7 @@ jobs:
     - name: Check build output
       run: |
         echo "Checking build output directory:"
-        ls -la dist/gitlabissue
+        ls -la dist
 
     # 8. Deploy to Firebase
     - name: Deploy to Firebase
