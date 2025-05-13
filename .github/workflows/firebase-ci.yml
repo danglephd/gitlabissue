@@ -38,7 +38,7 @@ jobs:
         echo "export const environment = {" > src/environments/environment.ts
         echo "  production: true," >> src/environments/environment.ts
         echo "  firebase: {" >> src/environments/environment.ts
-        echo "    apiKey: '${FIREBASE_API_KEY}'," >> src/environments/environment.ts
+        echo "    apiKey: '${{secrets.FIREBASE_API_KEY}}'," >> src/environments/environment.ts
         echo "    authDomain: '${FIREBASE_AUTH_DOMAIN}'," >> src/environments/environment.ts
         echo "    databaseURL: '${FIREBASE_DATABASE_URL}'," >> src/environments/environment.ts
         echo "    projectId: '${FIREBASE_PROJECT_ID}'," >> src/environments/environment.ts
