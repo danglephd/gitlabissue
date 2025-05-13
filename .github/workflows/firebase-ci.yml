@@ -88,22 +88,12 @@ jobs:
     # 7. Build dự án Angular
     - name: Build Angular project
       run: npm run build1
-      
-    # 8. Debug Firebase Token
-    - name: Debug Firebase Token
-      env:
-        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+    
+    # 8. Verify build output
+    - name: Check build output
       run: |
-        if [ -n "$FIREBASE_TOKEN" ]; then
-          echo "FIREBASE_TOKEN exists and starts with: ${FIREBASE_TOKEN:0:10}..."
-          echo "Token length: ${#FIREBASE_TOKEN}"
-          if [[ $FIREBASE_TOKEN == 1/* ]]; then
-            echo "Token format appears correct (starts with '1/')"
-          else
-            echo "Warning: Token format may be incorrect (should start with '1/')"
-          fi
-        else
-          echo "Error: FIREBASE_TOKEN is not set"
+        if [ ! -d "dist/gitlabissue" ]; then
+          echo "Build output directory not found"
           exit 1
         fi
 
