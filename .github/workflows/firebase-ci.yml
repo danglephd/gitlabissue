@@ -89,7 +89,25 @@ jobs:
     - name: Build Angular project
       run: npm run build1
       
-    # 8. Đăng nhập Firebase CLI
+    # 8. Debug Firebase Token
+    - name: Debug Firebase Token
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      run: |
+        if [ -n "$FIREBASE_TOKEN" ]; then
+          echo "FIREBASE_TOKEN exists and starts with: ${FIREBASE_TOKEN:0:10}..."
+          echo "Token length: ${#FIREBASE_TOKEN}"
+          if [[ $FIREBASE_TOKEN == 1/* ]]; then
+            echo "Token format appears correct (starts with '1/')"
+          else
+            echo "Warning: Token format may be incorrect (should start with '1/')"
+          fi
+        else
+          echo "Error: FIREBASE_TOKEN is not set"
+          exit 1
+        fi
+
+    # 9. Đăng nhập Firebase CLI
     - name: Firebase CLI Login
       uses: w9jds/firebase-action@v2.2.1
       with:
@@ -97,18 +115,7 @@ jobs:
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
-    # 8.1. Debug Firebase Token
-    - name: Debug Firebase Token
-      run: |
-        if [ -n "$FIREBASE_TOKEN" ]; then
-          echo "FIREBASE_TOKEN is set and starts with: ${FIREBASE_TOKEN:0:10}..."
-        else
-          echo "FIREBASE_TOKEN is not set"
-        fi
-      env:
-        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-
-    # 9. Triển khai lên Firebase Hosting
+    # 10. Triển khai lên Firebase Hosting
     - name: Deploy to Firebase Hosting
       uses: w9jds/firebase-action@v2.2.1
       with:
