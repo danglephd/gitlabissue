@@ -85,7 +85,7 @@ jobs:
       # with:
       #   args: deploy --only hosting:projp21-17b04-2e509
       env:
-        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
       run: |
         echo "Starting Firebase deployment..."
         echo "Using Firebase Hosting target: projp21-17b04-2e509"
