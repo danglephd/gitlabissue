@@ -83,3 +83,5 @@ jobs:
         firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_GITLAB_ISSUES }}'
         projectId: projp21-17b04 # Thay bằng project ID của bạn
         channelId: live # Hoặc channel ID tùy chọn
+        target: projp21-17b04-2e509
+        args: --only hosting:projp21-17b04-2e509
