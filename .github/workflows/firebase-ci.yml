@@ -89,13 +89,6 @@ jobs:
       run: |
         echo "Starting Firebase deployment..."
         echo "Using Firebase Hosting target: projp21-17b04-2e509"
-        echo "Checking Firebase token..."
-        if [ -z "$FIREBASE_TOKEN" ]; then
-          echo "Error: FIREBASE_TOKEN is not set or is empty."
-          exit 1
-        else
-          echo "FIREBASE_TOKEN is set and starts with: ${FIREBASE_TOKEN:0:10}..."
-        fi
 
         echo "Running Firebase deploy command..."
         firebase deploy --only hosting:projp21-17b04-2e509
