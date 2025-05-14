@@ -77,6 +77,9 @@ jobs:
         ls -la dist
       
     # 8. Deploy to Firebase
+    - name: Install Firebase CLI
+      run: npm install -g firebase-tools
+      
     - name: Deploy to Firebase
       # uses: w9jds/firebase-action@v2.2.1
       # with:
