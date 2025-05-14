@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { Observable } from 'rxjs';
-import { Issue } from './issue';
+import { Issue } from '../issue';
 import { tap, catchError, map } from 'rxjs/operators';
-import { updateGDriveValue } from './shared/utils'; // Import hàm dùng chung
+import { updateGDriveValue } from '../shared/utils'; // Import hàm dùng chung
 
 
 @Injectable({

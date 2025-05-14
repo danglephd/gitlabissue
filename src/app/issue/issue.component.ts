@@ -8,7 +8,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { IssueRealtimeDbService } from '../issue.realtimedb.service';
+import { IssueRealtimeDbService } from '../services/issue.realtimedb.service';
 
 interface status {
   value: string;
