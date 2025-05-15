@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Issue } from './issue';
+import { Issue } from '../issue';
 import { Observable, Subject, map, pipe, tap, toArray, catchError, throwError } from 'rxjs';
-import { updateGDriveValue } from './shared/utils'; // Import hàm dùng chung
+import { updateGDriveValue } from '../shared/utils'; // Import hàm dùng chung
 
 
 @Injectable({
