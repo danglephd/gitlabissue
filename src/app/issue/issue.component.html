@@ -75,7 +75,7 @@
 
                 <!-- Cột Path -->
                 <ng-container matColumnDef="path">
-                    <th mat-header-cell *matHeaderCellDef> Path </th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Path </th>
                     <td mat-cell *matCellDef="let issue" (click)="onClick($event)" title="Click to copy">
                         {{ issue.path }}
                     </td>
