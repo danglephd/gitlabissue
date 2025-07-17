@@ -62,11 +62,12 @@ export class IssueComponent implements OnInit {
 
   ngOnInit(): void {
     this.isLoading = true;
-    this.fetchIssues();
+    this.fetchIssues(this.testStatus[1]);
   }
 
-  private fetchIssues(): void {
-    this.issueService.getIssues().subscribe((issues: Issue[]) => {
+  private fetchIssues(issStatus: status): void {
+    // this.issueService.getIssues().subscribe((issues: Issue[]) => {
+    this.issueService.getIssuesByStatus(issStatus.value).subscribe((issues: Issue[]) => {
       this.isLoading = false;
       this.noData = issues.length === 0;
       this.dataSource.data = issues;
