@@ -28,6 +28,10 @@ export function updateGDriveValue(data: Issue[]): Issue[] {
         element.proj_url_company = "https://drive.google.com/drive/u/1/folders/1AohlxBRxuybnV3bVt5u4ycRFbYnQmzd7";
         element.proj_url_mypc = "https://drive.google.com/drive/u/1/folders/13gh2XVoqhKoXPFPnvaLLFRrzigdCYRBr";
         break;
+      case "xm-la":
+        element.proj_url_company = "https://drive.google.com/drive/u/1/folders/15nqElvThvemMUVswbH_vbchD_A8DY8LR";
+        element.proj_url_mypc = "https://drive.google.com/drive/u/1/folders/1hMYaBkEtfJ1eUz0sAn5x3UHlC3jj38YA";
+        break;
       default:
         element.proj_url_company = "https://null";
         element.proj_url_mypc = "https://nan";
