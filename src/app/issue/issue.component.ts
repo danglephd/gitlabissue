@@ -286,4 +286,42 @@ export class IssueComponent implements OnInit {
       this.dataSource.paginator.firstPage();
     }
   }
+
+  onQuickFilter(type: string, event: Event) {
+    event.preventDefault();
+    this.isLoading = true;
+    this.noData = false;
+
+    switch (type) {
+      case 'working':
+        this.issues$ = this.issueService.getIssuesByStatus('Working');
+        break;
+      case 'finished':
+        this.issues$ = this.issueService.getIssuesByStatus('Finish');
+        break;
+      case 'all':
+        this.issues$ = this.issueService.getIssues();
+        break;
+      case 'newfirst':
+        this.issues$ = this.issueService.getIssuesSortedByNewest();
+        break;
+      default:
+        this.issues$ = this.issueService.getIssues();
+    }
+
+    this.issues$.subscribe({
+      next: (issues) => {
+        this.isLoading = false;
+        this.noData = issues.length === 0;
+        this.dataSource.data = issues;
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    });
+
+    if (this.isMobile) {
+      this.isSidebarOpen = false;
+    }
+  }
 }

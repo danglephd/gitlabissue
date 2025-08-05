@@ -26,6 +26,12 @@
                     id="issue_number">Search</button>
                 <button mat-raised-button class="reset" (click)="onReset()">Reset</button>
             </div>
+            <div class="quick-filter-links" style="margin-top: 8px;">
+                <a href="#" class="label label-all" (click)="onQuickFilter('all', $event)">all</a>
+                <a href="#" class="label label-working" (click)="onQuickFilter('working', $event)">working</a>
+                <a href="#" class="label label-finished" (click)="onQuickFilter('finished', $event)">finished</a>
+                <a href="#" class="label label-newfirst" (click)="onQuickFilter('newfirst', $event)">new</a>
+            </div>
         </div>
     </div>
 
@@ -85,7 +91,8 @@
                 <ng-container matColumnDef="test_state">
                     <th mat-header-cell *matHeaderCellDef> Test State </th>
                     <td mat-cell *matCellDef="let issue">
-                        <mat-select matNativeControl (selectionChange)="onChange($event, issue)" [value]="issue.test_state">
+                        <mat-select matNativeControl (selectionChange)="onChange($event, issue)"
+                            [value]="issue.test_state">
                             <mat-option value="Finish">Finish</mat-option>
                             <mat-option value="Working">Working</mat-option>
                             <mat-option value="Created">Created</mat-option>
