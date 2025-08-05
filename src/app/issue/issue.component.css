@@ -310,6 +310,48 @@ tr.mat-row:hover {
   background: #a0aec0;
 }
 
+/* Quick filter links styles */
+.quick-filter-links {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.quick-filter-links .label {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+  margin-bottom: 4px;
+  transition: filter 0.2s;
+  border: none;
+}
+
+.quick-filter-links .label-all {
+  background: #1976d2;
+}
+
+.quick-filter-links .label-working {
+  background: #fbc02d;
+  color: #333;
+}
+
+.quick-filter-links .label-finished {
+  background: #43a047;
+}
+
+.quick-filter-links .label-newfirst {
+  background: #d32f2f;
+}
+
+.quick-filter-links .label:hover {
+  filter: brightness(0.9);
+}
+
 /* Mobile styles */
 @media (max-width: 768px) {
   .sidebar {
