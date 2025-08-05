@@ -160,4 +160,25 @@ export class IssueRealtimeDbService {
   updateIssue(issueKey: string, status: string): Promise<void> {
     return this.db.object(`${this.dbPath}/${issueKey}`).update({ test_state: status });
   }
+
+  /**
+   * Lấy danh sách issues chỉ có test_state === 'Created'.
+   * @returns Observable<Issue[]>
+   */
+  getIssuesSortedByNewest(): Observable<Issue[]> {
+    return this.db.list<Issue>(this.dbPath).snapshotChanges().pipe(
+      map((snapshots) => {
+        const issues = snapshots
+          .map(snapshot => ({
+            ...snapshot.payload.val() as Issue,
+            id: snapshot.key ?? ''
+          }))
+          .filter(issue => issue.test_state === 'Created');
+        return updateGDriveValue(issues);
+      }),
+      catchError((error) => {
+        throw error;
+      })
+    );
+  }
 }
