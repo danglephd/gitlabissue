@@ -1,0 +1,51 @@
+<div class="app-container">
+    <div class="sidebar" [class.sidebar-open]="isSidebarOpen" [class.collapsed]="isSidebarCollapsed">
+        <div class="sidebar-header">
+            <h2>Search Filters</h2>
+            <div>
+                <button mat-icon-button class="close-button" (click)="toggleSidebar()" *ngIf="isMobile">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
+        </div>
+        <!-- <div class="search-form">
+            <mat-form-field appearance="fill">
+                <mat-label>Issue Number: </mat-label>
+                <input #input matInput id="issue_number" type="text" placeholder="Enter number issue here"
+                    (keyup.enter)="onSearch(input.value, test_status.value)" [(ngModel)]="inp_issueno">
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Test status</mat-label>
+                <mat-select #test_status [(ngModel)]="sel_status">
+                    <mat-option>None</mat-option>
+                    <mat-option *ngFor="let status of testStatus" [value]="status">{{status.value}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <div class="button-group">
+                <button mat-raised-button color="primary" (click)="onSearch(input.value, test_status.value)"
+                    id="issue_number">Search</button>
+                <button mat-raised-button class="reset" (click)="onReset()">Reset</button>
+            </div>
+            <div class="quick-filter-links" style="margin-top: 8px;">
+                <a href="#" class="label label-all" (click)="onQuickFilter('all', $event)">all</a>
+                <a href="#" class="label label-working" (click)="onQuickFilter('working', $event)">working</a>
+                <a href="#" class="label label-finished" (click)="onQuickFilter('finished', $event)">finished</a>
+                <a href="#" class="label label-newfirst" (click)="onQuickFilter('newfirst', $event)">new</a>
+            </div>
+        </div> -->
+    </div>
+
+    <div class="main-content" [class.expanded]="isSidebarCollapsed">
+        <div class="header">
+            <button mat-icon-button class="menu-button" (click)="toggleSidebar()" *ngIf="isMobile">
+                <mat-icon>menu</mat-icon>
+            </button>
+            <h1>Free Wallet</h1>
+        </div>
+        <div class="table-container">
+            <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8"> 
+
+            </table>
+        </div>
+    </div>
+</div>
