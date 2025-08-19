@@ -1,14 +1,12 @@
 import { Component, OnInit, HostListener, ViewChild } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Sort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Wallet } from '../wallet';
-import { WalletRealtimeDbService } from '../services/wallet.realtimedb.service';
+import { moneyTransactionCsvService } from '../services/wallet.realtimedb.service';
+import { MoneyTransactionClass } from '../shared/models/money-transaction';
 
 interface status {
   value: string;
@@ -20,7 +18,6 @@ interface status {
   styleUrls: ['./wallet.component.css']
 })
 export class WalletComponent implements OnInit {
-  wallets$: Observable<Wallet[]> = new Observable();
   inp_walletno: string = '';
   sel_status: string = '';
   oneDay = 24 * 60 * 60 * 1000;
@@ -29,13 +26,28 @@ export class WalletComponent implements OnInit {
   isMobile = false;
   isLoading = false;
   noData = false;
-  displayedColumns: string[] = ['wallet_number', 'actions', 'project', 'links', 'path', 'test_state', 'duedate'];
-  dataSource = new MatTableDataSource<Wallet>();
+  walletGroups: WalletDayGroup[] = [];
+  displayedColumns: string[] = [
+    'category',
+    'amount',
+    'currency',
+    'date',
+    // 'billType',
+    // 'notes',
+    // 'account',
+    // 'ledger',
+    // 'tags',
+    // 'includedInBudget',
+    // 'id',
+    // 'image'
+  ];
+  dataSource: MatTableDataSource<MoneyTransactionClass>;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private walletService: WalletRealtimeDbService, private _snackBar: MatSnackBar, private dialog: MatDialog) {
+  constructor(private moneyService: moneyTransactionCsvService, private _snackBar: MatSnackBar, private dialog: MatDialog) {
+    this.dataSource = new MatTableDataSource();
     this.checkScreenSize();
   }
 
@@ -52,57 +64,94 @@ export class WalletComponent implements OnInit {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
 
-  testStatus: status[] = [
-    { value: 'Finish' },
-    { value: 'Working' },
-    { value: 'Created' },
-    { value: 'Done' },
-    { value: 'Old' },
-  ];
-
   ngOnInit(): void {
     this.isLoading = true;
     // this.fetchWallets();
+    this.loadTransactions();
   }
 
-  // private fetchWallets(): void {
-  //   this.walletService.getWallets().subscribe((wallets: Wallet[]) => {
-  //     this.isLoading = false;
-  //     this.noData = wallets.length === 0;
-  //     this.dataSource.data = wallets;
-  //     this.dataSource.paginator = this.paginator;
-  //     this.dataSource.sort = this.sort;
-  //   });
-  // }
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
 
-  // private compare(a: number | string, b: number | string, isAsc: boolean) {
-  //   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-  // }
+  getIcon(category: string): string {
+    switch (category.toLowerCase()) {   
+      case 'salary': return 'assets/icons/gitlab.svg';
+      case 'gas': return 'assets/icons/gitlab.svg';
+      case 'meat': return 'assets/icons/gitlab.svg';
+      case 'vcb': return 'assets/icons/gitlab.svg';
+      case 'momo': return 'assets/icons/gitlab.svg';
+      default: return 'assets/icons/gitlab.svg';
+    } 
+  }
 
-  // sortData(sort: Sort) {
-  //   if (!sort.active || sort.direction === '') {
-  //     return;
-  //   }
-  //   this.wallets$.pipe(map(data => data.sort((a, b) => {
-  //     const isAsc = sort.direction === 'asc';
-  //     switch (sort.active) {
-  //       case 'wallet_number':
-  //         return this.compare(a.wallet_number, b.wallet_number, isAsc);
-  //       case 'project':
-  //         return this.compare(a.project, b.project, isAsc);
-  //       default:
-  //         return 0;
-  //     }
-  //   }))).subscribe();
-  // }
+  loadTransactions() {
+    this.moneyService.getTransactions().subscribe(
+      transactions => {
+        this.dataSource.data = transactions;
 
-  // onReset() {
-  //   this.inp_walletno = '';
-  //   this.sel_status = 'None';
-  // }
+        // Group transactions by date
+        const grouped = transactions.reduce((acc: { [key: string]: MoneyTransactionClass[] }, t: MoneyTransactionClass) => {
+          const key = t.date.toISOString().slice(0, 10);
+          if (!acc[key]) acc[key] = [];
+          acc[key].push(t);
+          return acc;
+        }, {});
 
-  // onChange(event: any, wallet: Wallet) {
-  //   this.walletService.updateWallet(wallet.id, event.value);
-  // }
+        this.walletGroups = [];
+        for (const date in grouped) {
+          const txs = grouped[date];
+          const totalIncome = txs.filter((t: MoneyTransactionClass) => t.isIncome())
+            .reduce((s: number, t: MoneyTransactionClass) => s + t.amount, 0);
+          const totalExpense = txs.filter((t: MoneyTransactionClass) => t.isExpense())
+            .reduce((s: number, t: MoneyTransactionClass) => s + t.amount, 0);
 
+          this.walletGroups.push({
+            date,
+            dayLabel: this.formatDayLabel(date),
+            totalIncome,
+            totalExpense,
+            transactions: txs
+          });
+        }
+      },
+      error => {
+        console.error('Error loading transactions:', error);
+      }
+    );
+  }
+
+  formatDayLabel(dateString: string): string {
+    const date = new Date(dateString);
+    const today = new Date();
+
+    // Chỉ lấy phần ngày, bỏ giờ/phút/giây
+    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+    const diffTime = todayOnly.getTime() - dateOnly.getTime();
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+    let label = '';
+    if (diffDays === 0) {
+      label = 'Today';
+    } else if (diffDays === 1) {
+      label = 'Yesterday';
+    } else {
+      label = date.toLocaleString('default', { month: 'short', day: 'numeric' });
+    }
+
+    label += ` ${date.toLocaleString('default', { weekday: 'short' })}`;
+
+    return label;
+  }
+}
+
+interface WalletDayGroup {
+  date: string;
+  dayLabel: string;
+  totalIncome: number;
+  totalExpense: number;
+  transactions: MoneyTransactionClass[];
 }
