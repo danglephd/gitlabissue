@@ -8,9 +8,71 @@ import { MoneyTransactionClass } from '../shared/models/money-transaction';
   providedIn: 'root'
 })
 export class moneyTransactionCsvService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
+  // Đọc dữ liệu từ file CSV và lưu vào localStorage
   getTransactions(): Observable<MoneyTransactionClass[]> {
+    const localData = localStorage.getItem('transactions');
+    if (localData) {
+      // Nếu đã có trong localStorage thì trả về dữ liệu đó
+      const transactions: MoneyTransactionClass[] = JSON.parse(localData).map((obj: any) => new MoneyTransactionClass(obj));
+      return new Observable(observer => {
+        observer.next(transactions);
+        observer.complete();
+      });
+    } else {
+      // Nếu chưa có thì lấy từ CSV và lưu vào localStorage
+      return this.getTransactionsFromCSV().pipe(
+        map(transactions => {
+          localStorage.setItem('transactions', JSON.stringify(transactions));
+          return transactions;
+        })
+      );
+    }
+  }
+
+  // Xuất dữ liệu từ localStorage ra file CSV
+  exportLocalStorageToCsv(filename: string = 'export.csv') {
+    const data = localStorage.getItem('transactions');
+    if (!data) return;
+
+    const transactions: MoneyTransactionClass[] = JSON.parse(data);
+
+    // Lấy header từ thuộc tính của MoneyTransactionClass
+    const headers = [
+      'Date', 'Category', 'Bill type', 'Amount', 'Currency', 'Notes',
+      'Account', 'Ledger', 'Tags', 'Included in budget', 'Id', 'Image'
+    ];
+
+    const csvRows = [
+      headers.join(','),
+      ...transactions.map(tx => [
+        tx.date instanceof Date ? tx.date.toISOString().split('T')[0] : tx.date,
+        tx.category,
+        tx.billType,
+        tx.amount,
+        tx.currency,
+        tx.notes,
+        tx.account,
+        tx.ledger,
+        tx.tags,
+        tx.includedInBudget,
+        tx.id,
+        tx.image
+      ].map(val => `"${(val ?? '').toString().replace(/"/g, '""')}"`).join(','))
+    ];
+
+    const csvContent = csvRows.join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  getTransactionsFromCSV(): Observable<MoneyTransactionClass[]> {
     return this.http.get('assets/data/Money_Manager_5years_with_income.csv', { responseType: 'text' })
       .pipe(
         map(text => {
@@ -42,7 +104,7 @@ export class moneyTransactionCsvService {
                   obj[key] = values[index] || '';
                 }
               });
-              
+
               return new MoneyTransactionClass(obj);
             });
           return result;
@@ -80,5 +142,30 @@ export class moneyTransactionCsvService {
           .sort((a, b) => a.month - b.month);
       })
     );
+  }
+
+  addTransactionToLocalStorage(newTx: MoneyTransactionClass): void {
+    const data = localStorage.getItem('transactions');
+    let transactions: MoneyTransactionClass[] = data ? JSON.parse(data) : [];
+    transactions.push(newTx);
+    localStorage.setItem('transactions', JSON.stringify(transactions));
+  }
+
+  // Sửa transaction theo id
+  updateTransactionInLocalStorage(updatedTx: MoneyTransactionClass): void {
+    const data = localStorage.getItem('transactions');
+    let transactions: MoneyTransactionClass[] = data ? JSON.parse(data) : [];
+    transactions = transactions.map(tx =>
+      tx.id === updatedTx.id ? updatedTx : tx
+    );
+    localStorage.setItem('transactions', JSON.stringify(transactions));
+  }
+
+  // Xóa transaction theo id
+  deleteTransactionFromLocalStorage(id: string): void {
+    const data = localStorage.getItem('transactions');
+    let transactions: MoneyTransactionClass[] = data ? JSON.parse(data) : [];
+    transactions = transactions.filter(tx => tx.id !== id);
+    localStorage.setItem('transactions', JSON.stringify(transactions));
   }
 }
