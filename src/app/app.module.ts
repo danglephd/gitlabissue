@@ -15,12 +15,14 @@ import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
 import { environment } from '../environments/environment';
 import { WalletComponent } from './wallet/wallet.component';
+import { WalletAddDialogComponent } from './wallet-add-dialog/wallet-add-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     IssueComponent,
     WalletComponent,
+    WalletAddDialogComponent, // Thêm WalletAddDialogComponent vào declarations
     ConfirmDialogComponent
   ],
   imports: [

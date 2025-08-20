@@ -7,10 +7,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { moneyTransactionCsvService } from '../services/wallet.realtimedb.service';
 import { MoneyTransactionClass } from '../shared/models/money-transaction';
-
-interface status {
-  value: string;
-}
+import { WalletAddDialogComponent } from '../wallet-add-dialog/wallet-add-dialog.component';
 
 @Component({
   selector: 'app-wallet',
@@ -18,9 +15,6 @@ interface status {
   styleUrls: ['./wallet.component.css']
 })
 export class WalletComponent implements OnInit {
-  inp_walletno: string = '';
-  sel_status: string = '';
-  oneDay = 24 * 60 * 60 * 1000;
   isSidebarOpen = false;
   isSidebarCollapsed = false;
   isMobile = false;
@@ -32,14 +26,6 @@ export class WalletComponent implements OnInit {
     'amount',
     'currency',
     'date',
-    // 'billType',
-    // 'notes',
-    // 'account',
-    // 'ledger',
-    // 'tags',
-    // 'includedInBudget',
-    // 'id',
-    // 'image'
   ];
   dataSource: MatTableDataSource<MoneyTransactionClass>;
 
@@ -66,7 +52,6 @@ export class WalletComponent implements OnInit {
 
   ngOnInit(): void {
     this.isLoading = true;
-    // this.fetchWallets();
     this.loadTransactions();
   }
 
@@ -76,18 +61,22 @@ export class WalletComponent implements OnInit {
   }
 
   getIcon(category: string): string {
-    switch (category.toLowerCase()) {   
+    switch (category.toLowerCase()) {
       case 'salary': return 'assets/icons/gitlab.svg';
       case 'gas': return 'assets/icons/gitlab.svg';
       case 'meat': return 'assets/icons/gitlab.svg';
       case 'vcb': return 'assets/icons/gitlab.svg';
       case 'momo': return 'assets/icons/gitlab.svg';
       default: return 'assets/icons/gitlab.svg';
-    } 
+    }
   }
 
   loadTransactions() {
-    this.moneyService.getTransactions().subscribe(
+    const now = new Date();
+    const month = now.getMonth() + 1;
+    const year = now.getFullYear();
+
+    this.moneyService.filterByMonthYear(month, year).subscribe(
       transactions => {
         this.dataSource.data = transactions;
 
@@ -100,7 +89,8 @@ export class WalletComponent implements OnInit {
         }, {});
 
         this.walletGroups = [];
-        for (const date in grouped) {
+        const sortedDates = Object.keys(grouped).sort().reverse(); // giảm dần
+        for (const date of sortedDates) {
           const txs = grouped[date];
           const totalIncome = txs.filter((t: MoneyTransactionClass) => t.isIncome())
             .reduce((s: number, t: MoneyTransactionClass) => s + t.amount, 0);
@@ -145,6 +135,14 @@ export class WalletComponent implements OnInit {
     label += ` ${date.toLocaleString('default', { weekday: 'short' })}`;
 
     return label;
+  }
+
+  openAddDialog() {
+    this.dialog.open(WalletAddDialogComponent, {
+      width: '420px',
+      maxWidth: '95vw',
+      panelClass: 'wallet-add-dialog-panel'
+    });
   }
 }
 

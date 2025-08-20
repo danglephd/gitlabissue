@@ -1,0 +1,170 @@
+.add-dialog-container {
+  background: #fff;
+  border-radius: 16px;
+  padding: 0;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.add-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 8px 16px;
+}
+
+.add-dialog-wallet {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 18px;
+  gap: 8px;
+}
+
+.add-dialog-tabs {
+  display: flex;
+  justify-content: flex-start;
+  gap: 32px;
+  padding: 0 16px 8px 16px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.tab {
+  color: #888;
+  cursor: pointer;
+  position: relative;
+  padding-bottom: 2px;
+}
+
+.tab.active {
+  color: #222;
+  font-weight: 600;
+  border-bottom: 2px solid #ffd600;
+  background: linear-gradient(90deg, #ffd600 60%, transparent 100%);
+}
+
+.add-dialog-categories {
+  padding: 8px 16px;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px 8px;
+}
+
+.category-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.category-item img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fafbfc;
+  margin-bottom: 4px;
+}
+
+.category-label {
+  font-size: 13px;
+  color: #222;
+  text-align: center;
+}
+
+.add-dialog-account-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+}
+
+.account-btn, .tag-btn, .edit-btn, .bear-btn {
+  background: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 14px;
+  color: #222;
+  cursor: pointer;
+  box-shadow: 0 1px 4px #0001;
+}
+
+.add-dialog-note-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+}
+
+.add-dialog-note-row input {
+  flex: 1;
+  border: none;
+  border-radius: 8px;
+  background: #fafbfc;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.add-dialog-keypad {
+  padding: 8px 16px 16px 16px;
+}
+
+.keypad-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.keypad-btn {
+  flex: 1;
+  background: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  padding: 12px 0;
+  box-shadow: 0 1px 4px #0001;
+  cursor: pointer;
+}
+
+.keypad-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.amount {
+  font-size: 18px;
+  font-weight: 600;
+  color: #222;
+}
+
+.today-btn {
+  background: #fafbfc;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 16px;
+  font-size: 14px;
+  color: #222;
+  cursor: pointer;
+}
+
+.ok-btn {
+  background: #ffd600;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  color: #222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 2px 8px #ffd60088;
+  cursor: pointer;
+}
