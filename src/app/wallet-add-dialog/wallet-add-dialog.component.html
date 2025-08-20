@@ -19,9 +19,15 @@
       Transfer <span class="tab-underline" *ngIf="activeTab === 'transfer'"></span>
     </span>
   </div>
+  <!-- Thay đổi: bọc category-grid trong add-dialog-categories-scroll -->
   <div class="add-dialog-categories-scroll">
     <div class="category-grid">
-      <div class="category-item" *ngFor="let cat of categories">
+      <div
+        class="category-item"
+        *ngFor="let cat of categories"
+        [class.selected]="cat === currentSelectedCategory"
+        (click)="onCategorySelect(cat)"
+      >
         <div class="category-icon-wrap">
           <img [src]="cat.icon" alt="{{cat.name}}" />
         </div>

@@ -1,6 +1,8 @@
 import { Component, HostListener } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { CalendarDialogComponent } from '../calendar-dialog/calendar-dialog.component';
+import { moneyTransactionCsvService } from '../services/wallet.realtimedb.service';
+import { MoneyTransactionClass } from '../shared/models/money-transaction';
 
 @Component({
   selector: 'app-wallet-add-dialog',
@@ -60,6 +62,12 @@ export class WalletAddDialogComponent {
   selectedDate: Date = new Date();
   todayLabel: string = 'Today';
 
+  selectedCategory: any = this.expensesCategories[0];
+  selectedIncomeCategory: any = this.incomeCategories[0];
+  selectedTransferCategory: any = this.transferCategories[0];
+
+  note: string = ''; // Biến lưu trữ ghi chú
+
   get displayAmount(): string {
     // Format số với dấu phẩy phân cách hàng nghìn
     const formatNumber = (numStr: string) => {
@@ -92,8 +100,29 @@ export class WalletAddDialogComponent {
       this.openCalendarDialog();
       return;
     }
-    if (key === 'OK') {
-      console.log('Lưu dữ liệu mới:', this.amount);
+    if (key === 'OK') {  // Định dạng thời gian: yyyy-MM-dd HH:mm:ss
+      const formatDate = (d: Date) => {
+        const pad = (n: number) => n.toString().padStart(2, '0');
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+      };
+
+      // Tạo transaction mới với đầy đủ trường
+      const newTx = new MoneyTransactionClass({
+        date: formatDate(this.selectedDate),
+        category: this.currentSelectedCategory?.name,
+        billType: this.activeTab,
+        currency: 'VND',
+        notes: this.note || '',
+        account: 'Cash',
+        ledger: '',
+        tags: '',
+        includedInBudget: true,
+        id: this.generateId(false, '', this.activeTab, 'Cash'),
+        image: '',
+        amount: parseFloat(this.amount.replace(/,/g, ''))
+      });
+      this.walletService.addTransactionToLocalStorage(newTx);
+      this.dialogRef.close(true);
       return;
     }
     if (key === '⌫') {
@@ -245,23 +274,97 @@ export class WalletAddDialogComponent {
     }
   }
 
+  onCategorySelect(category: any) {
+    if (this.activeTab === 'expenses') {
+      this.selectedCategory = category;
+    } else if (this.activeTab === 'income') {
+      this.selectedIncomeCategory = category;
+    } else if (this.activeTab === 'transfer') {
+      this.selectedTransferCategory = category;
+    }
+  }
+
   onTabClick(tab: 'expenses' | 'income' | 'transfer') {
     this.activeTab = tab;
     if (tab === 'expenses') {
       this.categories = this.expensesCategories;
+      // Nếu chưa chọn category ở tab này thì chọn mặc định
+      if (!this.selectedCategory) {
+        this.selectedCategory = this.expensesCategories[0];
+      }
     } else if (tab === 'income') {
       this.categories = this.incomeCategories;
+      if (!this.selectedIncomeCategory) {
+        this.selectedIncomeCategory = this.incomeCategories[0];
+      }
     } else {
       this.categories = this.transferCategories;
+      if (!this.selectedTransferCategory) {
+        this.selectedTransferCategory = this.transferCategories[0];
+      }
     }
+  }
+
+  get currentSelectedCategory() {
+    if (this.activeTab === 'expenses') return this.selectedCategory;
+    if (this.activeTab === 'income') return this.selectedIncomeCategory;
+    return this.selectedTransferCategory;
   }
 
   constructor(
     private dialogRef: MatDialogRef<WalletAddDialogComponent>,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private walletService: moneyTransactionCsvService
   ) { }
 
   onClose() {
     this.dialogRef.close();
+  }
+
+  // Thêm hàm sinh id duy nhất cho mỗi transaction:
+  generateId(
+    isUpdate = false,
+    oldId = '',
+    billType: string = 'expenses',
+    account: string = 'Cash',
+    account2: string = ''
+  ): string {
+    // 1. Thời điểm tạo transaction
+    let createdTime: number;
+    let updatedTime: number;
+
+    if (isUpdate && oldId) {
+      // Lấy phần đầu tiên và cuối cùng của id cũ
+      const parts = oldId.split('_');
+      createdTime = Number(parts[0]);
+      updatedTime = Date.now();
+    } else {
+      createdTime = Date.now();
+      updatedTime = createdTime; // Khi tạo mới, updatedTime = createdTime
+    }
+
+    // 2. id account (nếu Transfer thì account1/account2)
+    let accountId = account;
+    if (billType === 'transfer' && account2) {
+      accountId = `${account}/${account2}`;
+    }
+
+    // 3. Luôn là 0
+    const num3 = 0;
+
+    // 4. Luôn là 'n'
+    const char4 = 'n';
+
+    // 5. Luôn là 1
+    const num5 = 1;
+
+    // 6. BillType: 0 (expenses), 1 (income), 2 (transfer)
+    let billTypeNum = 0;
+    if (billType === 'income') billTypeNum = 1;
+    else if (billType === 'transfer') billTypeNum = 2;
+
+    // 7. Thời điểm cập nhật transaction
+
+    return `${createdTime}_${accountId}_${num3}_${char4}_${num5}_${billTypeNum}_${updatedTime}`;
   }
 }

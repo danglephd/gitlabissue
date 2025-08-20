@@ -69,12 +69,13 @@
 }
 
 .add-dialog-categories-scroll {
-  max-height: 180px;
+  max-height: 180px;   /* 3 dòng category */
   min-height: 180px;
   overflow-y: auto;
   padding: 8px 18px 0 18px;
   margin-bottom: 0;
   box-sizing: border-box;
+  background: #fff;
 }
 
 .category-grid {
@@ -284,6 +285,11 @@
   border: 2px solid #ffd600;
   box-shadow: 0 2px 8px #ffd60044;
   padding: 0 !important;
+}
+
+.category-item.selected .category-icon-wrap {
+  border: 2px solid #ffd600;
+  background: #fffbe6;
 }
 
 @media (max-width: 480px) {
