@@ -91,12 +91,14 @@
   align-items: center;
   margin-bottom: 16px;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .calendar-time-label {
   font-size: 15px;
   color: #888;
   margin-right: 8px;
+  min-width: 40px;
 }
 
 .calendar-time-select {
@@ -106,6 +108,7 @@
   background: #f5f5f5;
   border-radius: 12px;
   padding: 6px 12px;
+  flex-wrap: wrap;
 }
 
 .calendar-time-select select {
@@ -114,6 +117,7 @@
   background: transparent;
   outline: none;
   margin: 0 2px;
+  min-width: 36px;
 }
 
 .calendar-ampm {
@@ -123,7 +127,7 @@
   color: #888;
   margin-left: 8px;
   cursor: pointer;
-  padding: 2px 8px;
+  padding: 2px 12px;
   border-radius: 8px;
   transition: background 0.2s, color 0.2s;
 }

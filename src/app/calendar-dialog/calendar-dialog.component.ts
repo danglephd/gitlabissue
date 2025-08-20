@@ -102,6 +102,17 @@ export class CalendarDialogComponent {
     this.selectedDate.setHours(this.selectedHour);
   }
 
+  toggleAMPM() {
+    this.isPM = !this.isPM;
+    if (this.isPM && this.selectedHour < 12) {
+      this.selectedHour += 12;
+    }
+    if (!this.isPM && this.selectedHour >= 12) {
+      this.selectedHour -= 12;
+    }
+    this.selectedDate.setHours(this.selectedHour);
+  }
+
   close() {
     this.dialogRef.close();
   }
