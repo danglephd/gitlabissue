@@ -1,0 +1,48 @@
+<div class="calendar-dialog-container">
+  <div class="calendar-dialog-title">Select date</div>
+  <div class="calendar-dialog-month-row">
+    <button class="calendar-arrow" (click)="prevMonth()">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span class="calendar-month">{{ monthName }} {{ currentYear }}</span>
+    <button class="calendar-arrow" (click)="nextMonth()">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+  <div class="calendar-dialog-weekdays">
+    <span *ngFor="let wd of ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']">{{wd}}</span>
+  </div>
+  <div class="calendar-dialog-days">
+    <span
+      *ngFor="let day of calendarDays; let i = index"
+      [class.selected]="day === selectedDate.getDate() && currentMonth === selectedDate.getMonth() && currentYear === selectedDate.getFullYear()"
+      [class.today]="day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()"
+      (click)="selectDate(day)"
+      [class.empty]="!day"
+    >
+      {{ day ? day : '' }}
+    </span>
+  </div>
+  <div class="calendar-dialog-time-row">
+    <span class="calendar-time-label">Time</span>
+    <div class="calendar-time-select">
+      <select [(ngModel)]="selectedHour" (change)="setHour(selectedHour)">
+        <option *ngFor="let h of [].constructor(12); let i = index" [value]="isPM ? i+12 : i">{{ (isPM ? i+12 : i) | number:'2.0' }}</option>
+      </select>
+      :
+      <select [(ngModel)]="selectedMinute" (change)="setMinute(selectedMinute)">
+        <option *ngFor="let m of [].constructor(60); let i = index" [value]="i">{{ i | number:'2.0' }}</option>
+      </select>
+      <button class="calendar-ampm" [class.active]="!isPM" (click)="setAMPM(false)">AM</button>
+      <button class="calendar-ampm" [class.active]="isPM" (click)="setAMPM(true)">PM</button>
+    </div>
+  </div>
+  <div class="calendar-dialog-actions">
+    <button class="calendar-cancel" (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <button class="calendar-ok" (click)="confirm()">
+      <mat-icon>check</mat-icon>
+    </button>
+  </div>
+</div>

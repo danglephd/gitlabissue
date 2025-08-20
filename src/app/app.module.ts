@@ -16,6 +16,7 @@ import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
 import { environment } from '../environments/environment';
 import { WalletComponent } from './wallet/wallet.component';
 import { WalletAddDialogComponent } from './wallet-add-dialog/wallet-add-dialog.component';
+import { CalendarDialogComponent } from './calendar-dialog/calendar-dialog.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { WalletAddDialogComponent } from './wallet-add-dialog/wallet-add-dialog.
     IssueComponent,
     WalletComponent,
     WalletAddDialogComponent, // Thêm WalletAddDialogComponent vào declarations
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    CalendarDialogComponent // Thêm CalendarDialogComponent vào declarations
   ],
   imports: [
     BrowserModule,
