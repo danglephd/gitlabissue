@@ -142,6 +142,10 @@ export class WalletComponent implements OnInit {
       width: '420px',
       maxWidth: '95vw',
       panelClass: 'wallet-add-dialog-panel'
+    }).afterClosed().subscribe(reload => {
+      if (reload) {
+        this.loadTransactions(); // gọi lại hàm lấy danh sách transaction từ service
+      }
     });
   }
 }
