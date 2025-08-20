@@ -78,6 +78,9 @@ export class WalletComponent implements OnInit {
 
     this.moneyService.filterByMonthYear(month, year).subscribe(
       transactions => {
+        // Sort transactions theo ngày giảm dần trước khi group
+        transactions.sort((a, b) => b.date.getTime() - a.date.getTime());
+
         this.dataSource.data = transactions;
 
         // Group transactions by date
