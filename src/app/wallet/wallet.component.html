@@ -17,6 +17,16 @@
             </button>
             <h1>Free Wallet</h1>
         </div>
+        <div class="wallet-summary">
+            <div class="wallet-summary-item expense">
+                <span class="label">Chi:</span>
+                <span class="value">-{{ totalExpense | number:'1.0-0' }} VND</span>
+            </div>
+            <div class="wallet-summary-item income">
+                <span class="label">Thu:</span>
+                <span class="value">+{{ totalIncome | number:'1.0-0' }} VND</span>
+            </div>
+        </div>
         <div class="wallet-list">
             <div *ngFor="let group of walletGroups" class="wallet-day-group">
                 <div class="wallet-day-header">

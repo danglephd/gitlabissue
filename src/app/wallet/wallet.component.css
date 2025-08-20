@@ -218,6 +218,35 @@ table {
   width: 30px;
 }
 
+.wallet-summary {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin: 16px 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.wallet-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wallet-summary-item.expense .value {
+  color: #e53935;
+}
+
+.wallet-summary-item.income .value {
+  color: #43a047;
+}
+
+.wallet-summary-item .label {
+  color: #888;
+  font-size: 15px;
+  font-weight: 400;
+}
+
 @media (max-width: 768px) {
   .wallet-list {
     max-width: 100vw;

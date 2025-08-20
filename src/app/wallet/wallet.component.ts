@@ -29,6 +29,9 @@ export class WalletComponent implements OnInit {
   ];
   dataSource: MatTableDataSource<MoneyTransactionClass>;
 
+  totalExpense = 0;
+  totalIncome = 0;
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -78,10 +81,16 @@ export class WalletComponent implements OnInit {
 
     this.moneyService.filterByMonthYear(month, year).subscribe(
       transactions => {
-        // Sort transactions theo ngày giảm dần trước khi group
         transactions.sort((a, b) => b.date.getTime() - a.date.getTime());
-
         this.dataSource.data = transactions;
+
+        // Tính tổng thu chi của tháng
+        this.totalExpense = transactions
+          .filter(t => t.isExpense())
+          .reduce((sum, t) => sum + t.amount, 0);
+        this.totalIncome = transactions
+          .filter(t => t.isIncome())
+          .reduce((sum, t) => sum + t.amount, 0);
 
         // Group transactions by date
         const grouped = transactions.reduce((acc: { [key: string]: MoneyTransactionClass[] }, t: MoneyTransactionClass) => {
