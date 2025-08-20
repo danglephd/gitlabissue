@@ -36,26 +36,35 @@
     <button mat-icon-button disabled><mat-icon>photo_camera</mat-icon></button>
     <input type="text" placeholder="Add a note" />
     <span class="amount-block">
-      <span class="amount">{{displayAmount}}</span>
+      <span [class]="amountClass">{{displayAmount}}</span>
       <span class="currency">VND</span>
     </span>
   </div>
   <div class="add-dialog-keypad">
     <div class="keypad-row" *ngFor="let row of keypad; let i = index">
       <ng-container *ngFor="let key of row; let j = index">
+        <!-- Render nút Today ở vị trí [4][1] -->
         <button
+          *ngIf="i === 4 && j === 1"
+          class="keypad-btn today-btn"
+          (click)="onKeypadClick('Today')"
+        >
+          {{ todayLabel }}
+        </button>
+        <!-- Các nút khác -->
+        <button
+          *ngIf="!(i === 4 && j === 1) && key && key !== 'OK'"
           class="keypad-btn"
           [ngClass]="{
             'ok-btn yellow': key === 'OK' && !isOperatorMode,
-            'equal-btn': key === 'OK' && isOperatorMode,
-            'today-btn': key === 'Today'
+            'equal-btn': key === 'OK' && isOperatorMode
           }"
           (click)="onKeypadClick(isOperatorMode && key === 'OK' ? '=' : key)"
-          *ngIf="key !== 'OK'; else okButton"
         >
           {{isOperatorMode && key === 'OK' ? '=' : key}}
         </button>
-        <ng-template #okButton>
+        <!-- Nút OK -->
+        <ng-container *ngIf="key === 'OK' && !(i === 4 && j === 1)">
           <button
             class="keypad-btn"
             [ngClass]="{
@@ -67,7 +76,7 @@
             <mat-icon *ngIf="!isOperatorMode">check_circle</mat-icon>
             <span *ngIf="isOperatorMode">=</span>
           </button>
-        </ng-template>
+        </ng-container>
       </ng-container>
     </div>
   </div>

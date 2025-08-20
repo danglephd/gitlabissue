@@ -175,13 +175,23 @@
   align-items: flex-end;
   min-width: 56px;
   margin-left: 8px;
+  max-width: 180px;
 }
 
 .amount {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 700;
   color: #222;
   line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+  transition: font-size 0.2s;
+}
+
+.amount.small {
+  font-size: 16px;
 }
 
 .currency {

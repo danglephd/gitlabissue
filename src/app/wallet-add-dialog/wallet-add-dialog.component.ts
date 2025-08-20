@@ -1,4 +1,6 @@
 import { Component, HostListener } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { CalendarDialogComponent } from '../calendar-dialog/calendar-dialog.component';
 
 @Component({
   selector: 'app-wallet-add-dialog',
@@ -13,7 +15,7 @@ export class WalletAddDialogComponent {
     ['4', '5', '6', '+'],
     ['7', '8', '9', '-'],
     ['.', '0', '000', '×'],
-    ['÷', 'Today', 'OK']
+    ['÷', '', 'OK', ''] // vị trí thứ 2 sẽ là Today
   ];
 
   expensesCategories = [
@@ -55,6 +57,9 @@ export class WalletAddDialogComponent {
   private lastValue: string = '';
   private justCalculated: boolean = false;
 
+  selectedDate: Date = new Date();
+  todayLabel: string = 'Today';
+
   get displayAmount(): string {
     // Format số với dấu phẩy phân cách hàng nghìn
     const formatNumber = (numStr: string) => {
@@ -77,13 +82,18 @@ export class WalletAddDialogComponent {
     return !!this.lastOperator && !this.justCalculated;
   }
 
+  get amountClass(): string {
+    // Nếu độ dài lớn hơn 14 ký tự thì giảm font
+    return this.displayAmount.length > 14 ? 'amount small' : 'amount';
+  }
+
   onKeypadClick(key: string) {
-    if (key === 'OK') {
-      console.log('Lưu dữ liệu mới:', this.amount);
+    if (key === 'Today') {
+      this.openCalendarDialog();
       return;
     }
-    if (key === 'Today') {
-      // Xử lý chọn ngày hôm nay nếu cần
+    if (key === 'OK') {
+      console.log('Lưu dữ liệu mới:', this.amount);
       return;
     }
     if (key === '⌫') {
@@ -141,6 +151,45 @@ export class WalletAddDialogComponent {
       }
       return;
     }
+  }
+
+  openCalendarDialog() {
+    const dialogRef = this.dialog.open(CalendarDialogComponent, {
+      width: '360px',
+      panelClass: 'calendar-dialog-panel',
+      data: { selectedDate: this.selectedDate } // truyền ngày đã chọn
+    });
+
+    dialogRef.afterClosed().subscribe((result: Date) => {
+      if (result) {
+        this.selectedDate = result;
+        this.todayLabel = this.getDateLabel(result);
+      }
+    });
+  }
+
+  getDateLabel(date: Date): string {
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    const isToday =
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear();
+
+    const isYesterday =
+      date.getDate() === yesterday.getDate() &&
+      date.getMonth() === yesterday.getMonth() &&
+      date.getFullYear() === yesterday.getFullYear();
+
+    if (isToday) return 'Today';
+    if (isYesterday) return 'Yesterday';
+
+    // Hiển thị dạng DD/MM
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    return `${dd}/${mm}`;
   }
 
   calculate() {
@@ -207,7 +256,12 @@ export class WalletAddDialogComponent {
     }
   }
 
+  constructor(
+    private dialogRef: MatDialogRef<WalletAddDialogComponent>,
+    private dialog: MatDialog
+  ) { }
+
   onClose() {
-    // Đóng dialog
+    this.dialogRef.close();
   }
 }
