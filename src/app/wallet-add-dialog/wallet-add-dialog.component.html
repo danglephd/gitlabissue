@@ -1,44 +1,74 @@
 <div class="add-dialog-container">
   <div class="add-dialog-header">
-    <button mat-icon-button (click)="onClose()">
+    <button mat-icon-button class="close-btn" (click)="onClose()">
       <mat-icon>close</mat-icon>
     </button>
     <span class="add-dialog-wallet">
-      <img src="assets/icons/wallet.svg" alt="General" width="24" height="24" />
-      General
+      <img src="assets/icons/wallet.svg" alt="General" width="22" height="22" />
+      <span>General</span>
     </span>
   </div>
   <div class="add-dialog-tabs">
-    <span class="tab active">Expenses</span>
-    <span class="tab">Income</span>
-    <span class="tab">Transfer</span>
+    <span class="tab" [class.active]="activeTab === 'expenses'" (click)="onTabClick('expenses')">
+      Expenses <span class="tab-underline" *ngIf="activeTab === 'expenses'"></span>
+    </span>
+    <span class="tab" [class.active]="activeTab === 'income'" (click)="onTabClick('income')">
+      Income <span class="tab-underline" *ngIf="activeTab === 'income'"></span>
+    </span>
+    <span class="tab" [class.active]="activeTab === 'transfer'" (click)="onTabClick('transfer')">
+      Transfer <span class="tab-underline" *ngIf="activeTab === 'transfer'"></span>
+    </span>
   </div>
-  <div class="add-dialog-categories">
+  <div class="add-dialog-categories-scroll">
     <div class="category-grid">
       <div class="category-item" *ngFor="let cat of categories">
-        <img [src]="cat.icon" alt="{{cat.name}}" />
+        <div class="category-icon-wrap">
+          <img [src]="cat.icon" alt="{{cat.name}}" />
+        </div>
         <div class="category-label">{{cat.name}}</div>
       </div>
     </div>
   </div>
   <div class="add-dialog-account-row">
     <button class="account-btn">Cash</button>
-    <button class="tag-btn"><mat-icon>local_offer</mat-icon></button>
-    <button class="edit-btn"><mat-icon>edit</mat-icon></button>
-    <button class="bear-btn"><img src="assets/icons/bear.png" width="32" /></button>
   </div>
   <div class="add-dialog-note-row">
-    <button mat-icon-button><mat-icon>photo_camera</mat-icon></button>
+    <button mat-icon-button disabled><mat-icon>photo_camera</mat-icon></button>
     <input type="text" placeholder="Add a note" />
+    <span class="amount-block">
+      <span class="amount">{{displayAmount}}</span>
+      <span class="currency">VND</span>
+    </span>
   </div>
   <div class="add-dialog-keypad">
-    <div class="keypad-row" *ngFor="let row of keypad">
-      <button *ngFor="let key of row" class="keypad-btn">{{key}}</button>
-    </div>
-    <div class="keypad-bottom">
-      <span class="amount">0 VND</span>
-      <button class="today-btn">Today</button>
-      <button class="ok-btn"><mat-icon>check_circle</mat-icon></button>
+    <div class="keypad-row" *ngFor="let row of keypad; let i = index">
+      <ng-container *ngFor="let key of row; let j = index">
+        <button
+          class="keypad-btn"
+          [ngClass]="{
+            'ok-btn yellow': key === 'OK' && !isOperatorMode,
+            'equal-btn': key === 'OK' && isOperatorMode,
+            'today-btn': key === 'Today'
+          }"
+          (click)="onKeypadClick(isOperatorMode && key === 'OK' ? '=' : key)"
+          *ngIf="key !== 'OK'; else okButton"
+        >
+          {{isOperatorMode && key === 'OK' ? '=' : key}}
+        </button>
+        <ng-template #okButton>
+          <button
+            class="keypad-btn"
+            [ngClass]="{
+              'ok-btn yellow': !isOperatorMode,
+              'equal-btn': isOperatorMode
+            }"
+            (click)="onKeypadClick(isOperatorMode ? '=' : 'OK')"
+          >
+            <mat-icon *ngIf="!isOperatorMode">check_circle</mat-icon>
+            <span *ngIf="isOperatorMode">=</span>
+          </button>
+        </ng-template>
+      </ng-container>
     </div>
   </div>
 </div>

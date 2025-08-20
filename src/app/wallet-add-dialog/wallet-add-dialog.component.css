@@ -1,17 +1,23 @@
 .add-dialog-container {
   background: #fff;
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 0;
   width: 100%;
   max-width: 420px;
   margin: 0 auto;
+  box-shadow: 0 2px 16px #0002;
+  font-family: 'Roboto', Arial, sans-serif;
 }
 
 .add-dialog-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 16px 8px 16px;
+  padding: 18px 18px 0 18px;
+}
+
+.close-btn {
+  margin-right: 8px;
 }
 
 .add-dialog-wallet {
@@ -26,9 +32,10 @@
   display: flex;
   justify-content: flex-start;
   gap: 32px;
-  padding: 0 16px 8px 16px;
+  padding: 0 18px 8px 18px;
   font-size: 16px;
   font-weight: 500;
+  margin-top: 8px;
 }
 
 .tab {
@@ -36,23 +43,44 @@
   cursor: pointer;
   position: relative;
   padding-bottom: 2px;
+  font-weight: 500;
+  transition: color 0.2s;
 }
 
 .tab.active {
   color: #222;
-  font-weight: 600;
-  border-bottom: 2px solid #ffd600;
-  background: linear-gradient(90deg, #ffd600 60%, transparent 100%);
+  font-weight: 700;
+}
+
+.tab-underline {
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 4px;
+  background: #ffd600;
+  border-radius: 2px;
+  width: 100%;
 }
 
 .add-dialog-categories {
-  padding: 8px 16px;
+  padding: 8px 18px 0 18px;
+}
+
+.add-dialog-categories-scroll {
+  max-height: 180px;
+  min-height: 180px;
+  overflow-y: auto;
+  padding: 8px 18px 0 18px;
+  margin-bottom: 0;
+  box-sizing: border-box;
 }
 
 .category-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 16px 8px;
+  gap: 18px 8px;
 }
 
 .category-item {
@@ -60,27 +88,48 @@
   flex-direction: column;
   align-items: center;
   cursor: pointer;
+  user-select: none;
+}
+
+.category-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #fafbfc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  border: 2px solid #ffd60022;
 }
 
 .category-item img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #fafbfc;
-  margin-bottom: 4px;
+  width: 36px;
+  height: 36px;
 }
 
 .category-label {
   font-size: 13px;
   color: #222;
   text-align: center;
+  margin-top: 2px;
+  font-weight: 500;
 }
 
 .add-dialog-account-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 8px 18px 0 18px;
+}
+
+.add-dialog-account-row,
+.add-dialog-note-row,
+.add-dialog-keypad {
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  z-index: 2;
 }
 
 .account-btn, .tag-btn, .edit-btn, .bear-btn {
@@ -92,26 +141,59 @@
   color: #222;
   cursor: pointer;
   box-shadow: 0 1px 4px #0001;
+  display: flex;
+  align-items: center;
+}
+
+.bear-btn img {
+  width: 32px;
+  height: 32px;
 }
 
 .add-dialog-note-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 8px 18px 0 18px;
+  background: #fafbfc;
+  border-radius: 8px;
 }
 
 .add-dialog-note-row input {
   flex: 1;
   border: none;
   border-radius: 8px;
-  background: #fafbfc;
+  background: transparent;
   padding: 8px;
   font-size: 14px;
+  outline: none;
+}
+
+.amount-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 56px;
+  margin-left: 8px;
+}
+
+.amount {
+  font-size: 18px;
+  font-weight: 600;
+  color: #222;
+  line-height: 1;
+}
+
+.currency {
+  font-size: 12px;
+  color: #888;
+  text-decoration: underline;
+  margin-top: 2px;
+  letter-spacing: 1px;
 }
 
 .add-dialog-keypad {
-  padding: 8px 16px 16px 16px;
+  padding: 8px 18px 18px 18px;
 }
 
 .keypad-row {
@@ -129,6 +211,15 @@
   padding: 12px 0;
   box-shadow: 0 1px 4px #0001;
   cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.keypad-btn:active {
+  background: #ffd60022;
 }
 
 .keypad-bottom {
@@ -138,33 +229,72 @@
   margin-top: 8px;
 }
 
-.amount {
-  font-size: 18px;
-  font-weight: 600;
-  color: #222;
-}
-
 .today-btn {
-  background: #fafbfc;
-  border: none;
-  border-radius: 8px;
-  padding: 6px 16px;
-  font-size: 14px;
-  color: #222;
-  cursor: pointer;
+  background: #fafbfc !important;
+  color: #222 !important;
+  border-radius: 8px !important;
+  font-weight: 500;
+  box-shadow: 0 1px 4px #0001;
 }
 
 .ok-btn {
   background: #ffd600;
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   color: #222;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 26px;
   box-shadow: 0 2px 8px #ffd60088;
   cursor: pointer;
+}
+
+.ok-btn.yellow {
+  background: #ffd600 !important;
+  color: #222 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px #ffd60088;
+  font-size: 24px !important;
+  padding: 0 !important;
+}
+
+.ok-btn.yellow mat-icon {
+  font-size: 24px;
+  color: #222;
+}
+
+.equal-btn {
+  background: #fff !important;
+  color: #222 !important;
+  border-radius: 8px !important;
+  font-size: 24px !important;
+  border: 2px solid #ffd600;
+  box-shadow: 0 2px 8px #ffd60044;
+  padding: 0 !important;
+}
+
+@media (max-width: 480px) {
+  .add-dialog-container {
+    max-width: 100vw;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .add-dialog-header,
+  .add-dialog-tabs,
+  .add-dialog-categories-scroll,
+  .add-dialog-account-row,
+  .add-dialog-note-row,
+  .add-dialog-keypad {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  .category-grid {
+    gap: 12px 4px;
+  }
+  .add-dialog-categories-scroll {
+    max-height: 150px;
+  }
 }
