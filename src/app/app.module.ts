@@ -17,6 +17,7 @@ import { environment } from '../environments/environment';
 import { WalletComponent } from './wallet/wallet.component';
 import { WalletAddDialogComponent } from './wallet-add-dialog/wallet-add-dialog.component';
 import { CalendarDialogComponent } from './calendar-dialog/calendar-dialog.component';
+import { GameTimSoComponent } from './game-tim-so/game-tim-so.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { CalendarDialogComponent } from './calendar-dialog/calendar-dialog.compo
     WalletComponent,
     WalletAddDialogComponent, // Thêm WalletAddDialogComponent vào declarations
     ConfirmDialogComponent,
-    CalendarDialogComponent // Thêm CalendarDialogComponent vào declarations
+    CalendarDialogComponent, // Thêm CalendarDialogComponent vào declarations
+    GameTimSoComponent
   ],
   imports: [
     BrowserModule,
