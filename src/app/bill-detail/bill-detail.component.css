@@ -1,0 +1,99 @@
+.bill-detail-dialog {
+  background: #fff;
+  border-radius: 16px;
+  padding: 0 0 12px 0;
+  min-width: 300px;
+  max-width: 350px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  font-family: inherit;
+}
+
+.bill-detail-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px 0 8px;
+  border-bottom: none;
+  background: transparent;
+}
+
+.close-btn {
+  margin-right: 8px;
+}
+
+.bill-detail-title {
+  flex: 1;
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #222;
+  letter-spacing: 0.5px;
+}
+
+.bill-detail-header-spacer {
+  width: 40px;
+}
+
+.bill-detail-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.1rem;
+  padding: 12px 20px 0 20px;
+}
+
+.bill-detail-main .icon img {
+  border-radius: 50%;
+  background: #f5f5f5;
+  padding: 2px;
+}
+
+.bill-detail-main .category {
+  font-weight: 500;
+  color: #444;
+}
+
+.bill-detail-main .amount {
+  margin-left: auto;
+  font-weight: bold;
+  font-size: 1.15rem;
+}
+
+.bill-detail-main .expense { color: #d32f2f; }
+.bill-detail-main .income { color: #388e3c; }
+
+.bill-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 20px 0 20px;
+}
+
+.bill-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.98rem;
+  padding: 2px 0;
+}
+
+.bill-detail-row .label {
+  color: #888;
+}
+
+.bill-detail-row .value {
+  color: #222;
+  font-weight: 500;
+}
+
+.bill-detail-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin: 12px 16px 0 0;
+}
+
+hr {
+    border: none;
+    border-top: 1px dashed #ddd;
+    margin: 8px 0;
+}
