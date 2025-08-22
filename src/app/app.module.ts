@@ -18,6 +18,7 @@ import { WalletComponent } from './wallet/wallet.component';
 import { WalletAddDialogComponent } from './wallet-add-dialog/wallet-add-dialog.component';
 import { CalendarDialogComponent } from './calendar-dialog/calendar-dialog.component';
 import { BillDetailComponent } from './bill-detail/bill-detail.component';
+import { WalletConfirmDialogComponent } from './confirm-dialog/wallet-confirm-dialog.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { BillDetailComponent } from './bill-detail/bill-detail.component';
     WalletComponent,
     WalletAddDialogComponent, // Thêm WalletAddDialogComponent vào declarations
     ConfirmDialogComponent,
+    WalletConfirmDialogComponent,
     CalendarDialogComponent, // Thêm CalendarDialogComponent vào declarations
     BillDetailComponent // Thêm BillDetailComponent vào declarations
   ],
