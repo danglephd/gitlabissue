@@ -163,11 +163,26 @@ export class WalletComponent implements OnInit {
   }
 
   openBillDetail(tx: any) {
-    this.dialog.open(BillDetailComponent, {
+    const dialogRef = this.dialog.open(BillDetailComponent, {
       data: tx,
-      width: '350px',
-      panelClass: 'bill-detail-dialog-panel'
+      width: '350px'
     });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.action === 'delete' && result.id) {
+        this.deleteTransactionById(result.id);
+        this.loadTransactions(); // gọi lại hàm lấy danh sách transaction từ service
+      }
+    });
+  }
+
+  deleteTransactionById(id: string) {
+    this.moneyService.deleteTransactionFromLocalStorage(id);
+    this._snackBar.open('Transaction deleted successfully', 'Close', {
+      duration: 2000,
+      panelClass: ['snackbar-success']
+    });
+    this.loadTransactions();
   }
 }
 
