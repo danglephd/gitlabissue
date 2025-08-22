@@ -40,7 +40,7 @@
   </div>
   <div class="add-dialog-note-row">
     <button mat-icon-button disabled><mat-icon>photo_camera</mat-icon></button>
-    <input type="text" placeholder="Add a note" />
+    <input type="text" placeholder="Add a note" [(ngModel)]="note" />
     <span class="amount-block">
       <span [class]="amountClass">{{displayAmount}}</span>
       <span class="currency">VND</span>
