@@ -34,7 +34,9 @@
                     <span class="wallet-expense">↑ {{ group.totalExpense | number:'1.0-0' }}</span>
                     <span class="wallet-income">↓ {{ group.totalIncome | number:'1.0-0' }}</span>
                 </div>
-                <div *ngFor="let tx of group.transactions" class="wallet-transaction">
+                <div *ngFor="let tx of group.transactions" class="wallet-transaction"
+                     [ngClass]="{'income': tx.isIncome(), 'expense': tx.isExpense()}"
+                     (click)="openBillDetail(tx)">
                     <span class="wallet-icon">
                         <img [src]="getIcon(tx.category)" alt="{{tx.category}}" width="32" height="32" />
                     </span>

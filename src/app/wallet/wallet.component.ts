@@ -8,6 +8,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { moneyTransactionCsvService } from '../services/wallet.realtimedb.service';
 import { MoneyTransactionClass } from '../shared/models/money-transaction';
 import { WalletAddDialogComponent } from '../wallet-add-dialog/wallet-add-dialog.component';
+import { BillDetailComponent } from '../bill-detail/bill-detail.component';
 
 @Component({
   selector: 'app-wallet',
@@ -158,6 +159,14 @@ export class WalletComponent implements OnInit {
       if (reload) {
         this.loadTransactions(); // gọi lại hàm lấy danh sách transaction từ service
       }
+    });
+  }
+
+  openBillDetail(tx: any) {
+    this.dialog.open(BillDetailComponent, {
+      data: tx,
+      width: '350px',
+      panelClass: 'bill-detail-dialog-panel'
     });
   }
 }
