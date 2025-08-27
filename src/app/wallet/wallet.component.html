@@ -3,54 +3,57 @@
         <div class="header">
             <h1>Free Wallet</h1>
         </div>
-        <div class="wallet-summary-bar">
-            <div class="wallet-summary-header">
-                <select [(ngModel)]="selectedMonthYear" (change)="onMonthYearChange($event)" class="month-select">
-                    <option *ngFor="let m of monthYearOptions" [value]="m.value">{{ m.label }}</option>
-                </select>
-                <button mat-icon-button class="calendar-btn" (click)="openCalendarDialog()">
-                    <mat-icon>calendar_today</mat-icon>
-                </button>
-            </div>
-            <div class="wallet-summary-content">
-                <div class="wallet-summary-item expense">
-                    <span class="label"><mat-icon style="font-size:16px;vertical-align:middle;color:#e53935;">arrow_upward</mat-icon> Expense
+        <div class="wallet-content-container">
+            <div class="wallet-summary-bar">
+                <div class="wallet-summary-header">
+                    <span class="month-label" (click)="openCalendarDialog()">
+                        {{ getMonthLabel(selectedMonthYear) }}
+                        <mat-icon style="font-size:16px;vertical-align:middle;">arrow_drop_down</mat-icon>
                     </span>
-                    <span class="value">đ{{ totalExpense | number:'1.0-0' }}</span>
+                    <button mat-icon-button class="calendar-btn" (click)="openCalendarDialog()">
+                        <mat-icon>calendar_today</mat-icon>
+                    </button>
                 </div>
-                <div class="wallet-summary-item income">
-                    <span class="label"><mat-icon style="font-size:16px;vertical-align:middle;color:#43a047;">arrow_downward</mat-icon>
-                        Income
-                    </span>
-                    <span class="value">đ{{ totalIncome | number:'1.0-0' }}</span>
-                </div>
-                <div class="wallet-summary-item balance">
-                    <span class="label">Balance</span>
-                    <span class="value">đ{{ (totalIncome - totalExpense) | number:'1.0-0' }}</span>
-                </div>
-            </div>
-        </div>
-        <div class="wallet-list">
-            <div *ngFor="let group of walletGroups" class="wallet-day-group">
-                <div class="wallet-day-header">
-                    <span class="wallet-day-label">{{ group.dayLabel }}</span>
-                    <span class="wallet-expense">↑ {{ group.totalExpense | number:'1.0-0' }}</span>
-                    <span class="wallet-income">↓ {{ group.totalIncome | number:'1.0-0' }}</span>
-                </div>
-                <div *ngFor="let tx of group.transactions" class="wallet-transaction"
-                     [ngClass]="{'income': tx.isIncome(), 'expense': tx.isExpense()}"
-                     (click)="openBillDetail(tx)">
-                    <span class="wallet-icon">
-                        <img [src]="getIcon(tx.category)" alt="{{tx.category}}" width="32" height="32" />
-                    </span>
-                    <div class="wallet-info">
-                        <div class="wallet-title">{{ tx.category }}</div>
-                        <div class="wallet-note" *ngIf="tx.notes">{{ tx.notes }}</div>
+                <div class="wallet-summary-content">
+                    <div class="wallet-summary-item expense">
+                        <span class="label"><mat-icon style="font-size:16px;vertical-align:middle;color:#e53935;">arrow_upward</mat-icon> Expense
+                        </span>
+                        <span class="value">đ{{ totalExpense | number:'1.0-0' }}</span>
                     </div>
-                    <div class="wallet-amount" [ngClass]="{'income': tx.isIncome(), 'expense': tx.isExpense()}">
-                        {{ tx.isIncome() ? '+' : '-' }}{{ tx.amount | number:'1.0-0' }}
+                    <div class="wallet-summary-item income">
+                        <span class="label"><mat-icon style="font-size:16px;vertical-align:middle;color:#43a047;">arrow_downward</mat-icon>
+                            Income
+                        </span>
+                        <span class="value">đ{{ totalIncome | number:'1.0-0' }}</span>
                     </div>
-                    <div class="wallet-time">{{ tx.date | date:'shortTime' }}</div>
+                    <div class="wallet-summary-item balance">
+                        <span class="label">Balance</span>
+                        <span class="value">đ{{ (totalIncome - totalExpense) | number:'1.0-0' }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="wallet-list">
+                <div *ngFor="let group of walletGroups" class="wallet-day-group">
+                    <div class="wallet-day-header">
+                        <span class="wallet-day-label">{{ group.dayLabel }}</span>
+                        <span class="wallet-expense">↑ {{ group.totalExpense | number:'1.0-0' }}</span>
+                        <span class="wallet-income">↓ {{ group.totalIncome | number:'1.0-0' }}</span>
+                    </div>
+                    <div *ngFor="let tx of group.transactions" class="wallet-transaction"
+                         [ngClass]="{'income': tx.isIncome(), 'expense': tx.isExpense()}"
+                         (click)="openBillDetail(tx)">
+                        <span class="wallet-icon">
+                            <img [src]="getIcon(tx.category)" alt="{{tx.category}}" width="32" height="32" />
+                        </span>
+                        <div class="wallet-info">
+                            <div class="wallet-title">{{ tx.category }}</div>
+                            <div class="wallet-note" *ngIf="tx.notes">{{ tx.notes }}</div>
+                        </div>
+                        <div class="wallet-amount" [ngClass]="{'income': tx.isIncome(), 'expense': tx.isExpense()}">
+                            {{ tx.isIncome() ? '+' : '-' }}{{ tx.amount | number:'1.0-0' }}
+                        </div>
+                        <div class="wallet-time">{{ tx.date | date:'shortTime' }}</div>
+                    </div>
                 </div>
             </div>
         </div>

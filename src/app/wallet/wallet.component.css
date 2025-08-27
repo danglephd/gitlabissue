@@ -40,6 +40,12 @@ table {
   padding-bottom: 60px; /* Để không che mất nội dung bởi bottom nav */
 }
 
+.wallet-content-container {
+  max-width: 420px; /* hoặc giá trị bạn dùng cho wallet-list */
+  margin: 0 auto;
+  width: 100%;
+}
+
 .wallet-day-group {
   margin-bottom: 24px;
   background: #fff;
@@ -251,13 +257,17 @@ table {
   flex-direction: column;
   align-items: stretch;
   gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .wallet-summary-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   margin-bottom: 6px;
+  position: relative;
+  min-height: 40px;
 }
 
 .month-select {
@@ -273,7 +283,10 @@ table {
 }
 
 .calendar-btn {
-  margin-left: 4px;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .wallet-summary-content {
@@ -313,6 +326,17 @@ table {
 .wallet-summary-item.balance .value {
   color: #222;
   font-weight: bold;
+}
+
+.month-label {
+  font-size: 1.15rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  user-select: none;
+  margin: 0 auto;
 }
 
 @media (max-width: 768px) {
