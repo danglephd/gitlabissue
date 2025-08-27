@@ -1,10 +1,6 @@
-import { Component, OnInit, HostListener, ViewChild } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
 import { moneyTransactionCsvService } from '../services/wallet.realtimedb.service';
 import { MoneyTransactionClass } from '../shared/models/money-transaction';
 import { WalletAddDialogComponent } from '../wallet-add-dialog/wallet-add-dialog.component';
@@ -17,36 +13,19 @@ import { SelectMonthDialogComponent } from '../select-month-dialog/select-month-
   styleUrls: ['./wallet.component.css']
 })
 export class WalletComponent implements OnInit {
-  isSidebarOpen = false;
   isSidebarCollapsed = false;
   isMobile = false;
   isLoading = false;
-  noData = false;
   walletGroups: WalletDayGroup[] = [];
-  displayedColumns: string[] = [
-    'category',
-    'amount',
-    'currency',
-    'date',
-  ];
-  dataSource: MatTableDataSource<MoneyTransactionClass>;
-
   totalExpense = 0;
   totalIncome = 0;
+  selectedMonthYear = '';
 
-  selectedMonthYear = ''; // '2024-08'
-  monthYearOptions = [
-    // Sinh tự động hoặc lấy từ service
-    { value: '2024-08', label: 'Aug 2024' },
-    { value: '2024-07', label: 'Jul 2024' },
-    // ...
-  ];
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-
-  constructor(private moneyService: moneyTransactionCsvService, private _snackBar: MatSnackBar, private dialog: MatDialog) {
-    this.dataSource = new MatTableDataSource();
+  constructor(
+    private moneyService: moneyTransactionCsvService,
+    private _snackBar: MatSnackBar,
+    private dialog: MatDialog
+  ) {
     this.checkScreenSize();
   }
 
@@ -54,18 +33,12 @@ export class WalletComponent implements OnInit {
   checkScreenSize() {
     this.isMobile = window.innerWidth <= 768;
     if (!this.isMobile) {
-      this.isSidebarOpen = true;
       this.isSidebarCollapsed = false;
     }
   }
 
-  toggleSidebar() {
-    this.isSidebarOpen = !this.isSidebarOpen;
-  }
-
   ngOnInit(): void {
     this.isLoading = true;
-    this.monthYearOptions = this.moneyService.getMonthYearOptions();
     const now = new Date();
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
@@ -73,20 +46,8 @@ export class WalletComponent implements OnInit {
     this.loadTransactions();
   }
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-
   getIcon(category: string): string {
-    switch (category.toLowerCase()) {
-      case 'salary': return 'assets/icons/gitlab.svg';
-      case 'gas': return 'assets/icons/gitlab.svg';
-      case 'meat': return 'assets/icons/gitlab.svg';
-      case 'vcb': return 'assets/icons/gitlab.svg';
-      case 'momo': return 'assets/icons/gitlab.svg';
-      default: return 'assets/icons/gitlab.svg';
-    }
+    return 'assets/icons/gitlab.svg';
   }
 
   loadTransactions() {
@@ -95,9 +56,7 @@ export class WalletComponent implements OnInit {
     this.moneyService.filterByMonthYear(+month, +year).subscribe(
       transactions => {
         transactions.sort((a, b) => b.date.getTime() - a.date.getTime());
-        this.dataSource.data = transactions;
 
-        // Tính tổng thu chi của tháng
         this.totalExpense = transactions
           .filter(t => t.isExpense())
           .reduce((sum, t) => sum + t.amount, 0);
@@ -105,7 +64,6 @@ export class WalletComponent implements OnInit {
           .filter(t => t.isIncome())
           .reduce((sum, t) => sum + t.amount, 0);
 
-        // Group transactions by date
         const grouped = transactions.reduce((acc: { [key: string]: MoneyTransactionClass[] }, t: MoneyTransactionClass) => {
           const key = t.date.toISOString().slice(0, 10);
           if (!acc[key]) acc[key] = [];
@@ -114,7 +72,7 @@ export class WalletComponent implements OnInit {
         }, {});
 
         this.walletGroups = [];
-        const sortedDates = Object.keys(grouped).sort().reverse(); // giảm dần
+        const sortedDates = Object.keys(grouped).sort().reverse();
         for (const date of sortedDates) {
           const txs = grouped[date];
           const totalIncome = txs.filter((t: MoneyTransactionClass) => t.isIncome())
@@ -140,14 +98,10 @@ export class WalletComponent implements OnInit {
   formatDayLabel(dateString: string): string {
     const date = new Date(dateString);
     const today = new Date();
-
-    // Chỉ lấy phần ngày, bỏ giờ/phút/giây
     const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
     const diffTime = todayOnly.getTime() - dateOnly.getTime();
     const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-
     let label = '';
     if (diffDays === 0) {
       label = 'Today';
@@ -156,16 +110,14 @@ export class WalletComponent implements OnInit {
     } else {
       label = date.toLocaleString('default', { month: 'short', day: 'numeric' });
     }
-
     label += ` ${date.toLocaleString('default', { weekday: 'short' })}`;
-
     return label;
   }
 
-  onMonthYearChange(event: any) {
+  onMonthYearChange() {
     this.loadTransactions();
   }
-  
+
   filterTransactionsByMonthYear(selectedMonthYear: string) {
     this.selectedMonthYear = selectedMonthYear;
     this.loadTransactions();
@@ -190,7 +142,7 @@ export class WalletComponent implements OnInit {
       panelClass: 'wallet-add-dialog-panel'
     }).afterClosed().subscribe(reload => {
       if (reload) {
-        this.loadTransactions(); // gọi lại hàm lấy danh sách transaction từ service
+        this.loadTransactions();
       }
     });
   }
@@ -204,9 +156,9 @@ export class WalletComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.action === 'delete' && result.id) {
         this.deleteTransactionById(result.id);
-        this.loadTransactions(); // gọi lại hàm lấy danh sách transaction từ service
+        this.loadTransactions();
       } else if (result && result.action === 'edit') {
-        this.loadTransactions(); // gọi lại hàm lấy danh sách transaction từ service
+        this.loadTransactions();
       }
     });
   }
