@@ -168,4 +168,22 @@ export class moneyTransactionCsvService {
     transactions = transactions.filter(tx => tx.id !== id);
     localStorage.setItem('transactions', JSON.stringify(transactions));
   }
+
+  getMonthYearOptions(): { value: string, label: string }[] {
+    // Lấy từ dữ liệu thực tế, ví dụ:
+    const data = localStorage.getItem('transactions');
+    const transactions: MoneyTransactionClass[] = data ? JSON.parse(data) : [];
+    const set = new Set<string>();
+    transactions.forEach(tx => {
+      const d = new Date(tx.date);
+      const value = `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,'0')}`;
+      set.add(value);
+    });
+    // Sắp xếp giảm dần
+    const arr = Array.from(set).sort((a, b) => b.localeCompare(a));
+    return arr.map(v => ({
+      value: v,
+      label: `${new Date(v + '-01').toLocaleString('default', { month: 'short' })} ${v.slice(0,4)}`
+    }));
+  }
 }
