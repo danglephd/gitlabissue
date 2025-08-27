@@ -1,0 +1,54 @@
+<div class="calendar-container">
+  <div class="calendar-header">
+    <button mat-icon-button class="back-btn" (click)="prevMonth()"><mat-icon>arrow_back</mat-icon></button>
+    <span class="calendar-title">{{ monthLabel }}</span>
+    <button mat-icon-button class="next-btn" (click)="nextMonth()"><mat-icon>arrow_forward</mat-icon></button>
+  </div>
+  <div class="calendar-table">
+    <div class="calendar-weekdays">
+      <span *ngFor="let d of ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']">{{d}}</span>
+    </div>
+    <div class="calendar-days">
+      <ng-container *ngFor="let week of weeks">
+        <ng-container *ngFor="let day of week">
+          <span
+            class="calendar-day"
+            [class.empty]="!day.isCurrentMonth"
+            [class.selected]="selectedDay?.date?.getTime() === day.date?.getTime()"
+            [class.today]="day.isToday"
+            (click)="selectDay(day)">
+            <ng-container *ngIf="day.isCurrentMonth">
+              <span class="day-number">{{ day.day }}</span>
+              <span class="day-values">
+                <span *ngIf="day.expense" class="expense">-{{ day.expense | number:'1.0-0' }}</span>
+                <span *ngIf="day.income" class="income">+{{ day.income | number:'1.0-0' }}</span>
+              </span>
+            </ng-container>
+          </span>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+  <div class="calendar-summary">
+    Expenses: <span class="expense">đ2,872,000</span>
+    Income: <span class="income">đ2,225,910</span>
+    <br>
+    Balance: <span class="balance">-đ646,090</span>
+  </div>
+  <div class="calendar-detail" *ngIf="selectedDay">
+    <div class="calendar-detail-header">
+      {{ selectedDay.date ? (selectedDay.date | date:'fullDate') : '' }}
+      <span *ngIf="selectedDay.expense" class="expense">↑ đ{{ selectedDay.expense | number:'1.0-0' }}</span>
+      <span *ngIf="selectedDay.income" class="income">↓ đ{{ selectedDay.income | number:'1.0-0' }}</span>
+    </div>
+    <div class="calendar-detail-list">
+      <div class="calendar-detail-item" *ngIf="selectedDay.income">
+        <span class="icon"><img src="assets/icons/coin.svg" width="32"></span>
+        <span class="name">Dividend</span>
+        <span class="amount income">+đ{{ selectedDay.income | number:'1.0-0' }}</span>
+        <span class="time">12:41 PM</span>
+      </div>
+      <!-- Thêm các item khác nếu cần -->
+    </div>
+  </div>
+</div>

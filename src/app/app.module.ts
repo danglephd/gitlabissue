@@ -20,6 +20,7 @@ import { CalendarDialogComponent } from './calendar-dialog/calendar-dialog.compo
 import { BillDetailComponent } from './bill-detail/bill-detail.component';
 import { WalletConfirmDialogComponent } from './confirm-dialog/wallet-confirm-dialog.component';
 import { SelectMonthDialogComponent } from './select-month-dialog/select-month-dialog.component';
+import { WalletCalendarComponent } from './wallet-calendar/wallet-calendar.component';
 
 
 @NgModule({
@@ -32,7 +33,8 @@ import { SelectMonthDialogComponent } from './select-month-dialog/select-month-d
     WalletConfirmDialogComponent,
     CalendarDialogComponent, // Thêm CalendarDialogComponent vào declarations
     BillDetailComponent, // Thêm BillDetailComponent vào declarations
-    SelectMonthDialogComponent
+    SelectMonthDialogComponent,
+    WalletCalendarComponent
   ],
   imports: [
     BrowserModule,
