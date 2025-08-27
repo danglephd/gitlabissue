@@ -172,6 +172,8 @@ export class WalletComponent implements OnInit {
       if (result && result.action === 'delete' && result.id) {
         this.deleteTransactionById(result.id);
         this.loadTransactions(); // gọi lại hàm lấy danh sách transaction từ service
+      } else if (result && result.action === 'edit') {
+        this.loadTransactions(); // gọi lại hàm lấy danh sách transaction từ service
       }
     });
   }
