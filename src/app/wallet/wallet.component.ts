@@ -33,6 +33,14 @@ export class WalletComponent implements OnInit {
   totalExpense = 0;
   totalIncome = 0;
 
+  selectedMonthYear = ''; // ví dụ: '2024-08'
+  monthYearOptions = [
+    // Sinh tự động hoặc lấy từ service
+    { value: '2024-08', label: 'Aug 2024' },
+    { value: '2024-07', label: 'Jul 2024' },
+    // ...
+  ];
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -148,6 +156,19 @@ export class WalletComponent implements OnInit {
     label += ` ${date.toLocaleString('default', { weekday: 'short' })}`;
 
     return label;
+  }
+
+  onMonthYearChange(event: any) {
+    // Lọc lại transaction theo tháng/năm đã chọn
+    this.filterTransactionsByMonthYear(this.selectedMonthYear);
+  }
+  
+  filterTransactionsByMonthYear(selectedMonthYear: string) {
+    throw new Error('Method not implemented.');
+  }
+
+  openCalendarDialog() {
+    // Mở dialog chọn ngày/tháng
   }
 
   openAddDialog() {

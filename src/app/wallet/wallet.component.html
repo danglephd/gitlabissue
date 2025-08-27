@@ -1,30 +1,33 @@
 <div class="app-container">
-    <div class="sidebar" [class.sidebar-open]="isSidebarOpen" [class.collapsed]="isSidebarCollapsed">
-        <div class="sidebar-header">
-            <h2>Search Filters</h2>
-            <div>
-                <button mat-icon-button class="close-button" (click)="toggleSidebar()" *ngIf="isMobile">
-                    <!-- <mat-icon>close</mat-icon> -->
-                </button>
-            </div>
-        </div>
-    </div>
-
     <div class="main-content" [class.expanded]="isSidebarCollapsed">
         <div class="header">
-            <button mat-icon-button class="menu-button" (click)="toggleSidebar()" *ngIf="isMobile">
-                <mat-icon>menu</mat-icon>
-            </button>
             <h1>Free Wallet</h1>
         </div>
-        <div class="wallet-summary">
-            <div class="wallet-summary-item expense">
-                <span class="label">Chi:</span>
-                <span class="value">-{{ totalExpense | number:'1.0-0' }} VND</span>
+        <div class="wallet-summary-bar">
+            <div class="wallet-summary-header">
+                <select [(ngModel)]="selectedMonthYear" (change)="onMonthYearChange($event)" class="month-select">
+                    <option *ngFor="let m of monthYearOptions" [value]="m.value">{{ m.label }}</option>
+                </select>
+                <button mat-icon-button class="calendar-btn" (click)="openCalendarDialog()">
+                    <mat-icon>calendar_today</mat-icon>
+                </button>
             </div>
-            <div class="wallet-summary-item income">
-                <span class="label">Thu:</span>
-                <span class="value">+{{ totalIncome | number:'1.0-0' }} VND</span>
+            <div class="wallet-summary-content">
+                <div class="wallet-summary-item expense">
+                    <span class="label"><mat-icon style="font-size:16px;vertical-align:middle;color:#e53935;">arrow_upward</mat-icon> Expense
+                    </span>
+                    <span class="value">đ{{ totalExpense | number:'1.0-0' }}</span>
+                </div>
+                <div class="wallet-summary-item income">
+                    <span class="label"><mat-icon style="font-size:16px;vertical-align:middle;color:#43a047;">arrow_downward</mat-icon>
+                        Income
+                    </span>
+                    <span class="value">đ{{ totalIncome | number:'1.0-0' }}</span>
+                </div>
+                <div class="wallet-summary-item balance">
+                    <span class="label">Balance</span>
+                    <span class="value">đ{{ (totalIncome - totalExpense) | number:'1.0-0' }}</span>
+                </div>
             </div>
         </div>
         <div class="wallet-list">
