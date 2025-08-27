@@ -97,3 +97,7 @@ hr {
     border-top: 1px dashed #ddd;
     margin: 8px 0;
 }
+
+::ng-deep .mat-dialog-container {
+  padding: 0 !important;
+}
