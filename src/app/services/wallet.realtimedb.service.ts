@@ -152,11 +152,11 @@ export class moneyTransactionCsvService {
   }
 
   // Sửa transaction theo id
-  updateTransactionInLocalStorage(updatedTx: MoneyTransactionClass): void {
+  updateTransactionInLocalStorage(updatedTx: MoneyTransactionClass, id: any): void {
     const data = localStorage.getItem('transactions');
     let transactions: MoneyTransactionClass[] = data ? JSON.parse(data) : [];
     transactions = transactions.map(tx =>
-      tx.id === updatedTx.id ? updatedTx : tx
+      tx.id === id ? updatedTx : tx
     );
     localStorage.setItem('transactions', JSON.stringify(transactions));
   }
