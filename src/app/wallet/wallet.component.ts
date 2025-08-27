@@ -9,6 +9,7 @@ import { moneyTransactionCsvService } from '../services/wallet.realtimedb.servic
 import { MoneyTransactionClass } from '../shared/models/money-transaction';
 import { WalletAddDialogComponent } from '../wallet-add-dialog/wallet-add-dialog.component';
 import { BillDetailComponent } from '../bill-detail/bill-detail.component';
+import { SelectMonthDialogComponent } from '../select-month-dialog/select-month-dialog.component';
 
 @Component({
   selector: 'app-wallet',
@@ -33,7 +34,7 @@ export class WalletComponent implements OnInit {
   totalExpense = 0;
   totalIncome = 0;
 
-  selectedMonthYear = ''; // ví dụ: '2024-08'
+  selectedMonthYear = ''; // '2024-08'
   monthYearOptions = [
     // Sinh tự động hoặc lấy từ service
     { value: '2024-08', label: 'Aug 2024' },
@@ -64,6 +65,11 @@ export class WalletComponent implements OnInit {
 
   ngOnInit(): void {
     this.isLoading = true;
+    this.monthYearOptions = this.moneyService.getMonthYearOptions();
+    const now = new Date();
+    const month = now.getMonth() + 1;
+    const year = now.getFullYear();
+    this.selectedMonthYear = `${year}-${month.toString().padStart(2, '0')}`;
     this.loadTransactions();
   }
 
@@ -84,11 +90,9 @@ export class WalletComponent implements OnInit {
   }
 
   loadTransactions() {
-    const now = new Date();
-    const month = now.getMonth() + 1;
-    const year = now.getFullYear();
-
-    this.moneyService.filterByMonthYear(month, year).subscribe(
+    if (!this.selectedMonthYear) return;
+    const [year, month] = this.selectedMonthYear.split('-');
+    this.moneyService.filterByMonthYear(+month, +year).subscribe(
       transactions => {
         transactions.sort((a, b) => b.date.getTime() - a.date.getTime());
         this.dataSource.data = transactions;
@@ -159,16 +163,24 @@ export class WalletComponent implements OnInit {
   }
 
   onMonthYearChange(event: any) {
-    // Lọc lại transaction theo tháng/năm đã chọn
-    this.filterTransactionsByMonthYear(this.selectedMonthYear);
+    this.loadTransactions();
   }
   
   filterTransactionsByMonthYear(selectedMonthYear: string) {
-    throw new Error('Method not implemented.');
+    this.selectedMonthYear = selectedMonthYear;
+    this.loadTransactions();
   }
 
   openCalendarDialog() {
-    // Mở dialog chọn ngày/tháng
+    const [year, month] = this.selectedMonthYear.split('-').map(Number);
+    this.dialog.open(SelectMonthDialogComponent, {
+      data: { year, month }
+    }).afterClosed().subscribe(result => {
+      if (result && result.year && result.month) {
+        this.selectedMonthYear = `${result.year}-${result.month.toString().padStart(2, '0')}`;
+        this.loadTransactions();
+      }
+    });
   }
 
   openAddDialog() {
@@ -206,6 +218,13 @@ export class WalletComponent implements OnInit {
       panelClass: ['snackbar-success']
     });
     this.loadTransactions();
+  }
+
+  getMonthLabel(val: string) {
+    if (!val) return '';
+    const [year, month] = val.split('-');
+    const date = new Date(Number(year), Number(month)-1, 1);
+    return date.toLocaleString('default', { month: 'short' }) + ' ' + year;
   }
 }
 
