@@ -1,5 +1,5 @@
-import { Component, HostListener } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Component, HostListener, Inject } from '@angular/core';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CalendarDialogComponent } from '../calendar-dialog/calendar-dialog.component';
 import { moneyTransactionCsvService } from '../services/wallet.realtimedb.service';
 import { MoneyTransactionClass } from '../shared/models/money-transaction';
@@ -20,30 +20,27 @@ export class WalletAddDialogComponent {
     ['÷', '', 'OK', ''] // vị trí thứ 2 sẽ là Today
   ];
 
-  expensesCategories = [
-    { name: 'Meat', icon: 'assets/icons/gitlab.svg' },
-    { name: 'Gas', icon: 'assets/icons/gitlab.svg' },
-    { name: 'Trans', icon: 'assets/icons/gitlab.svg' },
-    { name: 'Elderly', icon: 'assets/icons/gitlab.svg' },
-    { name: 'Beverages', icon: 'assets/icons/gitlab.svg' },
-    { name: 'Travel', icon: 'assets/icons/gitlab.svg' },
-    { name: 'Rent', icon: 'assets/icons/gitlab.svg' },
-    { name: 'Drink', icon: 'assets/icons/gitlab.svg' },
-    { name: 'Lottery', icon: 'assets/icons/gitlab.svg' },
-    { name: 'Child', icon: 'assets/icons/gitlab.svg' },
-    { name: 'Stationery', icon: 'assets/icons/gitlab.svg' },
-    { name: 'Medical', icon: 'assets/icons/gitlab.svg' },
-    { name: 'Gift', icon: 'assets/icons/gitlab.svg' },
-    { name: 'Books', icon: 'assets/icons/gitlab.svg' },
-    { name: 'Edit', icon: 'assets/icons/gitlab.svg' }
+  expensesCategories = [{ name: 'Drink', icon: 'assets/icons/gitlab.svg' },
+  { name: 'Food', icon: 'assets/icons/gitlab.svg' },
+  { name: 'Gas', icon: 'assets/icons/gitlab.svg' },
+  { name: 'Health', icon: 'assets/icons/gitlab.svg' },
+  { name: 'Meat', icon: 'assets/icons/gitlab.svg' },
+  { name: 'Snacks', icon: 'assets/icons/gitlab.svg' },
+  { name: 'Transport', icon: 'assets/icons/gitlab.svg' },
+  { "name": "Child", "icon": "assets/icons/gitlab.svg" },
+  { "name": "Rent", "icon": "assets/icons/gitlab.svg" },
+  { "name": "Beverages", "icon": "assets/icons/gitlab.svg" },
+  { "name": "Stationery", "icon": "assets/icons/gitlab.svg" },
+  { "name": "Lottery", "icon": "assets/icons/gitlab.svg" },
+  { "name": "Elderly", "icon": "assets/icons/gitlab.svg" }
   ];
 
   incomeCategories = [
-    { name: 'Salary', icon: 'assets/icons/gitlab.svg' },
-    { name: 'Bonus', icon: 'assets/icons/gitlab.svg' },
-    { name: 'Interest', icon: 'assets/icons/gitlab.svg' },
-    { name: 'Gift', icon: 'assets/icons/gitlab.svg' },
-    { name: 'Other', icon: 'assets/icons/gitlab.svg' }
+    { "name": "Salary", "icon": "assets/icons/gitlab.svg" },
+    { "name": "Bonus", "icon": "assets/icons/gitlab.svg" },
+    { "name": "Interest", "icon": "assets/icons/gitlab.svg" },
+    { "name": "Gift", "icon": "assets/icons/gitlab.svg" },
+    { "name": "Other", "icon": "assets/icons/gitlab.svg" }
   ];
 
   transferCategories = [
@@ -67,6 +64,7 @@ export class WalletAddDialogComponent {
   selectedTransferCategory: any = this.transferCategories[0];
 
   note: string = ''; // Biến lưu trữ ghi chú
+  editedTransaction: any;
 
   get displayAmount(): string {
     // Format số với dấu phẩy phân cách hàng nghìn
@@ -117,12 +115,19 @@ export class WalletAddDialogComponent {
         ledger: '',
         tags: '',
         includedInBudget: true,
-        id: this.generateId(false, '', this.activeTab, 'Cash'),
+        id: this.generateId(this.data.isEdit, '', this.activeTab, 'Cash'),
         image: '',
         amount: parseFloat(this.amount.replace(/,/g, ''))
       });
-      this.walletService.addTransactionToLocalStorage(newTx);
-      this.dialogRef.close(true);
+      if (this.data.isEdit) {
+        this.walletService.updateTransactionInLocalStorage(newTx, this.data.id);
+        console.log('Updated transaction:', newTx);
+        
+      }else{
+        this.walletService.addTransactionToLocalStorage(newTx);
+        console.log('Saved transaction:', newTx);
+      }
+      this.dialogRef.close({ action: 'save', transaction: newTx });
       return;
     }
     if (key === '⌫') {
@@ -314,11 +319,59 @@ export class WalletAddDialogComponent {
   constructor(
     private dialogRef: MatDialogRef<WalletAddDialogComponent>,
     private dialog: MatDialog,
-    private walletService: moneyTransactionCsvService
-  ) { }
+    private walletService: moneyTransactionCsvService,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {
+    // Nếu là edit, gán dữ liệu vào các biến
+    if (data && data.isEdit) {
+      this.activeTab = data.billType.toLowerCase() || 'expenses';
+      this.note = data.notes || '';
+      this.amount = data.amount ? data.amount.toString() : '';
+      this.selectedDate = data.date ? new Date(data.date) : new Date();
+
+      // Chọn đúng categories array
+      if (this.activeTab === 'expenses') {
+        this.categories = this.expensesCategories;
+        // Gán đúng category đang chọn
+        this.selectedCategory = this.categories.find(
+          c => c.name === data.category
+        ) || this.categories[0];
+      } else if (this.activeTab === 'income') {
+        this.categories = this.incomeCategories;
+        // Gán đúng category đang chọn
+        this.selectedIncomeCategory = this.categories.find(
+          c => c.name === data.category
+        ) || this.categories[0];
+      } else {
+
+        this.categories = this.transferCategories;
+      }
+    }
+  }
 
   onClose() {
     this.dialogRef.close();
+  }
+
+  patchFormWithData(data: any) {
+    this.amount = data.amount ? data.amount.toString() : '0';
+    this.note = data.notes || '';
+    this.selectedDate = data.date ? new Date(data.date) : new Date();
+
+    // Chọn đúng category theo tab
+    if (data.billType === 'expenses') {
+      this.activeTab = 'expenses';
+      this.categories = this.expensesCategories;
+      this.selectedCategory = this.expensesCategories.find(c => c.name === data.category) || this.expensesCategories[0];
+    } else if (data.billType === 'income') {
+      this.activeTab = 'income';
+      this.categories = this.incomeCategories;
+      this.selectedIncomeCategory = this.incomeCategories.find(c => c.name === data.category) || this.incomeCategories[0];
+    } else if (data.billType === 'transfer') {
+      this.activeTab = 'transfer';
+      this.categories = this.transferCategories;
+      this.selectedTransferCategory = this.transferCategories.find(c => c.name === data.category) || this.transferCategories[0];
+    }
   }
 
   // Thêm hàm sinh id duy nhất cho mỗi transaction:
