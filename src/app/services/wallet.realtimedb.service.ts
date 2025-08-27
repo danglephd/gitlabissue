@@ -186,4 +186,27 @@ export class moneyTransactionCsvService {
       label: `${new Date(v + '-01').toLocaleString('default', { month: 'short' })} ${v.slice(0,4)}`
     }));
   }
+
+  // Thêm hàm này vào moneyTransactionCsvService
+  getDayDataByMonthYear(month: number, year: number): { [key: string]: { expense?: number, income?: number } } {
+    const data = localStorage.getItem('transactions');
+    if (!data) return {};
+    const transactions: MoneyTransactionClass[] = JSON.parse(data).map((obj: any) => new MoneyTransactionClass(obj));
+    const result: { [key: string]: { expense?: number, income?: number } } = {};
+
+    transactions.forEach(tx => {
+      const txDate = new Date(tx.date);
+      if (txDate.getMonth() + 1 === month && txDate.getFullYear() === year) {
+        const key = `${txDate.getFullYear()}-${(txDate.getMonth() + 1).toString().padStart(2, '0')}-${txDate.getDate().toString().padStart(2, '0')}`;
+        if (!result[key]) result[key] = {};
+        if (tx.billType.toLowerCase() === 'expenses') {
+          result[key].expense = (result[key].expense || 0) + Math.abs(tx.amount);
+        } else if (tx.billType.toLowerCase() === 'income') {
+          result[key].income = (result[key].income || 0) + tx.amount;
+        }
+      }
+    });
+
+    return result;
+  }
 }
