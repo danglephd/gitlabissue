@@ -34,6 +34,10 @@ export class WalletCalendarComponent implements OnInit {
     this.year = today.getFullYear();
     this.updateDayDataAndCalendar();
     this.selectToday();
+    // Hiển thị transactions của ngày hiện tại (nếu có)
+    if (this.selectedDay && this.selectedDay.date) {
+      this.transactionsOfSelectedDay = this.moneyService.getTransactionsByDate(this.selectedDay.date);
+    }
   }
 
   updateDayDataAndCalendar() {
