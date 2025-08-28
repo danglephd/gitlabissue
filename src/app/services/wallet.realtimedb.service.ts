@@ -209,4 +209,16 @@ export class moneyTransactionCsvService {
 
     return result;
   }
+
+  getTransactionsByDate(date: Date): MoneyTransactionClass[] {
+    const data = localStorage.getItem('transactions');
+    if (!data) return [];
+    const transactions: MoneyTransactionClass[] = JSON.parse(data).map((obj: any) => new MoneyTransactionClass(obj));
+    return transactions.filter(tx => {
+      const txDate = new Date(tx.date);
+      return txDate.getFullYear() === date.getFullYear()
+        && txDate.getMonth() === date.getMonth()
+        && txDate.getDate() === date.getDate();
+    });
+  }
 }
