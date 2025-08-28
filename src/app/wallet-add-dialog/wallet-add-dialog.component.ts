@@ -253,10 +253,10 @@ export class WalletAddDialogComponent {
       this.onKeypadClick('.');
       event.preventDefault();
     }
-    if (key === 'Backspace') {
-      this.onKeypadClick('⌫');
-      event.preventDefault();
-    }
+    // if (key === 'Backspace') {
+    //   this.onKeypadClick('⌫');
+    //   event.preventDefault();
+    // }
     if (key === '+') {
       this.onKeypadClick('+');
       event.preventDefault();
