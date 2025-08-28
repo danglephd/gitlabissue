@@ -139,7 +139,8 @@ export class WalletComponent implements OnInit {
     this.dialog.open(WalletAddDialogComponent, {
       width: '420px',
       maxWidth: '95vw',
-      panelClass: 'wallet-add-dialog-panel'
+      panelClass: 'wallet-add-dialog-panel',
+      data: { isEdit: false }
     }).afterClosed().subscribe(reload => {
       if (reload) {
         this.loadTransactions();
