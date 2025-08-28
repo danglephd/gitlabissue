@@ -24,6 +24,7 @@ export class WalletCalendarComponent implements OnInit {
   totalExpense = 0;
   totalIncome = 0;
   totalBalance = 0;
+  transactionsOfSelectedDay: any[] = []; // Add this line
 
   constructor(private moneyService: moneyTransactionCsvService) {}
 
@@ -124,6 +125,8 @@ export class WalletCalendarComponent implements OnInit {
   selectDay(day: CalendarDay) {
     if (!day.isCurrentMonth || !day.day) return;
     this.selectedDay = day;
+    // Lấy giao dịch của ngày được chọn
+    this.transactionsOfSelectedDay = this.moneyService.getTransactionsByDate(this.selectedDay.date!);
   }
 
   selectToday() {

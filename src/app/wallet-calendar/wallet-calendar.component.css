@@ -170,12 +170,32 @@
 }
 
 .calendar-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-weight: bold;
   font-size: 1.08rem;
   margin-bottom: 6px;
-  display: flex;
-  align-items: center;
   gap: 8px;
+}
+
+.calendar-detail-header-left {
+  flex: 1 1 0;
+  text-align: left;
+}
+.calendar-detail-header-right {
+  flex: 0 0 auto;
+  text-align: right;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.calendar-detail-header .expense {
+  color: #d32f2f;
+}
+.calendar-detail-header .income {
+  color: #388e3c;
 }
 
 .calendar-detail-list {
