@@ -14,7 +14,7 @@
           <span
             class="calendar-day"
             [class.empty]="!day.isCurrentMonth"
-            [class.selected]="selectedDay?.date?.getTime() === day.date?.getTime()"
+            [class.selected]="day.isCurrentMonth && day.day && selectedDay?.date?.getTime() === day.date?.getTime()"
             [class.today]="day.isToday"
             (click)="selectDay(day)">
             <ng-container *ngIf="day.isCurrentMonth">
