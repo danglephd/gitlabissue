@@ -130,6 +130,37 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
+.calendar-summary-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.calendar-summary-col {
+  flex: 1 1 0;
+  text-align: left;
+}
+
+.calendar-summary-col:last-child {
+  text-align: right;
+}
+
+.calendar-summary-balance {
+  margin-top: 4px;
+  text-align: left;
+}
+
+.balance.negative {
+  color: #d32f2f;
+  font-weight: bold;
+}
+.balance.positive {
+  color: #388e3c;
+  font-weight: bold;
+}
+
 .calendar-detail {
   margin: 12px 8px 0 8px;
   background: #fff;

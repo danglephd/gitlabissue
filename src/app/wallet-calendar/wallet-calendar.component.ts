@@ -21,6 +21,9 @@ export class WalletCalendarComponent implements OnInit {
   weeks: CalendarDay[][] = [];
   selectedDay: CalendarDay | null = null;
   dayData: { [key: string]: { expense?: number, income?: number } } = {};
+  totalExpense = 0;
+  totalIncome = 0;
+  totalBalance = 0;
 
   constructor(private moneyService: moneyTransactionCsvService) {}
 
@@ -36,6 +39,14 @@ export class WalletCalendarComponent implements OnInit {
     // Lấy dữ liệu ngày theo tháng/năm
     this.dayData = this.moneyService.getDayDataByMonthYear(this.month + 1, this.year);
     this.generateCalendar();
+    // Tính tổng expense, income, balance
+    this.totalExpense = 0;
+    this.totalIncome = 0;
+    Object.values(this.dayData).forEach(d => {
+      if (d.expense) this.totalExpense += d.expense;
+      if (d.income) this.totalIncome += d.income;
+    });
+    this.totalBalance = this.totalIncome - this.totalExpense;
   }
 
   get monthLabel() {

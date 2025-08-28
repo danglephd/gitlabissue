@@ -20,8 +20,8 @@
             <ng-container *ngIf="day.isCurrentMonth">
               <span class="day-number">{{ day.day }}</span>
               <span class="day-values">
-                <span *ngIf="day.expense" class="expense">-{{ day.expense | number:'1.0-0' }}</span>
-                <span *ngIf="day.income" class="income">+{{ day.income | number:'1.0-0' }}</span>
+                <span *ngIf="day.expense" class="expense">-{{ day.expense | numberShort }}</span>
+                <span *ngIf="day.income" class="income">+{{ day.income | numberShort }}</span>
               </span>
             </ng-container>
           </span>
@@ -30,10 +30,19 @@
     </div>
   </div>
   <div class="calendar-summary">
-    Expenses: <span class="expense">đ2,872,000</span>
-    Income: <span class="income">đ2,225,910</span>
-    <br>
-    Balance: <span class="balance">-đ646,090</span>
+    <div class="calendar-summary-row">
+      <div class="calendar-summary-col">
+        Expenses: <span class="expense">đ{{ totalExpense | number:'1.0-0' }}</span>
+      </div>
+      <div class="calendar-summary-col">
+        Income: <span class="income">đ{{ totalIncome | number:'1.0-0' }}</span>
+      </div>
+    </div>
+    <div class="calendar-summary-balance">
+      Balance: <span class="balance" [ngClass]="{'negative': totalBalance < 0, 'positive': totalBalance > 0}">
+        {{ totalBalance < 0 ? '-' : '' }}đ{{ totalBalance | number:'1.0-0' }}
+      </span>
+    </div>
   </div>
   <div class="calendar-detail" *ngIf="selectedDay">
     <div class="calendar-detail-header">
