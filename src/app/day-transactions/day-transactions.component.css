@@ -7,8 +7,9 @@
   align-items: center;
   gap: 12px;
   font-weight: bold;
-  font-size: 1.05rem;
-  margin-bottom: 4px;
+  font-size: 0.95rem;
+  margin: 5px 10px 5px 10px;
+  
 }
 
 .wallet-day-label {
@@ -76,7 +77,7 @@
 }
 
 .wallet-transaction .note {
-  font-size: 0.95rem;
+  font-size: 0.8rem;
   color: #888;
   margin-top: 2px;
   word-break: break-word;
@@ -92,7 +93,7 @@
 
 .wallet-transaction .amount {
   font-weight: bold;
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   margin-bottom: 2px;
 }
 
