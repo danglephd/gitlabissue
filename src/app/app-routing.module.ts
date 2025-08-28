@@ -6,16 +6,16 @@ import { WalletCalendarComponent } from './wallet-calendar/wallet-calendar.compo
 import { GameTimSoComponent } from './game-tim-so/game-tim-so.component';
 
 const routes: Routes = [
- { path: '', redirectTo: 'issue', pathMatch: 'full' },
- { path: 'issue', component: IssueComponent },
- { path: 'wallet', component: WalletComponent },
- { path: 'calendarDialog', component: CalendarDialogComponent }
-{ path: 'game-tim-so', component: GameTimSoComponent } // Assuming GameTimSoComponent is defined and imported      ,
-]; 
+    { path: '', redirectTo: 'issue', pathMatch: 'full' },
+    { path: 'issue', component: IssueComponent },
+    { path: 'wallet', component: WalletComponent },
+    { path: 'wallet-calendar', component: WalletCalendarComponent },
+    { path: 'game-tim-so', component: GameTimSoComponent } // Assuming GameTimSoComponent is defined and imported      ,
+];
 
 @NgModule({
- imports: [RouterModule.forRoot(routes)],
- exports: [RouterModule]
+    imports: [RouterModule.forRoot(routes)],
+    exports: [RouterModule]
 })
 
 export class AppRoutingModule { }

@@ -24,6 +24,7 @@ import { GameTimSoComponent } from './game-tim-so/game-tim-so.component';
 import { WalletCalendarComponent } from './wallet-calendar/wallet-calendar.component';
 import { NumberShortPipe } from './pipes/number-short.pipe';
 import { DayTransactionsComponent } from './day-transactions/day-transactions.component';
+import { SelectMonthDialogComponent } from './select-month-dialog/select-month-dialog.component';
 
 
 @NgModule({
@@ -38,8 +39,9 @@ import { DayTransactionsComponent } from './day-transactions/day-transactions.co
     BillDetailComponent, // Thêm BillDetailComponent vào declarations
     GameTimSoComponent,
     WalletCalendarComponent,
+    DayTransactionsComponent,
+    SelectMonthDialogComponent,
     NumberShortPipe,
-    DayTransactionsComponent
   ],
   imports: [
     BrowserModule,
