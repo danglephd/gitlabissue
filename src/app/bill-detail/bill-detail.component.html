@@ -1,0 +1,48 @@
+<div class="bill-detail-dialog">
+  <div class="bill-detail-header">
+    <button mat-icon-button class="close-btn" (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <span class="bill-detail-title">Bill Details</span>
+    <span class="bill-detail-header-spacer"></span>
+  </div>
+  <div class="bill-detail-main">
+    <span class="icon">
+      <img [src]="getIcon(data.category)" width="32" />
+    </span>
+    <span class="category">{{ data.category }}</span>
+    <span class="amount" [ngClass]="{'expense': data.isExpense(), 'income': data.isIncome()}">
+      {{ data.isExpense() ? '-' : '+' }}{{ data.amount | number:'1.0-0' }}
+    </span>
+  </div>
+  <div class="bill-detail-content">
+    <div class="bill-detail-row">
+      <span class="label">Notes</span>
+      <span class="value">{{ data.notes || '--' }}</span>
+    </div>
+    <div class="bill-detail-row">
+      <span class="label">Ledger</span>
+      <span class="value">{{ data.ledger || 'General' }}</span>
+    </div>
+    <div class="bill-detail-row">
+      <span class="label">Accounts</span>
+      <span class="value">{{ data.account || 'momo' }}</span>
+    </div>
+    <div class="bill-detail-row">
+      <span class="label">Included in budget</span>
+      <span class="value"><img src="assets/budget-icon.png" width="24" /></span>
+    </div>
+    <div class="bill-detail-row">
+      <span class="label">Date</span>
+      <span class="value">{{ data.date | date:'MMM d HH:mm a' }}</span>
+    </div>
+  </div>
+  <div class="bill-detail-actions">
+    <button mat-icon-button color="warn" (click)="delete()">
+      <mat-icon>delete</mat-icon>
+    </button>
+    <button mat-icon-button (click)="edit()">
+      <mat-icon>edit</mat-icon>
+    </button>
+  </div>
+</div>

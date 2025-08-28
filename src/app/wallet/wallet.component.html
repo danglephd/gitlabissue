@@ -1,62 +1,61 @@
 <div class="app-container">
-    <div class="sidebar" [class.sidebar-open]="isSidebarOpen" [class.collapsed]="isSidebarCollapsed">
-        <div class="sidebar-header">
-            <h2>Search Filters</h2>
-            <div>
-                <button mat-icon-button class="close-button" (click)="toggleSidebar()" *ngIf="isMobile">
-                    <!-- <mat-icon>close</mat-icon> -->
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="main-content" [class.expanded]="isSidebarCollapsed">
-        <div class="header">
-            <button mat-icon-button class="menu-button" (click)="toggleSidebar()" *ngIf="isMobile">
-                <mat-icon>menu</mat-icon>
+  <div class="main-content" [class.expanded]="isSidebarCollapsed">
+    <ng-container *ngIf="!showCalendar; else calendarView">
+      <!-- Wallet view -->
+      <div class="header">
+        <h1>Free Wallet</h1>
+      </div>
+      <div class="wallet-content-container">
+        <div class="wallet-summary-bar">
+          <div class="wallet-summary-header">
+            <span class="month-label" (click)="openCalendarDialog()">
+              {{ getMonthLabel(selectedMonthYear) }}
+              <mat-icon style="font-size:16px;vertical-align:middle;">arrow_drop_down</mat-icon>
+            </span>
+            <button mat-icon-button class="calendar-btn" (click)="openCalendarWallet()">
+              <mat-icon>calendar_today</mat-icon>
             </button>
-            <h1>Free Wallet</h1>
-        </div>
-        <div class="wallet-summary">
+          </div>
+          <div class="wallet-summary-content">
             <div class="wallet-summary-item expense">
-                <span class="label">Chi:</span>
-                <span class="value">-{{ totalExpense | number:'1.0-0' }} VND</span>
+              <span class="label"><mat-icon style="font-size:16px;vertical-align:middle;color:#e53935;">arrow_upward</mat-icon> Expense
+              </span>
+              <span class="value">đ{{ totalExpense | number:'1.0-0' }}</span>
             </div>
             <div class="wallet-summary-item income">
-                <span class="label">Thu:</span>
-                <span class="value">+{{ totalIncome | number:'1.0-0' }} VND</span>
+              <span class="label"><mat-icon style="font-size:16px;vertical-align:middle;color:#43a047;">arrow_downward</mat-icon>
+                Income
+              </span>
+              <span class="value">đ{{ totalIncome | number:'1.0-0' }}</span>
             </div>
+            <div class="wallet-summary-item balance">
+              <span class="label">Balance</span>
+              <span class="value">đ{{ (totalIncome - totalExpense) | number:'1.0-0' }}</span>
+            </div>
+          </div>
         </div>
         <div class="wallet-list">
-            <div *ngFor="let group of walletGroups" class="wallet-day-group">
-                <div class="wallet-day-header">
-                    <span class="wallet-day-label">{{ group.dayLabel }}</span>
-                    <span class="wallet-expense">↑ {{ group.totalExpense | number:'1.0-0' }}</span>
-                    <span class="wallet-income">↓ {{ group.totalIncome | number:'1.0-0' }}</span>
-                </div>
-                <div *ngFor="let tx of group.transactions" class="wallet-transaction">
-                    <span class="wallet-icon">
-                        <img [src]="getIcon(tx.category)" alt="{{tx.category}}" width="32" height="32" />
-                    </span>
-                    <div class="wallet-info">
-                        <div class="wallet-title">{{ tx.category }}</div>
-                        <div class="wallet-note" *ngIf="tx.notes">{{ tx.notes }}</div>
-                    </div>
-                    <div class="wallet-amount" [ngClass]="{'income': tx.isIncome(), 'expense': tx.isExpense()}">
-                        {{ tx.isIncome() ? '+' : '-' }}{{ tx.amount | number:'1.0-0' }}
-                    </div>
-                    <div class="wallet-time">{{ tx.date | date:'shortTime' }}</div>
-                </div>
-            </div>
+          <app-day-transactions
+            *ngFor="let group of walletGroups"
+            [dayLabel]="group.dayLabel"
+            [totalExpense]="group.totalExpense"
+            [totalIncome]="group.totalIncome"
+            [transactions]="group.transactions"
+            [showHeader]="true"
+            (billDetail)="openBillDetail($event)">
+          </app-day-transactions>
         </div>
-
-        <!-- Bottom navigation bar: chỉ giữ nút Add -->
-        <div class="wallet-bottom-nav">
-            <button class="wallet-plus-btn" (click)="openAddDialog()">
-                <span class="plus-circle">
-                    <mat-icon>add</mat-icon>
-                </span>
-            </button>
-        </div>
-    </div>
+      </div>
+      <div class="wallet-bottom-nav">
+        <button class="wallet-plus-btn" (click)="openAddDialog()">
+          <span class="plus-circle">
+            <mat-icon>add</mat-icon>
+          </span>
+        </button>
+      </div>
+    </ng-container>
+    <ng-template #calendarView>
+      <app-wallet-calendar (back)="onBackFromCalendar()"></app-wallet-calendar>
+    </ng-template>
+  </div>
 </div>

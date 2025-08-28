@@ -1,0 +1,397 @@
+.calendar-container {
+  max-width: 420px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 18px;
+  font-family: inherit;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px 0 8px 0;
+  font-size: 1.3rem;
+  position: relative;
+}
+
+.calendar-title {
+  font-size: 1.35rem;
+  font-weight: 600;
+  flex: 0 0 auto;
+  text-align: center;
+  margin: 0 32px;
+  letter-spacing: 0.5px;
+}
+
+.month-nav-btn {
+  background: #222 !important;
+  color: #fff !important;
+  border-radius: 50% !important;
+  margin: 0 8px;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  box-shadow: 0 2px 8px #0001;
+  transition: background 0.2s;
+}
+
+.month-nav-btn:hover {
+  background: #444 !important;
+}
+
+.calendar-back-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 8px 0 0 0;
+  min-height: 36px;
+}
+
+.mat-icon-button i,
+.mat-icon-button .mat-icon {
+  line-height: 18px;
+}
+
+.back-btn {
+  position: absolute;
+  left: 8px;
+  top: 16px;
+  background: #fff !important;
+  color: #222 !important;
+  border-radius: 50% !important;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  z-index: 2;
+  box-shadow: 0 2px 8px #0001;
+  transition: background 0.2s;
+  margin-left: 4px;
+}
+
+.back-btn:hover {
+  background: #f5f5f5 !important;
+  color: #111 !important;
+}
+
+.calendar-table {
+  background: #fff;
+  border-radius: 16px;
+  margin: 0 8px 0 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  padding: 0 0 8px 0;
+}
+
+.calendar-weekdays {
+  display: flex;
+  background: #ffd600;
+  border-radius: 16px 16px 0 0;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #222;
+  padding: 8px 0;
+  justify-content: space-between;
+}
+
+.calendar-weekdays span {
+  flex: 1 1 0;
+  text-align: center;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  padding: 8px 0 0 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.calendar-day {
+  aspect-ratio: 1 / 1.1;
+  width: 100%;
+  min-width: 0;
+  min-height: 54px;
+  text-align: center;
+  font-size: 1.05rem;
+  padding: 2px 0;
+  border-radius: 8px;
+  background: #fff;
+  color: #222;
+  position: relative;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.calendar-day.selected {
+  border: 2px solid #ffd600;
+  background: #fffde7;
+}
+
+.calendar-day.today {
+  border: 2px solid #43a047;
+}
+
+.calendar-day.inactive,
+.calendar-day.empty {
+  color: #bbb;
+  background: #fafafa;
+  cursor: default;
+}
+
+.expense {
+  color: #d32f2f;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.income {
+  color: #388e3c;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.balance {
+  color: #222;
+  font-weight: bold;
+}
+
+.calendar-summary {
+  margin: 12px 8px 0 8px;
+  font-size: 1.05rem;
+  background: #fff;
+  border-radius: 12px;
+  padding: 8px 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.calendar-summary-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.calendar-summary-col {
+  flex: 1 1 0;
+  text-align: left;
+}
+
+.calendar-summary-col:last-child {
+  text-align: right;
+}
+
+.calendar-summary-balance {
+  margin-top: 4px;
+  text-align: left;
+}
+
+.balance.negative {
+  color: #d32f2f;
+  font-weight: bold;
+}
+
+.balance.positive {
+  color: #388e3c;
+  font-weight: bold;
+}
+
+.calendar-detail {
+  margin: 12px 8px 0 8px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.calendar-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 16px 16px 8px 16px;
+  background: #fafbfc;
+  border-radius: 12px 12px 0 0;
+  border-bottom: 1px solid #eee;
+}
+
+.calendar-detail-header-left {
+  flex: 1 1 0;
+  text-align: left;
+}
+
+.calendar-detail-header-right {
+  flex: 0 0 auto;
+  text-align: right;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.calendar-detail-header .expense {
+  color: #d32f2f;
+}
+
+.calendar-detail-header .income {
+  color: #388e3c;
+}
+
+.calendar-detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.calendar-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.05rem;
+}
+
+.calendar-detail-item .icon img {
+  width: 32px;
+  height: 32px;
+}
+
+.calendar-detail-item .detail-info {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: 0;
+}
+
+.calendar-detail-item .category {
+  font-weight: 500;
+  font-size: 1.05rem;
+  color: #222;
+  word-break: break-word;
+}
+
+.calendar-detail-item .note {
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 2px;
+  word-break: break-word;
+}
+
+.calendar-detail-item .detail-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  min-width: 90px;
+}
+
+.calendar-detail-item .amount {
+  font-weight: bold;
+  font-size: 1.05rem;
+  margin-bottom: 2px;
+}
+
+.calendar-detail-item .income {
+  color: #388e3c;
+}
+
+.calendar-detail-item .expense {
+  color: #d32f2f;
+}
+
+.calendar-detail-item .time {
+  font-size: 0.75rem;
+  color: #888;
+  min-width: 60px;
+  text-align: right;
+  margin-left: 8px;
+}
+
+.calendar-day .day-values {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  min-height: 2.2em;
+  margin-top: 2px;
+  gap: 0;
+}
+
+.calendar-day .expense,
+.calendar-day .income {
+  font-size: 0.85rem;
+  line-height: 1.1;
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  width: 100%;
+  display: block;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .calendar-container {
+    max-width: 100vw;
+    border-radius: 0;
+    padding: 0 0 8px 0;
+  }
+
+  .calendar-table,
+  .calendar-summary,
+  .calendar-detail {
+    margin: 0 2px;
+    border-radius: 8px;
+    padding: 6px 4px;
+  }
+
+  .calendar-header {
+    padding: 12px 0 6px 0;
+    font-size: 1.2rem;
+  }
+
+  .calendar-title {
+    margin: 0 24px;
+    font-size: 1.1rem;
+  }
+
+  .back-btn,
+  .month-nav-btn {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+  }
+
+  .calendar-weekdays {
+    padding: 6px 0;
+    font-size: 1rem;
+  }
+
+  .calendar-day {
+    min-height: 38px;
+    font-size: 0.95rem;
+    padding: 2px 0;
+  }
+
+  .calendar-day .expense,
+  .calendar-day .income {
+    font-size: 0.78rem;
+  }
+
+  .calendar-detail-item {
+    font-size: 1rem;
+  }
+}

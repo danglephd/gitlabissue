@@ -1,0 +1,43 @@
+.select-month-dialog { 
+  padding: 16px 12px 8px 12px; 
+  min-width: 240px; 
+  text-align: center; 
+}
+.dialog-header { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 8px; 
+  margin-bottom: 12px; 
+}
+.year-label { 
+  font-weight: bold; 
+  font-size: 1.2rem; 
+  min-width: 60px; 
+}
+.reset-btn { 
+  margin-left: auto; 
+}
+.month-grid { 
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 8px; 
+  margin-bottom: 12px; 
+}
+.month-grid button { 
+  padding: 12px 0; 
+  border-radius: 8px; 
+  border: none; 
+  background: #f5f5f5; 
+  font-size: 1.1rem; 
+  font-weight: 500; 
+}
+.month-grid button.selected { 
+  background: #ffd600; 
+  color: #222; 
+  font-weight: bold; 
+}
+.dialog-actions { 
+  display: flex; 
+  justify-content: space-between; 
+}

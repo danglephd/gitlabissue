@@ -17,7 +17,14 @@ import { environment } from '../environments/environment';
 import { WalletComponent } from './wallet/wallet.component';
 import { WalletAddDialogComponent } from './wallet-add-dialog/wallet-add-dialog.component';
 import { CalendarDialogComponent } from './calendar-dialog/calendar-dialog.component';
+import { BillDetailComponent } from './bill-detail/bill-detail.component';
+import { WalletConfirmDialogComponent } from './confirm-dialog/wallet-confirm-dialog.component';
 import { GameTimSoComponent } from './game-tim-so/game-tim-so.component';
+
+import { WalletCalendarComponent } from './wallet-calendar/wallet-calendar.component';
+import { NumberShortPipe } from './pipes/number-short.pipe';
+import { DayTransactionsComponent } from './day-transactions/day-transactions.component';
+
 
 @NgModule({
   declarations: [
@@ -26,8 +33,13 @@ import { GameTimSoComponent } from './game-tim-so/game-tim-so.component';
     WalletComponent,
     WalletAddDialogComponent, // Thêm WalletAddDialogComponent vào declarations
     ConfirmDialogComponent,
+    WalletConfirmDialogComponent,
     CalendarDialogComponent, // Thêm CalendarDialogComponent vào declarations
-    GameTimSoComponent
+    BillDetailComponent, // Thêm BillDetailComponent vào declarations
+    GameTimSoComponent,
+    WalletCalendarComponent,
+    NumberShortPipe,
+    DayTransactionsComponent
   ],
   imports: [
     BrowserModule,

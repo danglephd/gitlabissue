@@ -1,0 +1,19 @@
+<div class="select-month-dialog">
+  <div class="dialog-header">
+    <button mat-icon-button (click)="prevYear()"><mat-icon>chevron_left</mat-icon></button>
+    <span class="year-label">{{ year }}</span>
+    <button mat-icon-button (click)="nextYear()"><mat-icon>chevron_right</mat-icon></button>
+    <button mat-icon-button class="reset-btn" (click)="resetToCurrent()"><mat-icon>refresh</mat-icon></button>
+  </div>
+  <div class="month-grid">
+    <button *ngFor="let m of months"
+            [class.selected]="m === month"
+            (click)="selectMonth(m)">
+      {{ m }}
+    </button>
+  </div>
+  <div class="dialog-actions">
+    <button mat-icon-button (click)="close(false)"><mat-icon>close</mat-icon></button>
+    <button mat-icon-button color="primary" (click)="close(true)"><mat-icon>check</mat-icon></button>
+  </div>
+</div>
