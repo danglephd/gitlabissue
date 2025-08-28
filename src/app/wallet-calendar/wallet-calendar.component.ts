@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { moneyTransactionCsvService } from '../services/wallet.realtimedb.service';
 
 interface CalendarDay {
@@ -25,6 +25,8 @@ export class WalletCalendarComponent implements OnInit {
   totalIncome = 0;
   totalBalance = 0;
   transactionsOfSelectedDay: any[] = []; // Add this line
+
+  @Output() back = new EventEmitter<void>();
 
   constructor(private moneyService: moneyTransactionCsvService) {}
 

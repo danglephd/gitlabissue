@@ -20,6 +20,7 @@ export class WalletComponent implements OnInit {
   totalExpense = 0;
   totalIncome = 0;
   selectedMonthYear = '';
+  showCalendar = false;
 
   constructor(
     private moneyService: moneyTransactionCsvService,
@@ -178,6 +179,14 @@ export class WalletComponent implements OnInit {
     const [year, month] = val.split('-');
     const date = new Date(Number(year), Number(month)-1, 1);
     return date.toLocaleString('default', { month: 'short' }) + ' ' + year;
+  }
+
+  openCalendarWallet() {
+    this.showCalendar = true;
+  }
+
+  onBackFromCalendar() {
+    this.showCalendar = false;
   }
 }
 

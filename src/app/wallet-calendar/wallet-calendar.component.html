@@ -1,8 +1,17 @@
 <div class="calendar-container">
+  <div class="calendar-back-row">
+    <button mat-icon-button class="back-btn" (click)="back.emit()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+  </div>
   <div class="calendar-header">
-    <button mat-icon-button class="back-btn" (click)="prevMonth()"><mat-icon>arrow_back</mat-icon></button>
+    <button mat-icon-button class="month-nav-btn" (click)="prevMonth()">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
     <span class="calendar-title">{{ monthLabel }}</span>
-    <button mat-icon-button class="next-btn" (click)="nextMonth()"><mat-icon>arrow_forward</mat-icon></button>
+    <button mat-icon-button class="month-nav-btn" (click)="nextMonth()">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
   </div>
   <div class="calendar-table">
     <div class="calendar-weekdays">
@@ -56,9 +65,7 @@
       </div>
     </div>
     <div class="calendar-detail-list">
-      <app-day-transactions
-        [transactions]="transactionsOfSelectedDay"
-        [showHeader]="false">
+      <app-day-transactions [transactions]="transactionsOfSelectedDay" [showHeader]="false">
       </app-day-transactions>
     </div>
   </div>
