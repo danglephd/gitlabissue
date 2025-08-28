@@ -3,7 +3,7 @@
   margin: 0 auto;
   background: #fff;
   border-radius: 18px;
-  padding: 0 0 16px 0;
+  /* padding: 0 0 16px 0; */
   font-family: inherit;
 }
 
@@ -165,18 +165,21 @@
   margin: 12px 8px 0 8px;
   background: #fff;
   border-radius: 12px;
-  padding: 8px 12px 8px 12px;
+  /* padding: 8px 12px 8px 12px; */
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
 .calendar-detail-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  font-weight: bold;
-  font-size: 1.08rem;
-  margin-bottom: 6px;
-  gap: 8px;
+  justify-content: flex-start;
+  gap: 16px;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 16px 16px 8px 16px;
+  background: #fafbfc;
+  border-radius: 12px 12px 0 0;
+  border-bottom: 1px solid #eee;
 }
 
 .calendar-detail-header-left {
@@ -228,10 +231,43 @@
 }
 
 .calendar-detail-item .time {
-  font-size: 0.95rem;
+  font-size: 0.75rem;         /* giống .wallet-time */
   color: #888;
   min-width: 60px;
   text-align: right;
+  margin-left: 8px;        /* giống .wallet-time */
+}
+
+
+.calendar-detail-item .detail-info {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: 0;
+}
+
+.calendar-detail-item .category {
+  font-weight: 500;
+  font-size: 1.05rem;
+  color: #222;
+  word-break: break-word;
+}
+
+.calendar-detail-item .note {
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 2px;
+  word-break: break-word;
+}
+
+.calendar-detail-item .detail-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  min-width: 90px;
 }
 
 .calendar-day .day-values {

@@ -11,12 +11,9 @@
     <div class="calendar-days">
       <ng-container *ngFor="let week of weeks">
         <ng-container *ngFor="let day of week">
-          <span
-            class="calendar-day"
-            [class.empty]="!day.isCurrentMonth"
+          <span class="calendar-day" [class.empty]="!day.isCurrentMonth"
             [class.selected]="day.isCurrentMonth && day.day && selectedDay?.date?.getTime() === day.date?.getTime()"
-            [class.today]="day.isToday"
-            (click)="selectDay(day)">
+            [class.today]="day.isToday" (click)="selectDay(day)">
             <ng-container *ngIf="day.isCurrentMonth">
               <span class="day-number">{{ day.day }}</span>
               <span class="day-values">
@@ -40,8 +37,7 @@
     </div>
     <div class="calendar-summary-balance">
       Balance: <span class="balance" [ngClass]="{'negative': totalBalance < 0, 'positive': totalBalance > 0}">
-        {{ totalBalance < 0 ? '-' : '' }}đ{{ totalBalance | number:'1.0-0' }}
-      </span>
+        đ{{ totalBalance | number:'1.0-0' }} </span>
     </div>
   </div>
   <div class="calendar-detail" *ngIf="selectedDay">
@@ -60,19 +56,10 @@
       </div>
     </div>
     <div class="calendar-detail-list">
-      <div class="calendar-detail-item" *ngFor="let tx of transactionsOfSelectedDay">
-        <span class="icon">
-          <img [src]="tx.icon || 'assets/icons/gitlab.svg'" width="32" />
-        </span>
-        <span class="name">{{ tx.category || tx.note || 'No name' }}</span>
-        <span class="amount" [ngClass]="{'income': tx.isIncome(), 'expense': tx.isExpense()}">
-          {{ tx.isIncome() ? '+' : '-' }}đ{{ (tx.amount | number:'1.0-0') }}
-        </span>
-        <span class="time">{{ tx.date | date:'shortTime' }}</span>
-      </div>
-      <div *ngIf="transactionsOfSelectedDay.length === 0" class="calendar-detail-empty">
-        No transactions
-      </div>
+      <app-day-transactions
+        [transactions]="transactionsOfSelectedDay"
+        [showHeader]="false">
+      </app-day-transactions>
     </div>
   </div>
 </div>
