@@ -31,6 +31,7 @@ export class IssueComponent implements OnInit {
   noData = false;
   displayedColumns: string[] = ['issue_number', 'actions', 'project', 'links', 'path', 'test_state', 'duedate'];
   dataSource = new MatTableDataSource<Issue>();
+  lastQuickFilter: string | null = null;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -215,6 +216,7 @@ export class IssueComponent implements OnInit {
   }
 
   onSearch(issue_number: string, test_status: any) {
+    this.lastQuickFilter = null; // Reset lại trạng thái quick filter khi search
     this.isLoading = true;
     this.noData = false;
 
@@ -246,6 +248,51 @@ export class IssueComponent implements OnInit {
     }
   }
 
+  onQuickFilter(type: string, event: Event) {
+    event.preventDefault();
+    this.lastQuickFilter = type; // Lưu lại filter cuối cùng
+    this.isLoading = true;
+    this.noData = false;
+
+    let issuesObservable: Observable<Issue[]>;
+
+    switch (type) {
+      case 'duplicate':
+        issuesObservable = this.issueService.getIssuesWithDuplicatePath();
+        break;
+      case 'working':
+        issuesObservable = this.issueService.getIssuesByStatus('Working');
+        break;
+      case 'finished':
+        issuesObservable = this.issueService.getIssuesByStatus('Finish');
+        break;
+      case 'newfirst':
+        issuesObservable = this.issueService.getIssuesSortedByNewest();
+        break;
+      case 'all':
+      default:
+        issuesObservable = this.issueService.getIssues();
+        break;
+    }
+
+    issuesObservable.subscribe({
+      next: (issues) => {
+        this.isLoading = false;
+        this.noData = issues.length === 0;
+        this.dataSource.data = issues;
+      },
+      error: () => {
+        this.isLoading = false;
+        this.noData = true;
+        this.dataSource.data = [];
+      }
+    });
+
+    if (this.isMobile) {
+      this.isSidebarOpen = false;
+    }
+  }
+
   onDelete(event: any, issue: Issue) {
     const issuePath = issue.path;
     const match = issuePath.match(/Testcase-(\d+)-(\d+)/);
@@ -264,7 +311,12 @@ export class IssueComponent implements OnInit {
               verticalPosition: 'bottom',
               panelClass: ['success-snackbar']
             });
-            this.onSearch(this.inp_issueno, this.sel_status);
+            // Nếu đã dùng quickFilter thì reload theo quickFilter, nếu không thì search như cũ
+            if (this.lastQuickFilter) {
+              this.onQuickFilter(this.lastQuickFilter, new Event('click'));
+            } else {
+              this.onSearch(this.inp_issueno, this.sel_status);
+            }
           })
           .catch(() => {
             this._snackBar.open(`Failed to delete issue ${issue.issue_number}`, '', {
@@ -284,44 +336,6 @@ export class IssueComponent implements OnInit {
 
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
-    }
-  }
-
-  onQuickFilter(type: string, event: Event) {
-    event.preventDefault();
-    this.isLoading = true;
-    this.noData = false;
-
-    switch (type) {
-      case 'working':
-        this.issues$ = this.issueService.getIssuesByStatus('Working');
-        break;
-      case 'finished':
-        this.issues$ = this.issueService.getIssuesByStatus('Finish');
-        break;
-      case 'all':
-        this.issues$ = this.issueService.getIssues();
-        break;
-      case 'newfirst':
-        this.issues$ = this.issueService.getIssuesSortedByNewest();
-        break;
-      default:
-        this.issues$ = this.issueService.getIssues();
-    }
-
-    this.issues$.subscribe({
-      next: (issues) => {
-        this.isLoading = false;
-        this.noData = issues.length === 0;
-        this.dataSource.data = issues;
-      },
-      error: () => {
-        this.isLoading = false;
-      }
-    });
-
-    if (this.isMobile) {
-      this.isSidebarOpen = false;
     }
   }
 }
