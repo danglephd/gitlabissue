@@ -181,4 +181,34 @@ export class IssueRealtimeDbService {
       })
     );
   }
+
+  /**
+   * Trả về danh sách các issues có trùng path, sắp xếp theo path.
+   * @returns Observable<Issue[]>
+   */
+  getIssuesWithDuplicatePath(): Observable<Issue[]> {
+    return this.db.list<Issue>(this.dbPath).snapshotChanges().pipe(
+      map((snapshots) => {
+        const issues = snapshots.map(snapshot => ({
+          ...snapshot.payload.val() as Issue,
+          id: snapshot.key ?? ''
+        }));
+        // Đếm số lần xuất hiện của từng path
+        const pathCount: { [key: string]: number } = {};
+        issues.forEach(issue => {
+          if (issue.path) {
+            pathCount[issue.path] = (pathCount[issue.path] || 0) + 1;
+          }
+        });
+        // Lọc ra các issues có path xuất hiện nhiều hơn 1 lần
+        const duplicates = issues.filter(issue => issue.path && pathCount[issue.path] > 1);
+        // Sắp xếp theo path
+        duplicates.sort((a, b) => (a.path || '').localeCompare(b.path || ''));
+        return duplicates;
+      }),
+      catchError((error) => {
+        throw error;
+      })
+    );
+  }
 }

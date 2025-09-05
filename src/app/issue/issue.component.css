@@ -348,6 +348,11 @@ tr.mat-row:hover {
   background: #d32f2f;
 }
 
+.quick-filter-links .label-duplicate {
+  background: #6d4c41;
+  color: #fff;
+}
+
 .quick-filter-links .label:hover {
   filter: brightness(0.9);
 }
