@@ -326,4 +326,12 @@ export class GameTimSoComponent implements AfterViewInit {
       color: `rgb(0, 0, 0)`,
     };
   }
+
+  onRadiusChange(event: Event) {
+    const r = +(event.target as HTMLInputElement).value;
+    const fontSizeInput = document.getElementById('font-size') as HTMLInputElement;
+    if (fontSizeInput) {
+      fontSizeInput.value = String(Math.max(r - 10, 1));
+    }
+  }
 }

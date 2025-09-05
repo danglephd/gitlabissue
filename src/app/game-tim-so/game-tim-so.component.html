@@ -29,7 +29,7 @@
 
         <label for="cR">Circle Radius (R)</label>
         <div class="desc">Radius of each number circle (in pixels).</div>
-        <input type="number" name="cR" id="cR" value="50">
+        <input type="number" name="cR" id="cR" value="50" (input)="onRadiusChange($event)">
 
         <label for="font-size">Font Size</label>
         <div class="desc">Size of the number text inside each circle.</div>
