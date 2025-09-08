@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
-import { Observable } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { Issue } from '../issue';
 import { tap, catchError, map } from 'rxjs/operators';
 import { updateGDriveValue } from '../shared/utils'; // Import hàm dùng chung
@@ -12,7 +12,7 @@ import { updateGDriveValue } from '../shared/utils'; // Import hàm dùng chung
 export class IssueRealtimeDbService {
   private dbPath = '/issues';
 
-  constructor(private db: AngularFireDatabase) {}
+  constructor(private db: AngularFireDatabase) { }
 
   private updateGDriveValue(data: Issue[]) {
     data.forEach(element => {
@@ -37,7 +37,7 @@ export class IssueRealtimeDbService {
           element.proj_url_company = "https://drive.google.com/drive/u/1/folders/1AohlxBRxuybnV3bVt5u4ycRFbYnQmzd7";
           element.proj_url_mypc = "https://drive.google.com/drive/u/1/folders/13gh2XVoqhKoXPFPnvaLLFRrzigdCYRBr";
           break;
-          
+
         default:
           element.proj_url_company = "https://null";
           element.proj_url_mypc = "https://nan";
@@ -148,7 +148,7 @@ export class IssueRealtimeDbService {
    * @returns Promise<void>
    */
   deleteIssue(issueKey: string): Promise<void> {
-    return this.db.object(`/issues/${issueKey}`).remove();
+    return this.db.object(`/${this.dbPath}/${issueKey}`).remove();
   }
 
   /**
@@ -210,5 +210,38 @@ export class IssueRealtimeDbService {
         throw error;
       })
     );
+  }
+
+  /**
+   * Xóa các issue duplicate, chỉ giữ lại 1 issue cho mỗi path bị trùng.
+   * Trả về Promise<void> khi hoàn thành.
+   */
+  async deleteDuplicateIssuesKeepOne(): Promise<void> {
+    const issues = await firstValueFrom(this.getIssues());
+    // Gom các issue theo path
+    const pathGroups: { [key: string]: Issue[] } = {};
+    (issues ?? []).forEach(issue => {
+      if (issue.path) {
+        if (!pathGroups[issue.path]) pathGroups[issue.path] = [];
+        pathGroups[issue.path].push(issue);
+      }
+    });
+
+    // Lọc ra các nhóm có nhiều hơn 1 issue (bị duplicate)
+    const duplicateGroups = Object.values(pathGroups).filter(group => group.length > 1);
+
+    // Xóa tất cả trừ issue đầu tiên của mỗi nhóm
+    const deletePromises: Promise<void>[] = [];
+    duplicateGroups.forEach(group => {
+      // Giữ lại issue đầu tiên, xóa các issue còn lại
+      const [, ...toDelete] = group;
+      toDelete.forEach(issue => {
+        if (issue.id) {
+          deletePromises.push(this.deleteIssue(issue.id));
+        }
+      });
+    });
+
+    await Promise.all(deletePromises);
   }
 }
