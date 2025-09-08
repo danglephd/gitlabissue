@@ -226,7 +226,7 @@ export class GameTimSoComponent implements AfterViewInit {
       return null;
     }
 
-    let circleColor = this.hsv_to_rgb_By_Int(Math.random(), s, v);
+    let circleColor = this.hsvToRgb(Math.random(), s, v);
 
     let c = {
       R: cR,
@@ -239,91 +239,26 @@ export class GameTimSoComponent implements AfterViewInit {
     return c;
   }
 
-  hsv_to_rgb_By_Int(h: number, s: number, v: number) {
-    let r = 0, g = 0, b = 0, count = 0;
-    let randColor = 6;
-    try {
-      do {
-        let h_i = Math.round(h * randColor);
-        let f = (h * 6 - h_i);
-        let p = v * (1 - s);
-        let q = v * (1 - f * s);
-        let t = v * (1 - (1 - f) * s);
+  hsvToRgb(h: number, s: number, v: number) {
+    let r = 0, g = 0, b = 0;
+    let i = Math.floor(h * 6);
+    let f = h * 6 - i;
+    let p = v * (1 - s);
+    let q = v * (1 - f * s);
+    let t = v * (1 - (1 - f) * s);
 
-        switch (h_i) {
-          case 24:
-          case 0:
-            r = v; g = t; b = p; break;
-          case 1:
-            r = q; g = v; b = p; break;
-          case 2:
-            r = p; g = v; b = t; break;
-          case 3:
-            r = p; g = q; b = v; break;
-          case 4:
-            r = t; g = p; b = v; break;
-          case 5:
-            r = v; g = p; b = q; break;
-          case 6:
-            r = p; g = t; b = v; break;
-          case 7:
-            r = v; g = t; b = q; break;
-          case 8:
-            r = v; g = q; b = t; break;
-          case 9:
-            r = t; g = v; b = q; break;
-          case 10:
-            r = t; g = q; b = v; break;
-          case 11:
-            r = q; g = v; b = t; break;
-          case 12:
-            r = q; g = t; b = v; break;
-          case 13:
-            r = v; g = p; b = t; break;
-          case 14:
-            r = v; g = q; b = p; break;
-          case 15:
-            r = p; g = v; b = q; break;
-          case 16:
-            r = t; g = v; b = p; break;
-          case 17:
-            r = q; g = p; b = t; break;
-          case 18:
-            r = q; g = p; b = v; break;
-          case 19:
-            r = t; g = p; b = q; break;
-          case 20:
-            r = t; g = q; b = p; break;
-          case 21:
-            r = p; g = t; b = q; break;
-          case 22:
-            r = p; g = q; b = t; break;
-          case 23:
-            r = q; g = t; b = p; break;
-        }
-        if (r == 0 && g == 0 && b == 0) {
-          console.log('>>>Count: ', h_i);
-        }
-      } while (r == 0 && g == 0 && b == 0 && count++ < 3)
-    }
-    catch (exx) {
-      console.log('Error: ', exx);
-      return { backgroundColor: `rgb(0, 0 , 0)`, color: `rgb(0, 0, 0)` };
+    switch (i % 6) {
+      case 0: r = v; g = t; b = p; break;
+      case 1: r = q; g = v; b = p; break;
+      case 2: r = p; g = v; b = t; break;
+      case 3: r = p; g = q; b = v; break;
+      case 4: r = t; g = p; b = v; break;
+      case 5: r = v; g = p; b = q; break;
     }
 
-    let floatV = (r * 256) + "";
-    let red = floatV.includes(".") ? floatV.substring(0, floatV.indexOf(".")) : floatV;
-    floatV = (g * 256) + "";
-    let green = floatV.includes(".") ? floatV.substring(0, floatV.indexOf(".")) : floatV;
-    floatV = (b * 256) + "";
-    let blue = floatV.includes(".") ? floatV.substring(0, floatV.indexOf(".")) : floatV;
-
-    red = (+red > 255 ? 255 : +red).toString();
-    green = (+green > 255 ? 255 : +green).toString();
-    blue = (+blue > 255 ? 255 : +blue).toString();
     return {
-      backgroundColor: `rgb(${red}, ${green}, ${blue})`,
-      color: `rgb(0, 0, 0)`,
+      backgroundColor: `rgb(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)})`,
+      color: `rgb(0, 0, 0)`
     };
   }
 
