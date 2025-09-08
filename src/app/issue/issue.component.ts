@@ -293,6 +293,39 @@ export class IssueComponent implements OnInit {
     }
   }
 
+  onDeleteDuplicate(event: any) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: { message: `Are you sure you want to delete Duplicated issues?` }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.issueService.deleteDuplicateIssuesKeepOne()
+          .then(() => {
+            this._snackBar.open(`Duplicate issues deleted successfully`, '', {
+              duration: 2000,
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              panelClass: ['success-snackbar']
+            });
+            // Nếu đã dùng quickFilter thì reload theo quickFilter, nếu không thì search như cũ
+            if (this.lastQuickFilter) {
+              this.onQuickFilter(this.lastQuickFilter, new Event('click'));
+            } else {
+              this.onSearch(this.inp_issueno, this.sel_status);
+            }
+          })
+          .catch(() => {
+            this._snackBar.open(`Failed to delete duplicate issues`, '', {
+              duration: 3000,
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              panelClass: ['error-snackbar']
+            });
+          });
+      }
+    });
+  }
+
   onDelete(event: any, issue: Issue) {
     const issuePath = issue.path;
     const match = issuePath.match(/Testcase-(\d+)-(\d+)/);
