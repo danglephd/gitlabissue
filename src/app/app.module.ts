@@ -25,6 +25,7 @@ import { WalletCalendarComponent } from './wallet-calendar/wallet-calendar.compo
 import { NumberShortPipe } from './pipes/number-short.pipe';
 import { DayTransactionsComponent } from './day-transactions/day-transactions.component';
 import { SelectMonthDialogComponent } from './select-month-dialog/select-month-dialog.component';
+import { DogWhistleComponent } from './dog-whistle/dog-whistle.component';
 
 
 @NgModule({
@@ -42,6 +43,8 @@ import { SelectMonthDialogComponent } from './select-month-dialog/select-month-d
     DayTransactionsComponent,
     SelectMonthDialogComponent,
     NumberShortPipe,
+
+    DogWhistleComponent
   ],
   imports: [
     BrowserModule,
@@ -53,6 +56,7 @@ import { SelectMonthDialogComponent } from './select-month-dialog/select-month-d
     FormsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
+
     // CommonModule, // Cho ngClass và date pipe
   ],
   providers: [],
