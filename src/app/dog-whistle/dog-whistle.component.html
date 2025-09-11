@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dog Whistle</title>
+</head>
+
+<body>
+    <h1>Dog Whistle 🔊</h1>
+    <div class="whistle-container">
+
+        <label for="freq">Frequency: {{ frequency }} Hz</label>
+        <input type="range" id="freq" min="15000" max="22000" step="100" [(ngModel)]="frequency"
+            (input)="updateFrequency()" />
+        <button class="whistle-btn play" (click)="playSound()" [disabled]="isPlaying">Play</button>
+        <button class="whistle-btn stop" (click)="stopSound()" [disabled]="!isPlaying">Stop</button>
+        <button class="whistle-btn test" (click)="testSound()">Test</button>
+        <div class="whistle-status">
+            <span *ngIf="isPlaying" class="playing">Playing...</span>
+            <span *ngIf="!isPlaying" class="stopped">Stopped</span>
+        </div>
+    </div>
+    <!-- <div class="whistle-container">
+        <label for="rate">Playback Rate: {{ playbackRate }}x</label>
+        <input type="range" id="rate" min="1" max="3" step="0.1" [(ngModel)]="playbackRate" />
+        <div class="buttons">
+            <button (click)="playIntro()">Play Intro 5s</button>
+            <button (click)="stopMusic()">Stop Music</button>
+        </div>
+    </div> -->
+</body>
+
+</html>

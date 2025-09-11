@@ -1,0 +1,59 @@
+.whistle-container {
+  max-width: 320px;
+  margin: 32px auto;
+  padding: 24px 16px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px #0001;
+  text-align: center;
+}
+
+.whistle-btn {
+  font-size: 1.1rem;
+  padding: 10px 28px;
+  margin: 0 8px 12px 8px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.whistle-btn.play {
+  background: #43a047;
+  color: #fff;
+}
+.whistle-btn.play:disabled {
+  background: #bdbdbd;
+  color: #fff;
+  cursor: not-allowed;
+}
+
+.whistle-btn.stop {
+  background: #d32f2f;
+  color: #fff;
+}
+.whistle-btn.stop:disabled {
+  background: #bdbdbd;
+  color: #fff;
+  cursor: not-allowed;
+}
+
+.whistle-btn.test {
+  background: #1976d2;
+  color: #fff;
+  margin-left: 8px;
+}
+
+.whistle-status {
+  margin-top: 8px;
+  font-size: 1rem;
+}
+.playing {
+  color: #43a047;
+  font-weight: bold;
+}
+.stopped {
+  color: #d32f2f;
+  font-weight: bold;
+}
