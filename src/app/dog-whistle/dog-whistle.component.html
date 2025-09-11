@@ -1,35 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
+<h1>Dog Whistle 🔊</h1>
+<div class="whistle-container">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dog Whistle</title>
-</head>
+    <label for="freq">Frequency: {{ frequency }} Hz</label>
+    <input type="range" id="freq" min="15000" max="22000" step="100" [(ngModel)]="frequency"
+        (input)="updateFrequency()" />
+    <button class="whistle-btn play" (click)="playSound()" [disabled]="isPlaying">Play</button>
+    <button class="whistle-btn stop" (click)="stopSound()" [disabled]="!isPlaying">Stop</button>
+    <button class="whistle-btn test" (click)="testSound()">Test</button>
+    <div class="whistle-status">
+        <span *ngIf="isPlaying" class="playing">Playing...</span>
+        <span *ngIf="!isPlaying" class="stopped">Stopped</span>
+    </div>
+</div>
 
-<body>
-    <h1>Dog Whistle 🔊</h1>
-    <div class="whistle-container">
+<div class="morse-card">
+    <h3>Morse Player</h3>
 
-        <label for="freq">Frequency: {{ frequency }} Hz</label>
+    <label>Text to send:</label>
+    <textarea [(ngModel)]="inputText" rows="2"></textarea>
+
+    <div class="row">
+        <label>WPM: {{wpm}}</label>
+        <input type="range" min="5" max="40" step="1" [(ngModel)]="wpm" />
+    </div>
+
+    <div class="row">
+        <label>Frequency: {{frequency}} Hz</label>
         <input type="range" id="freq" min="15000" max="22000" step="100" [(ngModel)]="frequency"
             (input)="updateFrequency()" />
-        <button class="whistle-btn play" (click)="playSound()" [disabled]="isPlaying">Play</button>
-        <button class="whistle-btn stop" (click)="stopSound()" [disabled]="!isPlaying">Stop</button>
-        <button class="whistle-btn test" (click)="testSound()">Test</button>
-        <div class="whistle-status">
-            <span *ngIf="isPlaying" class="playing">Playing...</span>
-            <span *ngIf="!isPlaying" class="stopped">Stopped</span>
-        </div>
+        <small *ngIf="frequency>20000" class="warn">⚠ Frequency &gt; 20kHz — many speakers can't reproduce this.</small>
     </div>
-    <!-- <div class="whistle-container">
-        <label for="rate">Playback Rate: {{ playbackRate }}x</label>
-        <input type="range" id="rate" min="1" max="3" step="0.1" [(ngModel)]="playbackRate" />
-        <div class="buttons">
-            <button (click)="playIntro()">Play Intro 5s</button>
-            <button (click)="stopMusic()">Stop Music</button>
-        </div>
-    </div> -->
-</body>
 
-</html>
+    <div class="controls">
+        <button (click)="playMorse()" [disabled]="playing">Play</button>
+        <button (click)="stopMorse()" [disabled]="!playing">Stop</button>
+        <button (click)="testPulse()">Test 2s</button>
+        <button (click)="exportLogCsv()">Export log</button>
+    </div>
+
+    <div class="led">
+        <div class="led-indicator" [class.on]="playing"></div>
+        <div class="status">Status: {{ playing ? 'Playing' : 'Idle' }}</div>
+    </div>
+
+    <div class="logbox">
+        <h4>Log</h4>
+        <div *ngFor="let l of log">{{l.time}} — {{l.evt}}</div>
+    </div>
+</div>
