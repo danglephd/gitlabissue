@@ -11,8 +11,8 @@ const routes: Routes = [
     { path: 'issue', component: IssueComponent },
     { path: 'wallet', component: WalletComponent },
     { path: 'wallet-calendar', component: WalletCalendarComponent },
-    { path: 'game-tim-so', component: GameTimSoComponent } // Assuming GameTimSoComponent is defined and imported      ,
-    { path: 'dog-whistle', component: DogWhistleComponent },
+    { path: 'game-tim-so', component: GameTimSoComponent }, // Assuming GameTimSoComponent is defined and imported      ,
+    { path: 'dog-whistle', component: DogWhistleComponent }
 ];
 
 @NgModule({
