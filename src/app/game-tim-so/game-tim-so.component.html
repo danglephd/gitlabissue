@@ -13,7 +13,7 @@
         </div>
     </div>
 </div>
-<div id="mySidenav" class="sidenav">
+<div #mySidenav class="sidenav">
     <div class="sidenav-header">
         <a href="javascript:void(0)" class="closebtn" (click)="closeNav()">&times;</a>
         <span class="sidenav-title" (click)="closeNav()" style="cursor:pointer;">Settings</span>
@@ -58,8 +58,8 @@
         {{item.value}}
     </div>
 </div>
-
-<canvas id="myCanvas"></canvas>
+<canvas #myCanvas></canvas>
+<!-- <canvas id="myCanvas"></canvas> -->
 
 <div id="gameZone">
     <div *ngFor="let item of gameZoneItems" class="numberCircle" [class.hidden]="item.isHidden"

@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Circle } from '../models/circle.model';
 
@@ -8,6 +8,8 @@ import { Circle } from '../models/circle.model';
   styleUrls: ['./game-tim-so.component.css']
 })
 export class GameTimSoComponent implements AfterViewInit {
+  @ViewChild('myCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('mySidenav') sidenavRef!: ElementRef;
   // UI state
   isShowSidenav = false;
   showGameOver = false;
@@ -39,14 +41,13 @@ export class GameTimSoComponent implements AfterViewInit {
 
   toggleNav() {
     this.isShowSidenav = !this.isShowSidenav;
-    const sidenav = document.getElementById("mySidenav") as HTMLElement;
-    sidenav.style.width = this.isShowSidenav ? "350px" : "0";
-    sidenav.classList.toggle('open');
+    this.sidenavRef.nativeElement.style.width = this.isShowSidenav ? "350px" : "0";
+    this.sidenavRef.nativeElement.classList.toggle('open');
   }
 
   closeNav() {
     this.isShowSidenav = false;
-    (document.getElementById("mySidenav") as HTMLElement).style.width = "0";
+    this.sidenavRef.nativeElement.style.width = "0";
   }
 
   closeFinish() {
@@ -73,7 +74,7 @@ export class GameTimSoComponent implements AfterViewInit {
 
   private initGameBoard() {
     const formValues = this.settingsForm.value;
-    const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
+    const canvas = this.canvasRef.nativeElement;
     const { width, height } = this.setupCanvas(canvas);
     
     const centerx = width / 2;
@@ -85,7 +86,7 @@ export class GameTimSoComponent implements AfterViewInit {
     this.gameZoneItems = [];
     let k = 0;
     for (let j = 0; k < this.numberArray.length; j++) {
-      const circle = this.createCircle(j, centerx, centery, this.numberArray[k], formValues);
+      const circle = this.createCircle(j, centerx, centery, this.numberArray[k], formValues, width, height);
       if (circle) {
         this.gameZoneItems.push({ ...circle, isHidden: false });
         k++;
@@ -111,7 +112,7 @@ export class GameTimSoComponent implements AfterViewInit {
   private calculateFinalNumber(numbLength: number, width: number, height: number, centerx: number, centery: number): number {
     let numberMax = 0;
     for (let j = 0; numberMax < numbLength && j < numbLength * 1.5; j++) {
-      const circle = this.RandCircle(j, centerx, centery, 0, this.settingsForm.value.zoomBoard, this.settingsForm.value.cR);
+      const circle = this.RandCircle(j, centerx, centery, 0, this.settingsForm.value.zoomBoard, this.settingsForm.value.cR, width, height);
       if (circle) numberMax++;
     }
     return numberMax;
@@ -125,7 +126,7 @@ export class GameTimSoComponent implements AfterViewInit {
     }
   }
 
-  private RandCircle(i: number, centerx: number, centery: number, value: number, zoom: number, cR: number): Circle | null {
+  private RandCircle(i: number, centerx: number, centery: number, value: number, zoom: number, cR: number, canvasWidth: number, canvasHeight: number): Circle | null {
     const goldenRatio_phi = 0.618033988749895;
     const r = Math.sqrt(i);
     const theta = i * 2 * Math.PI / (goldenRatio_phi * goldenRatio_phi);
@@ -135,8 +136,8 @@ export class GameTimSoComponent implements AfterViewInit {
     const rX = Math.round(centerx + x);
     const rY = Math.round(centery + y);
 
-    const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
-    if (rX - cR < 0 || rY - cR < 0 || rX + cR > canvas.width || rY + cR > canvas.height) {
+    // const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
+    if (rX - cR < 0 || rY - cR < 0 || rX + cR > canvasWidth || rY + cR > canvasHeight) {
       return null;
     }
 
@@ -218,8 +219,8 @@ export class GameTimSoComponent implements AfterViewInit {
     return { width: canvas.width, height: canvas.height };
   }
 
-  private createCircle(index: number, centerx: number, centery: number, value: number, settings: any): Circle | null {
-    const circle = this.RandCircle(index, centerx, centery, value, settings.zoomBoard, settings.cR);
+  private createCircle(index: number, centerx: number, centery: number, value: number, settings: any, canvasWidth: number, canvasHeight: number): Circle | null {
+    const circle = this.RandCircle(index, centerx, centery, value, settings.zoomBoard, settings.cR, canvasWidth, canvasHeight);
     if (!circle) return null;
 
     return {
