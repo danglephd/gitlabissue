@@ -6,14 +6,14 @@
         </h1>
         <div class="header-actions-group">
             <div class="scores-container">
-                <div class="score-container" id="vn_number">{{currentNumber}}</div>
-                <div class="best-container" id="vn_timer">{{timerDisplay}}</div>
+                <div class="score-container">{{(gameState$ | async)?.currentNumber ?? 1}}</div>
+                <div class="best-container">{{((gameState$ | async)?.timeLeft ?? 0) | formatTime}}</div>
             </div>
             <a class="restart-button" (click)="startGame()">New Game</a>
         </div>
     </div>
 </div>
-<div id="mySidenav" class="sidenav">
+<div #sidenav class="sidenav">
     <div class="sidenav-header">
         <a href="javascript:void(0)" class="closebtn" (click)="closeNav()">&times;</a>
         <span class="sidenav-title" (click)="closeNav()" style="cursor:pointer;">Settings</span>
@@ -42,7 +42,24 @@
         <a class="restart-button" style="margin: 10px 0;" (click)="startGame()">New Game</a>
     </div>
 </div>
-<div class="game-message game-over" id="game-over" [style.display]="showGameOver ? 'flex' : 'none'">
+<canvas #gameCanvas></canvas>
+<div id="gameZone">
+    <div *ngFor="let item of gameZoneItems"
+         class="numberCircle"
+         [class.hidden]="item.isHidden"
+         [style.background-color]="item.backgroundColor"
+         [style.top]="item.top"
+         [style.left]="item.left"
+         [style.width]="item.width"
+         [style.height]="item.height"
+         [style.line-height]="item.lineHeight"
+         [style.font-size]="item.fontSize"
+         [style.color]="item.color"
+         (click)="onNumberClick(item)">
+        {{item.value}}
+    </div>
+</div>
+<div class="game-over" *ngIf="(gameState$ | async)?.isGameOver">
     <p id="final_timer">{{finalTimer}}</p>
     <p>Finish!</p>
     <div class="lower">
@@ -50,26 +67,3 @@
         <a class="retry-button" (click)="startGame()">Play again</a>
     </div>
 </div>
-<div id="gameZone">
-    <div *ngFor="let item of gameZoneItems" class="numberCircle" [class.hidden]="item.isHidden"
-        [style.background-color]="item.backgroundColor" [style.top]="item.top" [style.left]="item.left"
-        [style.width]="item.width" [style.height]="item.height" [style.line-height]="item.lineHeight"
-        [style.font-size]="item.fontSize" [style.color]="item.color" (click)="onNumberClick(item)">
-        {{item.value}}
-    </div>
-</div>
-
-<canvas id="myCanvas"></canvas>
-
-<div id="gameZone">
-    <div *ngFor="let item of gameZoneItems" class="numberCircle" [class.hidden]="item.isHidden"
-        [style.background-color]="item.backgroundColor" [style.top]="item.top" [style.left]="item.left"
-        [style.width]="item.width" [style.height]="item.height" [style.line-height]="item.lineHeight"
-        [style.font-size]="item.fontSize" [style.color]="item.color" (click)="onNumberClick(item)">
-        {{item.value}}
-    </div>
-</div>
-
-<!-- <div id="game-over" [style.display]="showGameOver ? 'flex' : 'none'">
-  <div id="final_timer">{{finalTimer}}</div> -->
-<!-- </div> -->
