@@ -1,8 +1,9 @@
 import { Component, AfterViewInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-game-tim-so',
-  templateUrl: './game-tim-so.component.html',
+  templateUrl: './game-tim-so.component.html', 
   styleUrls: ['./game-tim-so.component.css']
 })
 export class GameTimSoComponent implements AfterViewInit {
@@ -33,6 +34,18 @@ export class GameTimSoComponent implements AfterViewInit {
   }> = [];
   showGameOver = false;
   finalTimer = '00:00:00';
+
+  settingsForm: FormGroup;
+
+  constructor(private fb: FormBuilder) {
+    this.settingsForm = this.fb.group({
+      zoomBoard: [40],
+      numbLength: [200],
+      cR: [40],
+      fontSize: [40],
+      deltaTop: [40]
+    });
+  }
 
   ngAfterViewInit() {
     this.initBoard();
@@ -65,26 +78,26 @@ export class GameTimSoComponent implements AfterViewInit {
   }
 
   initBoard() {
-    if (localStorage.getItem("zoomBoard") !== null) {
+    if (localStorage.getItem("zoomBoard")) {
       this.zoomBoard = +localStorage.getItem("zoomBoard")!;
+      this.settingsForm.get('zoomBoard')?.setValue(this.zoomBoard);
     }
-    if (localStorage.getItem("numbLength") !== null) {
+    if (localStorage.getItem("numbLength")) {
       this.numbLength = +localStorage.getItem("numbLength")!;
+      this.settingsForm.get('numbLength')?.setValue(this.numbLength);
     }
-    if (localStorage.getItem("cR") !== null) {
+    if (localStorage.getItem("cR")) {
       this.cR = +localStorage.getItem("cR")!;
+      this.settingsForm.get('cR')?.setValue(this.cR);
     }
-    if (localStorage.getItem("font-size") !== null) {
+    if (localStorage.getItem("font-size")) {
       this.font_size = +localStorage.getItem("font-size")!;
+      this.settingsForm.get('fontSize')?.setValue(this.font_size);
     }
-    if (localStorage.getItem("delta_top") !== null) {
+    if (localStorage.getItem("delta_top")) {
       this.delta_top = +localStorage.getItem("delta_top")!;
+      this.settingsForm.get('deltaTop')?.setValue(this.delta_top);
     }
-    (document.getElementById("cR") as HTMLInputElement).value = this.cR.toString();
-    (document.getElementById("vn_numberLength") as HTMLInputElement).value = this.numbLength.toString();
-    (document.getElementById("zoomBoard") as HTMLInputElement).value = this.zoomBoard.toString();
-    (document.getElementById("font-size") as HTMLInputElement).value = this.font_size.toString();
-    (document.getElementById("delta_top") as HTMLInputElement).value = this.delta_top.toString();
   }
 
   gameTimer = () => {
@@ -104,19 +117,21 @@ export class GameTimSoComponent implements AfterViewInit {
   }
 
   startCounting = () => {    
-    // Reset timer và number thông qua property binding
     this.timerDisplay = '00:00:00';
     this.currentNumber = '1';
     this.start = new Date().getTime();
+    
+    // Lưu settings từ form
+    const formValues = this.settingsForm.value;
+    localStorage.setItem("zoomBoard", formValues.zoomBoard);
+    localStorage.setItem("numbLength", formValues.numbLength);
+    localStorage.setItem("cR", formValues.cR);
+    localStorage.setItem("font-size", formValues.fontSize);
+    localStorage.setItem("delta_top", formValues.deltaTop);
+    
     this.Init();
     this.closeNav();
     this.closeFinish();
-
-    localStorage.setItem("zoomBoard", (document.getElementById("zoomBoard") as HTMLInputElement).value);
-    localStorage.setItem("numbLength", (document.getElementById("vn_numberLength") as HTMLInputElement).value);
-    localStorage.setItem("cR", (document.getElementById("cR") as HTMLInputElement).value);
-    localStorage.setItem("font-size", (document.getElementById("font-size") as HTMLInputElement).value);
-    localStorage.setItem("delta_top", (document.getElementById("delta_top") as HTMLInputElement).value);
 
     if (this.x) {
       clearInterval(this.x);
@@ -137,11 +152,13 @@ export class GameTimSoComponent implements AfterViewInit {
     canvas.width = (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) - 20;
     canvas.height = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight) - 200;
     const ctx = canvas.getContext("2d")!;
-    let lookNumber = 1;
-    this.cR = parseInt((document.getElementById("cR") as HTMLInputElement).value);
-    this.zoomBoard = parseInt((document.getElementById("zoomBoard") as HTMLInputElement).value);
-    this.numbLength = parseInt((document.getElementById("vn_numberLength") as HTMLInputElement).value);
-    this.delta_top = parseInt((document.getElementById("delta_top") as HTMLInputElement).value);
+    
+    const formValues = this.settingsForm.value;
+    this.cR = formValues.cR;
+    this.zoomBoard = formValues.zoomBoard;
+    this.numbLength = formValues.numbLength;
+    this.delta_top = formValues.deltaTop;
+    this.font_size = formValues.fontSize;
 
     ctx.beginPath();
 
@@ -154,8 +171,6 @@ export class GameTimSoComponent implements AfterViewInit {
     this.InitNumberArray();
     this.gameZoneItems = [];
     this.currentNumber = '1';
-    let fontSize = (document.getElementById("font-size") as HTMLInputElement).value;
-
 
     for (j = 0, i = j + 1; j < this.numbLength || k < this.numbLength; j++, i = j + 1) {
       let c = this.RandCircle(i, centerx, centery, this.numberArray[k], this.zoomBoard, this.cR);
@@ -170,7 +185,7 @@ export class GameTimSoComponent implements AfterViewInit {
           width: c.R + 'px',
           height: c.R + 'px',
           lineHeight: c.R + 'px',
-          fontSize: fontSize + "px",
+          fontSize: this.font_size + "px",
           isHidden: false
         });
         k++;
@@ -283,9 +298,8 @@ export class GameTimSoComponent implements AfterViewInit {
 
   onRadiusChange(event: Event) {
     const r = +(event.target as HTMLInputElement).value;
-    const fontSizeInput = document.getElementById('font-size') as HTMLInputElement;
-    if (fontSizeInput) {
-      fontSizeInput.value = String(Math.max(r - 10, 1));
-    }
+    this.settingsForm.patchValue({
+      fontSize: Math.max(r - 10, 1)
+    });
   }
 }

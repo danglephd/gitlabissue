@@ -18,26 +18,26 @@
         <a href="javascript:void(0)" class="closebtn" (click)="closeNav()">&times;</a>
         <span class="sidenav-title" (click)="closeNav()" style="cursor:pointer;">Settings</span>
     </div>
-    <div class="sidenav-content">
-        <label for="vn_numberLength">Number of Numbers</label>
+    <div class="sidenav-content" [formGroup]="settingsForm">
+        <label for="numbLength">Number of Numbers</label>
         <div class="desc">Total numbers to find in the game.</div>
-        <input type="number" name="numberLength" id="vn_numberLength" value="25">
+        <input type="number" id="numbLength" formControlName="numbLength">
 
         <label for="zoomBoard">Zoom</label>
         <div class="desc">Adjusts the overall scale of the board.</div>
-        <input type="number" name="zoomBoard" id="zoomBoard" value="40">
+        <input type="number" id="zoomBoard" formControlName="zoomBoard">
 
         <label for="cR">Circle Radius (R)</label>
         <div class="desc">Radius of each number circle (in pixels).</div>
-        <input type="number" name="cR" id="cR" value="50" (input)="onRadiusChange($event)">
+        <input type="number" id="cR" formControlName="cR" (input)="onRadiusChange($event)">
 
-        <label for="font-size">Font Size</label>
+        <label for="fontSize">Font Size</label>
         <div class="desc">Size of the number text inside each circle.</div>
-        <input type="number" name="font-size" id="font-size" value="30">
+        <input type="number" id="fontSize" formControlName="fontSize">
 
-        <label for="delta_top">Delta Top</label>
+        <label for="deltaTop">Delta Top</label>
         <div class="desc">Vertical offset for the board (in pixels).</div>
-        <input type="number" name="delta_top" id="delta_top" value="40">
+        <input type="number" id="deltaTop" formControlName="deltaTop">
 
         <a class="restart-button" style="margin: 10px 0;" (click)="startCounting()">New Game</a>
     </div>
