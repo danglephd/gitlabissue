@@ -18,6 +18,7 @@ import { WalletComponent } from './wallet/wallet.component';
 import { WalletAddDialogComponent } from './wallet-add-dialog/wallet-add-dialog.component';
 import { CalendarDialogComponent } from './calendar-dialog/calendar-dialog.component';
 import { GameTimSoComponent } from './game-tim-so/game-tim-so.component';
+import { FormatTimePipe } from './pipes/format-time.pipe';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { GameTimSoComponent } from './game-tim-so/game-tim-so.component';
     WalletAddDialogComponent, // Thêm WalletAddDialogComponent vào declarations
     ConfirmDialogComponent,
     CalendarDialogComponent, // Thêm CalendarDialogComponent vào declarations
-    GameTimSoComponent
+    GameTimSoComponent,
+    FormatTimePipe
   ],
   imports: [
     BrowserModule,
