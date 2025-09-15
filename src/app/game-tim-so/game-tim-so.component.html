@@ -1,7 +1,7 @@
 <div class="container header-container">
     <div class="heading header-flex">
         <h1 class="title header-title">
-            <span class="menu-icon" (click)="changeNav()">&#9776;</span>
+            <span class="menu-icon" (click)="toggleNav()">&#9776;</span>
             Number
         </h1>
         <div class="header-actions-group">
@@ -9,7 +9,7 @@
                 <div class="score-container" id="vn_number">{{currentNumber}}</div>
                 <div class="best-container" id="vn_timer">{{timerDisplay}}</div>
             </div>
-            <a class="restart-button" (click)="startCounting()">New Game</a>
+            <a class="restart-button" (click)="startGame()">New Game</a>
         </div>
     </div>
 </div>
@@ -39,7 +39,7 @@
         <div class="desc">Vertical offset for the board (in pixels).</div>
         <input type="number" id="deltaTop" formControlName="deltaTop">
 
-        <a class="restart-button" style="margin: 10px 0;" (click)="startCounting()">New Game</a>
+        <a class="restart-button" style="margin: 10px 0;" (click)="startGame()">New Game</a>
     </div>
 </div>
 <div class="game-message game-over" id="game-over" [style.display]="showGameOver ? 'flex' : 'none'">
@@ -47,7 +47,7 @@
     <p>Finish!</p>
     <div class="lower">
         <a class="keep-playing-button" (click)="closeFinish()">Keep going</a>
-        <a class="retry-button" (click)="startCounting()">Play again</a>
+        <a class="retry-button" (click)="startGame()">Play again</a>
     </div>
 </div>
 <div id="gameZone">

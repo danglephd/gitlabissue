@@ -8,21 +8,17 @@ import { Circle } from '../models/circle.model';
   styleUrls: ['./game-tim-so.component.css']
 })
 export class GameTimSoComponent implements AfterViewInit {
-  zoomBoard = 40;
-  numbLength = 200;
-  cR = 40;
-  font_size = 40;
-  delta_top = 40;
+  // UI state
   isShowSidenav = false;
-  numberArray: number[] = [];
-  x: any = null;
-  start = new Date().getTime();
+  showGameOver = false;
 
-  // Add new properties
+  // Game state
+  private timerInterval: any = null;
+  private gameStartTime = 0;
+  numberArray: number[] = [];
   timerDisplay = '00:00:00';
   currentNumber = '1';
   gameZoneItems: Array<Circle & { isHidden: boolean }> = [];
-  showGameOver = false;
   finalTimer = '00:00:00';
 
   settingsForm: FormGroup;
@@ -41,21 +37,11 @@ export class GameTimSoComponent implements AfterViewInit {
     this.initBoard();
   }
 
-  openNav() {
-    this.isShowSidenav = true;
-    (document.getElementById("mySidenav") as HTMLElement).style.width = "250px";
-  }
-
-  changeNav() {
+  toggleNav() {
     this.isShowSidenav = !this.isShowSidenav;
     const sidenav = document.getElementById("mySidenav") as HTMLElement;
-    if (this.isShowSidenav) {
-      sidenav.classList.add('open');
-      sidenav.style.width = "350px";
-    } else {
-      sidenav.classList.remove('open');
-      sidenav.style.width = "0";
-    }
+    sidenav.style.width = this.isShowSidenav ? "350px" : "0";
+    sidenav.classList.toggle('open');
   }
 
   closeNav() {
@@ -68,117 +54,40 @@ export class GameTimSoComponent implements AfterViewInit {
   }
 
   initBoard() {
-    if (localStorage.getItem("zoomBoard")) {
-      this.zoomBoard = +localStorage.getItem("zoomBoard")!;
-      this.settingsForm.get('zoomBoard')?.setValue(this.zoomBoard);
-    }
-    if (localStorage.getItem("numbLength")) {
-      this.numbLength = +localStorage.getItem("numbLength")!;
-      this.settingsForm.get('numbLength')?.setValue(this.numbLength);
-    }
-    if (localStorage.getItem("cR")) {
-      this.cR = +localStorage.getItem("cR")!;
-      this.settingsForm.get('cR')?.setValue(this.cR);
-    }
-    if (localStorage.getItem("font-size")) {
-      this.font_size = +localStorage.getItem("font-size")!;
-      this.settingsForm.get('fontSize')?.setValue(this.font_size);
-    }
-    if (localStorage.getItem("delta_top")) {
-      this.delta_top = +localStorage.getItem("delta_top")!;
-      this.settingsForm.get('deltaTop')?.setValue(this.delta_top);
-    }
+    const settings = ['zoomBoard', 'numbLength', 'cR', 'fontSize', 'deltaTop'];
+    settings.forEach(setting => {
+      const value = localStorage.getItem(setting);
+      if (value) {
+        this.settingsForm.get(setting)?.setValue(+value);
+      }
+    });
   }
 
-  gameTimer = () => {
-    let now = new Date().getTime();
-    let addTime = 0;
-    let distance = addTime + ((Date.now() - this.start) / 1000) | 0;
-    let hours: any = (distance / 3600) | 0;
-    let minutes: any = ((distance / 60) | 0) - (hours * 60);
-    let seconds: any = (distance % 60) | 0;
-    hours = hours < 10 ? "0" + hours : hours;
-    minutes = minutes < 10 ? "0" + minutes : minutes;
-    seconds = seconds < 10 ? "0" + seconds : seconds;
-    this.timerDisplay = `${hours}:${minutes}:${seconds}`;
-    if (+hours >= 1) {
-      clearInterval(this.x);
-    }
-  }
-
-  startCounting = () => {
-    this.timerDisplay = '00:00:00';
-    this.currentNumber = '1';
-    this.start = new Date().getTime();
-
-    // Lưu settings từ form
-    const formValues = this.settingsForm.value;
-    localStorage.setItem("zoomBoard", formValues.zoomBoard);
-    localStorage.setItem("numbLength", formValues.numbLength);
-    localStorage.setItem("cR", formValues.cR);
-    localStorage.setItem("font-size", formValues.fontSize);
-    localStorage.setItem("delta_top", formValues.deltaTop);
-
-    this.Init();
+  startGame = () => {
+    this.resetGameState();
+    this.saveSettings();
+    this.initGameBoard();
+    this.startTimer();
     this.closeNav();
-    this.closeFinish();
-
-    if (this.x) {
-      clearInterval(this.x);
-    }
-    this.x = setInterval(this.gameTimer, 1000);
-    return false;
   }
 
-  stopCounting() {
-    this.timerDisplay = '00:00:00';
-    this.gameZoneItems = [];
-    this.currentNumber = '';
-    clearInterval(this.x);
-  }
-
-  Init() {
-    const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
-    canvas.width = (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) - 20;
-    canvas.height = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight) - 200;
-    const ctx = canvas.getContext("2d")!;
-
+  private initGameBoard() {
     const formValues = this.settingsForm.value;
-    this.cR = formValues.cR;
-    this.zoomBoard = formValues.zoomBoard;
-    this.numbLength = formValues.numbLength;
-    this.delta_top = formValues.deltaTop;
-    this.font_size = formValues.fontSize;
-
-    ctx.beginPath();
-
-    let centerx = canvas.width / 2;
-    let centery = canvas.height / 2;
-    let j = 0, i = 0, k = 0;
-
-    let finalNumber = this.calculateFinalNumber(this.numbLength, canvas.width, canvas.height, centerx, centery);
-    this.numbLength = finalNumber;
-    this.InitNumberArray();
+    const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
+    const { width, height } = this.setupCanvas(canvas);
+    
+    const centerx = width / 2;
+    const centery = height / 2;
+    
+    const finalNumber = this.calculateFinalNumber(formValues.numbLength, width, height, centerx, centery);
+    this.initNumberArray(finalNumber);
+    
     this.gameZoneItems = [];
-    this.currentNumber = '1';
-
-    for (j = 0, i = j + 1; j < this.numbLength || k < this.numbLength; j++, i = j + 1) {
-      let c = this.RandCircle(i, centerx, centery, this.numberArray[k], this.zoomBoard, this.cR);
-
-      if (c != null) {
-        this.gameZoneItems.push({
-          ...c,
-          // value: c.value,
-          // backgroundColor: c.backgroundColor,
-          // color: c.color,
-          top: (c.rY + parseInt(this.delta_top as any)) + 'px',
-          left: c.rX + 'px',
-          width: c.R + 'px',
-          height: c.R + 'px',
-          lineHeight: c.R + 'px',
-          fontSize: this.font_size + "px",
-          isHidden: false
-        });
+    let k = 0;
+    for (let j = 0; k < this.numberArray.length; j++) {
+      const circle = this.createCircle(j, centerx, centery, this.numberArray[k], formValues);
+      if (circle) {
+        this.gameZoneItems.push({ ...circle, isHidden: false });
         k++;
       }
     }
@@ -190,8 +99,8 @@ export class GameTimSoComponent implements AfterViewInit {
       item.isHidden = true;
       this.currentNumber = (lookNumber + 1).toString();
 
-      if (lookNumber >= this.numbLength) {
-        clearInterval(this.x);
+      if (lookNumber >= this.numberArray.length) {
+        this.stopGame();
         this.currentNumber = ' - ';
         this.showGameOver = true;
         this.finalTimer = this.timerDisplay;
@@ -199,80 +108,57 @@ export class GameTimSoComponent implements AfterViewInit {
     }
   }
 
-  calculateFinalNumber(numbLength: number, width: number, height: number, centerx: number, centery: number): number {
+  private calculateFinalNumber(numbLength: number, width: number, height: number, centerx: number, centery: number): number {
     let numberMax = 0;
-    for (let j = 0, i = j + 1; j < numbLength || numberMax < numbLength; j++, i = j + 1) {
-      let c = this.RandCircle(i, centerx, centery, 0, this.zoomBoard, this.cR);
-      if (c != null) {
-        numberMax++;
-      }
-      if (j > numbLength * 1.5) {
-        return numberMax;
-      }
+    for (let j = 0; numberMax < numbLength && j < numbLength * 1.5; j++) {
+      const circle = this.RandCircle(j, centerx, centery, 0, this.settingsForm.value.zoomBoard, this.settingsForm.value.cR);
+      if (circle) numberMax++;
     }
-    return numbLength;
+    return numberMax;
   }
 
-  resizeCanvas() {
-    const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
-    canvas.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    canvas.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-    // clearScreen(); // Nếu bạn có hàm này
-  }
-
-  InitNumberArray() {
-    let j = 0, i = 0, temp;
-    for (i = 0; i < this.numbLength; i++) {
-      this.numberArray[i] = i + 1;
-    }
-    for (i = 0; i < this.numbLength; i++) {
-      j = i + Math.floor(Math.random() * this.numbLength - i);
-      temp = this.numberArray[i];
-      this.numberArray[i] = this.numberArray[j];
-      this.numberArray[j] = temp;
+  private initNumberArray(length: number) {
+    this.numberArray = Array(length).fill(0).map((_, i) => i + 1);
+    for (let i = 0; i < length; i++) {
+      const j = i + Math.floor(Math.random() * (length - i));
+      [this.numberArray[i], this.numberArray[j]] = [this.numberArray[j], this.numberArray[i]];
     }
   }
 
-  RandCircle(i: number, centerx: number, centery: number, value: number, zoom: number, cR: number) {
-    let goldenRatio_phi = 0.618033988749895;
-    let s = 0.5;
-    let v = 0.99;
-    let h = 0.99;
-    let r = Math.sqrt(i);
-    let theta = i * 2 * Math.PI / (goldenRatio_phi * goldenRatio_phi);
+  private RandCircle(i: number, centerx: number, centery: number, value: number, zoom: number, cR: number): Circle | null {
+    const goldenRatio_phi = 0.618033988749895;
+    const r = Math.sqrt(i);
+    const theta = i * 2 * Math.PI / (goldenRatio_phi * goldenRatio_phi);
 
-    let x = (Math.cos(theta) * r) * zoom;
-    let y = (Math.sin(theta) * r) * zoom;
-    let rX = Math.round((centerx) + x);
-    let rY = Math.round((centery) + y);
+    const x = (Math.cos(theta) * r) * zoom;
+    const y = (Math.sin(theta) * r) * zoom;
+    const rX = Math.round(centerx + x);
+    const rY = Math.round(centery + y);
 
     const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
     if (rX - cR < 0 || rY - cR < 0 || rX + cR > canvas.width || rY + cR > canvas.height) {
       return null;
     }
 
-    const colors = this.hsvToRgb(Math.random(), s, v);
+    const colors = this.hsvToRgb(Math.random(), 0.5, 0.99);
 
-    const circle: Circle = {
+    return {
       R: cR,
-      rX: rX,
-      rY: rY,
-      value: value,
-      backgroundColor: colors.backgroundColor,
-      color: colors.color,
-      fontSize: this.font_size
+      rX,
+      rY,
+      value,
+      ...colors,
+      fontSize: this.settingsForm.value.fontSize
     };
-
-    return circle;
   }
 
-  hsvToRgb(h: number, s: number, v: number) {
+  private hsvToRgb(h: number, s: number, v: number) {
     let r = 0, g = 0, b = 0;
-    let i = Math.floor(h * 6);
-    let f = h * 6 - i;
-    let p = v * (1 - s);
-    let q = v * (1 - f * s);
-    let t = v * (1 - (1 - f) * s);
+    const i = Math.floor(h * 6);
+    const f = h * 6 - i;
+    const p = v * (1 - s);
+    const q = v * (1 - f * s);
+    const t = v * (1 - (1 - f) * s);
 
     switch (i % 6) {
       case 0: r = v; g = t; b = p; break;
@@ -285,14 +171,77 @@ export class GameTimSoComponent implements AfterViewInit {
 
     return {
       backgroundColor: `rgb(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)})`,
-      color: `rgb(0, 0, 0)`
+      color: 'rgb(0, 0, 0)'
     };
   }
 
   onRadiusChange(event: Event) {
-    const r = +(event.target as HTMLInputElement).value;
+    const radius = +(event.target as HTMLInputElement).value;
     this.settingsForm.patchValue({
-      fontSize: Math.max(r - 10, 1)
+      fontSize: Math.max(radius - 10, 1)
     });
+  }
+
+  private resetGameState() {
+    this.timerDisplay = '00:00:00';
+    this.currentNumber = '1';
+    this.gameStartTime = Date.now();
+    this.gameZoneItems = [];
+    this.showGameOver = false;
+  }
+
+  private saveSettings() {
+    Object.entries(this.settingsForm.value).forEach(([key, value]) => {
+      localStorage.setItem(key, String(value));
+    });
+  }
+
+  private updateTimer = () => {
+    const elapsed = Math.floor((Date.now() - this.gameStartTime) / 1000);
+    const hours = Math.floor(elapsed / 3600);
+    const minutes = Math.floor((elapsed % 3600) / 60);
+    const seconds = elapsed % 60;
+
+    if (hours >= 1) {
+      this.stopGame();
+      return;
+    }
+
+    this.timerDisplay = [hours, minutes, seconds]
+      .map(v => v < 10 ? `0${v}` : v)
+      .join(':');
+  }
+
+  private setupCanvas(canvas: HTMLCanvasElement) {
+    canvas.width = window.innerWidth - 20;
+    canvas.height = window.innerHeight - 200;
+    return { width: canvas.width, height: canvas.height };
+  }
+
+  private createCircle(index: number, centerx: number, centery: number, value: number, settings: any): Circle | null {
+    const circle = this.RandCircle(index, centerx, centery, value, settings.zoomBoard, settings.cR);
+    if (!circle) return null;
+
+    return {
+      ...circle,
+      top: (circle.rY + settings.deltaTop) + 'px',
+      left: circle.rX + 'px',
+      width: circle.R + 'px',
+      height: circle.R + 'px',
+      lineHeight: circle.R + 'px',
+      fontSize: settings.fontSize + 'px'
+    };
+  }
+
+  private startTimer() {
+    if (this.timerInterval) clearInterval(this.timerInterval);
+    this.timerInterval = setInterval(this.updateTimer, 1000);
+  }
+
+  private stopGame() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
   }
 }
