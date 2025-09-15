@@ -1,9 +1,10 @@
 import { Component, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { Circle } from '../models/circle.model';
 
 @Component({
   selector: 'app-game-tim-so',
-  templateUrl: './game-tim-so.component.html', 
+  templateUrl: './game-tim-so.component.html',
   styleUrls: ['./game-tim-so.component.css']
 })
 export class GameTimSoComponent implements AfterViewInit {
@@ -20,18 +21,7 @@ export class GameTimSoComponent implements AfterViewInit {
   // Add new properties
   timerDisplay = '00:00:00';
   currentNumber = '1';
-  gameZoneItems: Array<{
-    value: number,
-    backgroundColor: string,
-    color: string,
-    top: string,
-    left: string,
-    width: string,
-    height: string,
-    lineHeight: string,
-    fontSize: string,
-    isHidden: boolean
-  }> = [];
+  gameZoneItems: Array<Circle & { isHidden: boolean }> = [];
   showGameOver = false;
   finalTimer = '00:00:00';
 
@@ -116,11 +106,11 @@ export class GameTimSoComponent implements AfterViewInit {
     }
   }
 
-  startCounting = () => {    
+  startCounting = () => {
     this.timerDisplay = '00:00:00';
     this.currentNumber = '1';
     this.start = new Date().getTime();
-    
+
     // Lưu settings từ form
     const formValues = this.settingsForm.value;
     localStorage.setItem("zoomBoard", formValues.zoomBoard);
@@ -128,7 +118,7 @@ export class GameTimSoComponent implements AfterViewInit {
     localStorage.setItem("cR", formValues.cR);
     localStorage.setItem("font-size", formValues.fontSize);
     localStorage.setItem("delta_top", formValues.deltaTop);
-    
+
     this.Init();
     this.closeNav();
     this.closeFinish();
@@ -152,7 +142,7 @@ export class GameTimSoComponent implements AfterViewInit {
     canvas.width = (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) - 20;
     canvas.height = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight) - 200;
     const ctx = canvas.getContext("2d")!;
-    
+
     const formValues = this.settingsForm.value;
     this.cR = formValues.cR;
     this.zoomBoard = formValues.zoomBoard;
@@ -177,9 +167,10 @@ export class GameTimSoComponent implements AfterViewInit {
 
       if (c != null) {
         this.gameZoneItems.push({
-          value: c.value,
-          backgroundColor: c.backgroundColor,
-          color: c.color,
+          ...c,
+          // value: c.value,
+          // backgroundColor: c.backgroundColor,
+          // color: c.color,
           top: (c.rY + parseInt(this.delta_top as any)) + 'px',
           left: c.rX + 'px',
           width: c.R + 'px',
@@ -193,7 +184,7 @@ export class GameTimSoComponent implements AfterViewInit {
     }
   }
 
-  onNumberClick(item: any) {
+  onNumberClick(item: Circle & { isHidden: boolean }) {
     const lookNumber = parseInt(this.currentNumber);
     if (item.value === lookNumber) {
       item.isHidden = true;
@@ -260,17 +251,19 @@ export class GameTimSoComponent implements AfterViewInit {
       return null;
     }
 
-    let circleColor = this.hsvToRgb(Math.random(), s, v);
+    const colors = this.hsvToRgb(Math.random(), s, v);
 
-    let c = {
+    const circle: Circle = {
       R: cR,
       rX: rX,
       rY: rY,
       value: value,
-      backgroundColor: circleColor.backgroundColor,
-      color: circleColor.color
+      backgroundColor: colors.backgroundColor,
+      color: colors.color,
+      fontSize: this.font_size
     };
-    return c;
+
+    return circle;
   }
 
   hsvToRgb(h: number, s: number, v: number) {
