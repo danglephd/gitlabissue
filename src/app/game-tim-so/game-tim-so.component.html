@@ -6,8 +6,8 @@
         </h1>
         <div class="header-actions-group">
             <div class="scores-container">
-                <div class="score-container" id="vn_number"> - </div>
-                <div class="best-container" id="vn_timer">00:00:00</div>
+                <div class="score-container" id="vn_number">{{currentNumber}}</div>
+                <div class="best-container" id="vn_timer">{{timerDisplay}}</div>
             </div>
             <a class="restart-button" (click)="startCounting()">New Game</a>
         </div>
@@ -42,13 +42,34 @@
         <a class="restart-button" style="margin: 10px 0;" (click)="startCounting()">New Game</a>
     </div>
 </div>
-<div class="game-message game-over" style="display: none;" id="game-over">
-    <p id="final_timer">00:00:11</p>
+<div class="game-message game-over" id="game-over" [style.display]="showGameOver ? 'flex' : 'none'">
+    <p id="final_timer">{{finalTimer}}</p>
     <p>Finish!</p>
     <div class="lower">
         <a class="keep-playing-button" (click)="closeFinish()">Keep going</a>
         <a class="retry-button" (click)="startCounting()">Play again</a>
     </div>
 </div>
-<div id="gameZone"></div>
+<div id="gameZone">
+    <div *ngFor="let item of gameZoneItems" class="numberCircle" [class.hidden]="item.isHidden"
+        [style.background-color]="item.backgroundColor" [style.top]="item.top" [style.left]="item.left"
+        [style.width]="item.width" [style.height]="item.height" [style.line-height]="item.lineHeight"
+        [style.font-size]="item.fontSize" [style.color]="item.color" (click)="onNumberClick(item)">
+        {{item.value}}
+    </div>
+</div>
+
 <canvas id="myCanvas"></canvas>
+
+<div id="gameZone">
+    <div *ngFor="let item of gameZoneItems" class="numberCircle" [class.hidden]="item.isHidden"
+        [style.background-color]="item.backgroundColor" [style.top]="item.top" [style.left]="item.left"
+        [style.width]="item.width" [style.height]="item.height" [style.line-height]="item.lineHeight"
+        [style.font-size]="item.fontSize" [style.color]="item.color" (click)="onNumberClick(item)">
+        {{item.value}}
+    </div>
+</div>
+
+<!-- <div id="game-over" [style.display]="showGameOver ? 'flex' : 'none'">
+  <div id="final_timer">{{finalTimer}}</div> -->
+<!-- </div> -->

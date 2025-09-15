@@ -16,6 +16,24 @@ export class GameTimSoComponent implements AfterViewInit {
   x: any = null;
   start = new Date().getTime();
 
+  // Add new properties
+  timerDisplay = '00:00:00';
+  currentNumber = '1';
+  gameZoneItems: Array<{
+    value: number,
+    backgroundColor: string,
+    color: string,
+    top: string,
+    left: string,
+    width: string,
+    height: string,
+    lineHeight: string,
+    fontSize: string,
+    isHidden: boolean
+  }> = [];
+  showGameOver = false;
+  finalTimer = '00:00:00';
+
   ngAfterViewInit() {
     this.initBoard();
   }
@@ -43,7 +61,7 @@ export class GameTimSoComponent implements AfterViewInit {
   }
 
   closeFinish() {
-    (document.getElementById("game-over") as HTMLElement).style.display = "none";
+    this.showGameOver = false;
   }
 
   initBoard() {
@@ -79,16 +97,17 @@ export class GameTimSoComponent implements AfterViewInit {
     hours = hours < 10 ? "0" + hours : hours;
     minutes = minutes < 10 ? "0" + minutes : minutes;
     seconds = seconds < 10 ? "0" + seconds : seconds;
-    (document.getElementById("vn_timer") as HTMLElement).innerHTML = `${hours}:${minutes}:${seconds}`;
+    this.timerDisplay = `${hours}:${minutes}:${seconds}`;
     if (+hours >= 1) {
       clearInterval(this.x);
     }
   }
 
-  startCounting = () => {
+  startCounting = () => {    
+    // Reset timer và number thông qua property binding
+    this.timerDisplay = '00:00:00';
+    this.currentNumber = '1';
     this.start = new Date().getTime();
-    (document.getElementById("vn_timer") as HTMLElement).innerHTML = `00:00:00`;
-    (document.getElementById("vn_number") as HTMLElement).innerHTML = '';
     this.Init();
     this.closeNav();
     this.closeFinish();
@@ -107,9 +126,9 @@ export class GameTimSoComponent implements AfterViewInit {
   }
 
   stopCounting() {
-    (document.getElementById("vn_timer") as HTMLElement).innerHTML = `00:00:00`;
-    (document.getElementById("gameZone") as HTMLElement).innerHTML = '';
-    (document.getElementById("vn_number") as HTMLElement).innerHTML = '';
+    this.timerDisplay = '00:00:00';
+    this.gameZoneItems = [];
+    this.currentNumber = '';
     clearInterval(this.x);
   }
 
@@ -133,43 +152,43 @@ export class GameTimSoComponent implements AfterViewInit {
     let finalNumber = this.calculateFinalNumber(this.numbLength, canvas.width, canvas.height, centerx, centery);
     this.numbLength = finalNumber;
     this.InitNumberArray();
-    (document.getElementById("gameZone") as HTMLElement).innerHTML = '';
-    (document.getElementById("vn_number") as HTMLElement).innerHTML = '1';
+    this.gameZoneItems = [];
+    this.currentNumber = '1';
     let fontSize = (document.getElementById("font-size") as HTMLInputElement).value;
+
 
     for (j = 0, i = j + 1; j < this.numbLength || k < this.numbLength; j++, i = j + 1) {
       let c = this.RandCircle(i, centerx, centery, this.numberArray[k], this.zoomBoard, this.cR);
 
       if (c != null) {
-        let node = document.createElement("div");
-        let textnode = document.createTextNode(c.value.toString());
-        node.appendChild(textnode);
-        node.classList.add('numberCircle');
-        node.style.backgroundColor = c.backgroundColor;
-        node.style.top = (c.rY + parseInt(this.delta_top as any)) + 'px';
-        node.style.left = c.rX + 'px'; // Thay vì node.style.right
-        node.style.width = c.R + 'px';
-        node.style.height = c.R + 'px';
-        node.style.lineHeight = c.R + 'px';
-        node.style.fontSize = fontSize + "px";
-        node.style.color = c.color;
-
-        node.addEventListener('click', (event) => {
-          var nodeNum = document.getElementById('vn_number') as HTMLElement;
-          if (node.innerHTML == `${lookNumber}`) {
-            node.classList.add('hidden');
-            lookNumber++;
-            nodeNum.innerHTML = lookNumber.toString();
-            if (lookNumber > this.numbLength) {
-              clearInterval(this.x);
-              nodeNum.innerHTML = ' - ';
-              (document.getElementById("game-over") as HTMLElement).style.display = "flex";
-              (document.getElementById("final_timer") as HTMLElement).innerHTML = (document.getElementById("vn_timer") as HTMLElement).innerHTML;
-            }
-          }
+        this.gameZoneItems.push({
+          value: c.value,
+          backgroundColor: c.backgroundColor,
+          color: c.color,
+          top: (c.rY + parseInt(this.delta_top as any)) + 'px',
+          left: c.rX + 'px',
+          width: c.R + 'px',
+          height: c.R + 'px',
+          lineHeight: c.R + 'px',
+          fontSize: fontSize + "px",
+          isHidden: false
         });
-        (document.getElementById("gameZone") as HTMLElement).appendChild(node);
         k++;
+      }
+    }
+  }
+
+  onNumberClick(item: any) {
+    const lookNumber = parseInt(this.currentNumber);
+    if (item.value === lookNumber) {
+      item.isHidden = true;
+      this.currentNumber = (lookNumber + 1).toString();
+
+      if (lookNumber >= this.numbLength) {
+        clearInterval(this.x);
+        this.currentNumber = ' - ';
+        this.showGameOver = true;
+        this.finalTimer = this.timerDisplay;
       }
     }
   }
