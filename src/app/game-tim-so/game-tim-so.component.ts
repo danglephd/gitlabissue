@@ -127,9 +127,12 @@ export class GameTimSoComponent implements AfterViewInit {
   }
 
   private RandCircle(i: number, centerx: number, centery: number, value: number, zoom: number, cR: number, canvasWidth: number, canvasHeight: number): Circle | null {
-    const goldenRatio_phi = 0.618033988749895;
+    // const goldenRatio_phi = 0.618033988749895;
+    // const goldenRatio_phi_2 = 0.382;
     const r = Math.sqrt(i);
-    const theta = i * 2 * Math.PI / (goldenRatio_phi * goldenRatio_phi);
+    const p_div_gol_phi_2 = 8.224;
+
+    const theta = i * 2 * p_div_gol_phi_2;
 
     const x = (Math.cos(theta) * r) * zoom;
     const y = (Math.sin(theta) * r) * zoom;
@@ -214,8 +217,10 @@ export class GameTimSoComponent implements AfterViewInit {
   }
 
   private setupCanvas(canvas: HTMLCanvasElement) {
-    canvas.width = window.innerWidth - 20;
-    canvas.height = window.innerHeight - 200;
+    // canvas.width = window.innerWidth - 20;
+    // canvas.height = window.innerHeight - 200;
+    canvas.width = 1000;
+    canvas.height = 500;
     return { width: canvas.width, height: canvas.height };
   }
 
