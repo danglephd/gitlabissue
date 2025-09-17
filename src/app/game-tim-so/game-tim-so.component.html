@@ -59,17 +59,3 @@
     </div>
 </div>
 <canvas #myCanvas></canvas>
-<!-- <canvas id="myCanvas"></canvas> -->
-
-<div id="gameZone">
-    <div *ngFor="let item of gameZoneItems" class="numberCircle" [class.hidden]="item.isHidden"
-        [style.background-color]="item.backgroundColor" [style.top]="item.top" [style.left]="item.left"
-        [style.width]="item.width" [style.height]="item.height" [style.line-height]="item.lineHeight"
-        [style.font-size]="item.fontSize" [style.color]="item.color" (click)="onNumberClick(item)">
-        {{item.value}}
-    </div>
-</div>
-
-<!-- <div id="game-over" [style.display]="showGameOver ? 'flex' : 'none'">
-  <div id="final_timer">{{finalTimer}}</div> -->
-<!-- </div> -->
