@@ -81,6 +81,8 @@ export class GameTimSoComponent implements AfterViewInit {
     const centery = height / 2;
 
     const finalNumber = this.calculateFinalNumber(formValues.numbLength, width, height, centerx, centery);
+    this.settingsForm.patchValue({ numbLength: finalNumber });
+    localStorage.setItem('numbLength', finalNumber.toString());
     this.initNumberArray(finalNumber);
 
     this.gameZoneItems = [];
@@ -111,9 +113,12 @@ export class GameTimSoComponent implements AfterViewInit {
 
   private calculateFinalNumber(numbLength: number, width: number, height: number, centerx: number, centery: number): number {
     let numberMax = 0;
-    for (let j = 0; numberMax < numbLength && j < numbLength * 1.5; j++) {
+    for (let j = 0;  j < numbLength || numberMax < numbLength; j++) {
       const circle = this.RandCircle(j, centerx, centery, 0, this.settingsForm.value.zoomBoard, this.settingsForm.value.cR, width, height);
       if (circle) numberMax++;
+      if (j > numbLength * 1.5) {
+        return numberMax;
+      }
     }
     return numberMax;
   }
@@ -217,10 +222,8 @@ export class GameTimSoComponent implements AfterViewInit {
   }
 
   private setupCanvas(canvas: HTMLCanvasElement) {
-    // canvas.width = window.innerWidth - 20;
-    // canvas.height = window.innerHeight - 200;
-    canvas.width = 1000;
-    canvas.height = 500;
+    canvas.width = window.innerWidth - 20;
+    canvas.height = window.innerHeight - 200;
     return { width: canvas.width, height: canvas.height };
   }
 
