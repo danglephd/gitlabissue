@@ -76,13 +76,13 @@ export class GameTimSoComponent implements AfterViewInit {
     const formValues = this.settingsForm.value;
     const canvas = this.canvasRef.nativeElement;
     const { width, height } = this.setupCanvas(canvas);
-    
+
     const centerx = width / 2;
     const centery = height / 2;
-    
+
     const finalNumber = this.calculateFinalNumber(formValues.numbLength, width, height, centerx, centery);
     this.initNumberArray(finalNumber);
-    
+
     this.gameZoneItems = [];
     let k = 0;
     for (let j = 0; k < this.numberArray.length; j++) {
@@ -129,6 +129,7 @@ export class GameTimSoComponent implements AfterViewInit {
   private RandCircle(i: number, centerx: number, centery: number, value: number, zoom: number, cR: number, canvasWidth: number, canvasHeight: number): Circle | null {
     // const goldenRatio_phi = 0.618033988749895;
     // const goldenRatio_phi_2 = 0.382;
+    i = i + 1;
     const r = Math.sqrt(i);
     const p_div_gol_phi_2 = 8.224;
 
@@ -139,7 +140,6 @@ export class GameTimSoComponent implements AfterViewInit {
     const rX = Math.round(centerx + x);
     const rY = Math.round(centery + y);
 
-    // const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
     if (rX - cR < 0 || rY - cR < 0 || rX + cR > canvasWidth || rY + cR > canvasHeight) {
       return null;
     }
