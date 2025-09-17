@@ -209,6 +209,8 @@ export class GameTimSoComponent implements AfterViewInit {
   }
 
   RandCircle(i: number, centerx: number, centery: number, value: number, zoom: number, cR: number) {
+    //ghi log để kiểm tra giá trị của i
+    console.log(`Generating circle for i: ${i}, value: ${value}`);
     let goldenRatio_phi = 0.618033988749895;
     let s = 0.5;
     let v = 0.99;
@@ -221,8 +223,13 @@ export class GameTimSoComponent implements AfterViewInit {
     let rX = Math.round((centerx) + x);
     let rY = Math.round((centery) + y);
 
+    //Ghi log ra console để kiểm tra giá trị của rX, rY, cR và kích thước canvas
     const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
+    console.log(`rX: ${rX}, rY: ${rY}, cR: ${cR}, canvasWidth: ${canvas.width}, canvasHeight: ${canvas.height}`);
+
     if (rX - cR < 0 || rY - cR < 0 || rX + cR > canvas.width || rY + cR > canvas.height) {
+      //Ghi log nếu vòng tròn không được vẽ
+      console.log(`Circle with center (${rX}, ${rY}) and radius ${cR} is out of bounds.`);
       return null;
     }
 
