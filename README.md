@@ -10,3 +10,10 @@ Trên máy local:
  - yarn build1
  - Copy from "/dist" to "C:\inetpub\wwwroot\gitlabissue"
  - Restart IIS
+
+
+Game Tim so:
+
+function  RandCircle(i: number, centerx: number, centery: number, value: number, zoom: number, cR: number)  
+
+- value is 0 for calculate final number
