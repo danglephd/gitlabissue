@@ -13,6 +13,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 const material = [
@@ -28,6 +29,7 @@ const material = [
   MatIconModule, // Cho mat-icon
   MatTableModule, // Cho mat-table
   MatPaginatorModule, // Cho mat-paginator
+  ReactiveFormsModule
 ];
 
 @NgModule({
