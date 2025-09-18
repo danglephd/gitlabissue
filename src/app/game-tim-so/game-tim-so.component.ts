@@ -113,7 +113,7 @@ export class GameTimSoComponent implements AfterViewInit {
 
   private calculateFinalNumber(numbLength: number, width: number, height: number, centerx: number, centery: number): number {
     let numberMax = 0;
-    for (let j = 0;  j < numbLength || numberMax < numbLength; j++) {
+    for (let j = 0; j < numbLength || numberMax < numbLength; j++) {
       const circle = this.RandCircle(j, centerx, centery, 0, this.settingsForm.value.zoomBoard, this.settingsForm.value.cR, width, height);
       if (circle) numberMax++;
       if (j > numbLength * 1.5) {
@@ -133,12 +133,11 @@ export class GameTimSoComponent implements AfterViewInit {
 
   private RandCircle(i: number, centerx: number, centery: number, value: number, zoom: number, cR: number, canvasWidth: number, canvasHeight: number): Circle | null {
     // const goldenRatio_phi = 0.618033988749895;
-    // const goldenRatio_phi_2 = 0.382;
+    // let theta2 = i * 2 * Math.PI / (goldenRatio_phi * goldenRatio_phi); =  8.22479634591;
     i = i + 1;
-    const r = Math.sqrt(i);
-    const p_div_gol_phi_2 = 8.224;
-
-    const theta = i * 2 * p_div_gol_phi_2;
+    const p_div_gol_phi_2 = 8.22479634591;
+    let r = Math.sqrt(i);
+    let theta = i * 2 * p_div_gol_phi_2;
 
     const x = (Math.cos(theta) * r) * zoom;
     const y = (Math.sin(theta) * r) * zoom;
