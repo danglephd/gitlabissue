@@ -1,4 +1,3 @@
-
 export interface Circle {
     fontSize: any;
     R: number;
@@ -14,4 +13,5 @@ export interface Circle {
     width?: string; // Chiều rộng (optional)
     left?: string; // Vị trí trái (optional)
     top?: string; // Vị trí trên (optional)
+    rotate?: number; // Góc quay (optional)
 }
