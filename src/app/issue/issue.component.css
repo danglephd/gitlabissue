@@ -585,23 +585,32 @@ tr.mat-row:hover {
   text-align: center;
 }
 
+/* Màu xanh dương đậm, chữ trắng */
 .project-alpha {
-  background: #6792be;
+  background: #1565c0;
+  color: #fff;
 }
 
+/* Màu xanh lá đậm, chữ trắng */
 .project-beta {
-  background: #618b63;
+  background: #388e3c;
+  color: #fff;
 }
 
+/* Màu vàng tươi, chữ đen */
 .project-gamma {
-  background: #e9d195;
-  color: #333;
+  background: #ffd600;
+  color: #222;
 }
 
+/* Màu đỏ đậm, chữ trắng */
 .project-delta {
-  background: #d88d8d;
+  background: #c62828;
+  color: #fff;
 }
 
+/* Màu xám đậm, chữ trắng */
 .project-other {
-  background: #757575;
+  background: #424242;
+  color: #fff;
 }
