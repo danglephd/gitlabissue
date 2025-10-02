@@ -59,7 +59,18 @@
                 <!-- Cột Project -->
                 <ng-container matColumnDef="project">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Project </th>
-                    <td mat-cell *matCellDef="let issue"> {{ issue.project }} </td>
+                    <td mat-cell *matCellDef="let issue">
+                        <span [ngClass]="{
+                    'project-label': true,
+                    'project-alpha': issue.project === 'xm-api',
+                    'project-beta': issue.project === 'xm-web',
+                    'project-gamma': issue.project === 'erp-web',
+                    'project-delta': issue.project === 'erp-server',
+                    'project-other': ['xm-api', 'xm-web','erp-web','erp-server'].indexOf(issue.project) === -1
+                  }">
+                            {{ issue.project }}
+                        </span>
+                    </td>
                 </ng-container>
 
                 <!-- Cột Actions -->
