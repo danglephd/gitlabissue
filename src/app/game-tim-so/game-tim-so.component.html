@@ -1,54 +1,61 @@
 <div class="container header-container">
     <div class="heading header-flex">
         <h1 class="title header-title">
-            <span class="menu-icon" (click)="changeNav()">&#9776;</span>
+            <span class="menu-icon" (click)="toggleNav()">&#9776;</span>
             Number
         </h1>
         <div class="header-actions-group">
             <div class="scores-container">
-                <div class="score-container" id="vn_number"> - </div>
-                <div class="best-container" id="vn_timer">00:00:00</div>
+                <div class="score-container" id="vn_number">{{currentNumber}}</div>
+                <div class="best-container" id="vn_timer">{{timerDisplay}}</div>
             </div>
-            <a class="restart-button" (click)="startCounting()">New Game</a>
+            <a class="restart-button" (click)="startGame()">New Game</a>
         </div>
     </div>
 </div>
-<div id="mySidenav" class="sidenav">
+<div #mySidenav class="sidenav">
     <div class="sidenav-header">
         <a href="javascript:void(0)" class="closebtn" (click)="closeNav()">&times;</a>
         <span class="sidenav-title" (click)="closeNav()" style="cursor:pointer;">Settings</span>
     </div>
-    <div class="sidenav-content">
-        <label for="vn_numberLength">Number of Numbers</label>
+    <div class="sidenav-content" [formGroup]="settingsForm">
+        <label for="numbLength">Number of Numbers</label>
         <div class="desc">Total numbers to find in the game.</div>
-        <input type="number" name="numberLength" id="vn_numberLength" value="25">
+        <input type="number" id="numbLength" formControlName="numbLength">
 
         <label for="zoomBoard">Zoom</label>
         <div class="desc">Adjusts the overall scale of the board.</div>
-        <input type="number" name="zoomBoard" id="zoomBoard" value="40">
+        <input type="number" id="zoomBoard" formControlName="zoomBoard">
 
         <label for="cR">Circle Radius (R)</label>
         <div class="desc">Radius of each number circle (in pixels).</div>
-        <input type="number" name="cR" id="cR" value="50" (input)="onRadiusChange($event)">
+        <input type="number" id="cR" formControlName="cR" (input)="onRadiusChange($event)">
 
-        <label for="font-size">Font Size</label>
+        <label for="fontSize">Font Size</label>
         <div class="desc">Size of the number text inside each circle.</div>
-        <input type="number" name="font-size" id="font-size" value="30">
+        <input type="number" id="fontSize" formControlName="fontSize">
 
-        <label for="delta_top">Delta Top</label>
+        <label for="deltaTop">Delta Top</label>
         <div class="desc">Vertical offset for the board (in pixels).</div>
-        <input type="number" name="delta_top" id="delta_top" value="40">
+        <input type="number" id="deltaTop" formControlName="deltaTop">
 
-        <a class="restart-button" style="margin: 10px 0;" (click)="startCounting()">New Game</a>
+        <a class="restart-button" style="margin: 10px 0;" (click)="startGame()">New Game</a>
     </div>
 </div>
-<div class="game-message game-over" style="display: none;" id="game-over">
-    <p id="final_timer">00:00:11</p>
+<div class="game-message game-over" id="game-over" [style.display]="showGameOver ? 'flex' : 'none'">
+    <p id="final_timer">{{finalTimer}}</p>
     <p>Finish!</p>
     <div class="lower">
         <a class="keep-playing-button" (click)="closeFinish()">Keep going</a>
-        <a class="retry-button" (click)="startCounting()">Play again</a>
+        <a class="retry-button" (click)="startGame()">Play again</a>
     </div>
 </div>
-<div id="gameZone"></div>
-<canvas id="myCanvas"></canvas>
+<div id="gameZone">
+    <div *ngFor="let item of gameZoneItems" class="numberCircle" [class.hidden]="item.isHidden"
+        [style.background-color]="item.backgroundColor" [style.top]="item.top" [style.left]="item.left"
+        [style.width]="item.width" [style.height]="item.height" [style.line-height]="item.lineHeight"
+        [style.font-size]="item.fontSize" [style.color]="item.color" (click)="onNumberClick(item)">
+        {{item.value}}
+    </div>
+</div>
+<canvas #myCanvas></canvas>

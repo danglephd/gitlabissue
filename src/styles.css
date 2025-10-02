@@ -2,12 +2,20 @@
 @import '@angular/material/prebuilt-themes/deeppurple-amber.css';
 @import 'game-tim-so.css';
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
 .container-md {
   padding-left: 0 !important;
   padding-right: 0 !important;
+  overflow: hidden;
 }
 
 /* Adjust table container padding instead */

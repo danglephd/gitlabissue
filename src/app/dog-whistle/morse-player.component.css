@@ -1,0 +1,64 @@
+.morse-card {
+  max-width: 640px;
+  margin: 16px auto;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+}
+
+textarea {
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.led {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.led-indicator {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #bbb;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+  transition: background .15s, box-shadow .15s;
+}
+
+.led-indicator.on {
+  background: #4caf50;
+  box-shadow: 0 0 8px #4caf50;
+}
+
+.logbox {
+  margin-top: 12px;
+  max-height: 220px;
+  overflow: auto;
+  background: #fafafa;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #eee;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.warn {
+  color: #b33;
+  font-weight: 700;
+  margin-left: 8px;
+}

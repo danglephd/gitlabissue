@@ -14,7 +14,6 @@ body {
 .container {
     width: 60%;
     margin: 0 auto;
-    margin-top: 30px;
 }
 
 .heading:after {
@@ -103,7 +102,7 @@ h1.title {
     color: #fff;
     border-radius: 6px;
     padding: 0 20px;
-    height: 40px;
+    height: 48px;
     min-width: 110px;
     display: flex;
     align-items: center;
@@ -250,14 +249,9 @@ input[type="number"]::placeholder {
     .header-actions-group {
         justify-content: flex-end;
         width: 100%;
-        margin-top: 8px;
-    }
-    .scores-container {
-        gap: 4px;
     }
     .restart-button {
         width: 100%;
-        margin-top: 8px;
     }
 }
 
@@ -273,22 +267,6 @@ input[type="number"]::placeholder {
     position: relative;
     width: 100%;
     height: 100%;
-}
-
-.numberCircle {
-    border-radius: 50%;
-    position: absolute;
-    background: #fff;
-    color: #000;
-    text-align: center;
-    font: 13px Arial, sans-serif;
-    user-select: none;
-    box-sizing: border-box;
-}
-
-.numberCircle:hover {
-    box-shadow: 0 0 0 1.5px rgba(200, 0, 0, 0.4);
-    cursor: pointer;
 }
 
 .hidden {
