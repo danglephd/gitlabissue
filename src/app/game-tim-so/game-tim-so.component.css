@@ -351,3 +351,32 @@ input[type="number"]::placeholder {
 .game-message.game-over {
     display: flex;
 }
+
+/* Style cho mat-checkbox trong form settings */
+.sidenav-content mat-checkbox {
+  display: flex;
+  align-items: center;
+  margin: 12px 0 8px 0;
+  font-size: 16px;
+  color: #776e65;
+}
+
+.sidenav-content mat-checkbox .mat-checkbox-layout {
+  font-size: 16px;
+}
+
+.sidenav-content mat-checkbox .mat-checkbox-inner-container {
+  width: 20px;
+  height: 20px;
+}
+
+.sidenav-content mat-checkbox .mat-checkbox-label {
+  padding-left: 8px;
+}
+
+/* Đảm bảo checkbox không bị quá to trên mobile */
+@media (max-width: 700px) {
+  .sidenav-content mat-checkbox {
+    font-size: 14px;
+  }
+}

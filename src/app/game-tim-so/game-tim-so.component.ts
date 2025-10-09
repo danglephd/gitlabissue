@@ -31,7 +31,8 @@ export class GameTimSoComponent implements AfterViewInit {
       numbLength: [200],
       cR: [40],
       fontSize: [40],
-      deltaTop: [40]
+      deltaTop: [40],
+      randomRotate: [true] // hoặc false tùy mặc định
     });
   }
 
@@ -90,7 +91,13 @@ export class GameTimSoComponent implements AfterViewInit {
     for (let j = 0; k < this.numberArray.length; j++) {
       const circle = this.createCircle(j, centerx, centery, this.numberArray[k], formValues, width, height);
       if (circle) {
-        this.gameZoneItems.push({ ...circle, isHidden: false });
+        const randomRotate = this.settingsForm.value.randomRotate;
+        const rotate = randomRotate ? Math.floor(Math.random() * 360) : 0;
+        this.gameZoneItems.push({
+          ...circle,
+          isHidden: false,
+          rotate,
+        });
         k++;
       }
     }

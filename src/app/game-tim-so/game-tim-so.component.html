@@ -39,6 +39,10 @@
         <div class="desc">Vertical offset for the board (in pixels).</div>
         <input type="number" id="deltaTop" formControlName="deltaTop">
 
+        <mat-checkbox formControlName="randomRotate">
+          Random rotate numbers
+        </mat-checkbox>
+
         <a class="restart-button" style="margin: 10px 0;" (click)="startGame()">New Game</a>
     </div>
 </div>
@@ -54,8 +58,14 @@
     <div *ngFor="let item of gameZoneItems" class="numberCircle" [class.hidden]="item.isHidden"
         [style.background-color]="item.backgroundColor" [style.top]="item.top" [style.left]="item.left"
         [style.width]="item.width" [style.height]="item.height" [style.line-height]="item.lineHeight"
-        [style.font-size]="item.fontSize" [style.color]="item.color" (click)="onNumberClick(item)">
-        {{item.value}}
+        [style.font-size]="item.fontSize" [style.color]="item.color"
+        [style.transform]="'rotate(' + (item.rotate || 0) + 'deg)'" (click)="onNumberClick(item)">
+        <span [ngStyle]="{
+  'text-decoration': (settingsForm.value.randomRotate && (item.value.toString().includes('6') || item.value.toString().includes('9')))
+    ? 'underline' : 'none'
+}">
+            {{item.value}}
+        </span>
     </div>
 </div>
 <canvas #myCanvas></canvas>
