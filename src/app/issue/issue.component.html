@@ -67,7 +67,7 @@
                     'project-gamma': issue.project === 'erp-web',
                     'project-delta': issue.project === 'erp-server',
                     'project-other': ['xm-api', 'xm-web','erp-web','erp-server'].indexOf(issue.project) === -1
-                  }">
+                  }" (click)="filterByProject(issue.project)" style="cursor:pointer">
                             {{ issue.project }}
                         </span>
                     </td>
