@@ -182,6 +182,24 @@ export class IssueRealtimeDbService {
     );
   }
 
+  getIssuesByProject(project: string): Observable<Issue[]> {
+    return this.db
+      .list<Issue>(this.dbPath, ref => ref.orderByChild('project').equalTo(project))
+      .snapshotChanges()
+      .pipe(
+        map((snapshots) => {
+          const issues = snapshots.map(snapshot => ({
+            ...snapshot.payload.val() as Issue,
+            id: snapshot.key ?? '' // Gán key từ Firebase vào trường id
+          }));
+          return updateGDriveValue(issues); // Cập nhật giá trị Google Drive
+        }),
+        catchError((error) => {
+          throw error; // Ném lỗi để xử lý ở nơi gọi hàm
+        })
+      );
+  }
+
   /**
    * Trả về danh sách các issues có trùng path, sắp xếp theo path.
    * @returns Observable<Issue[]>

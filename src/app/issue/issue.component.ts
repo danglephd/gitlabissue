@@ -248,6 +248,28 @@ export class IssueComponent implements OnInit {
     }
   }
 
+
+  filterByProject(project: string) {
+    this.isLoading = true;
+    this.noData = false;
+    let issuesObservable: Observable<Issue[]>;
+    // Gọi service để lấy danh sách issue theo project
+    issuesObservable = this.issueService.getIssuesByProject(project);
+
+    issuesObservable.subscribe({
+      next: (issues) => {
+        this.isLoading = false;
+        this.noData = issues.length === 0;
+        this.dataSource.data = issues;
+      },
+      error: () => {
+        this.isLoading = false;
+        this.noData = true;
+        this.dataSource.data = [];
+      }
+    });
+  }
+
   onQuickFilter(type: string, event: Event) {
     event.preventDefault();
     this.lastQuickFilter = type; // Lưu lại filter cuối cùng
