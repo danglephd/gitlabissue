@@ -72,12 +72,66 @@ export class moneyTransactionCsvService {
     document.body.removeChild(link);
   }
 
+  private parseCSVLine(line: string): string[] {
+    const result: string[] = [];
+    let cell = '';
+    let withinQuotes = false;
+    let i = 0;
+    
+    while (i < line.length) {
+      const char = line[i];
+      
+      if (char === '"') {
+        if (withinQuotes && line[i + 1] === '"') {
+          // Đây là dấu nháy kép được escape (""), giữ lại một dấu
+          cell += '"';
+          i++; // Bỏ qua dấu nháy tiếp theo
+        } else {
+          // Chuyển đổi trạng thái trong/ngoài vùng được quote
+          withinQuotes = !withinQuotes;
+        }
+      } else if (char === ',' && !withinQuotes) {
+        // Kết thúc một cell khi gặp dấu phẩy (ngoài vùng được quote)
+        result.push(cell);
+        cell = '';
+      } else {
+        cell += char;
+      }
+      i++;
+    }
+    
+    result.push(cell); // Thêm cell cuối cùng
+    return result.map(cell => {
+      // Loại bỏ dấu nháy kép ở đầu và cuối nếu có
+      if (cell.startsWith('"') && cell.endsWith('"')) {
+        cell = cell.slice(1, -1);
+      }
+      return cell.trim();
+    });
+  }
+
   getTransactionsFromCSV(): Observable<MoneyTransactionClass[]> {
-    return this.http.get('assets/data/Money_Manager_5years_with_income.csv', { responseType: 'text' })
+    return this.http.get('assets/data/Money Manager_20251020_1.csv', { responseType: 'text' })
       .pipe(
-        map(text => {
+        map(text => { 
+          // Thay thế category format từ "<From>\n<To>" thành "From => To"
+          text = text.replace(/(?:"[^"]*")|(?:[^,]+)/g, (match) => {
+            if (match.startsWith('"') && match.endsWith('"')) {
+              // Chỉ xử lý nội dung trong dấu nháy kép
+              const content = match.slice(1, -1);
+              if (content.includes('\n')) {
+                const [from, to] = content.split('\n').map(part => part.trim());
+                return `${from} => ${to}`;
+              }
+            }
+            return match;
+          });
+
+          // Tách từng dòng và lọc dòng trống
           const rows = text.split(/\r?\n/).filter(row => row.trim());
-          const headers = rows[0].split(',').map(h => h.trim());
+          
+          // Parse header
+          const headers = this.parseCSVLine(rows[0]);
           const headerMap: Record<string, string> = {
             'Date': 'date',
             'Category': 'category',
@@ -94,14 +148,26 @@ export class moneyTransactionCsvService {
           };
           const result = rows.slice(1)
             .map(row => {
-              const values = row.split(',').map(v => v.trim().replace('\r', ''));
+              const values = this.parseCSVLine(row);
+
               const obj: any = {};
               headers.forEach((header, index) => {
                 const key = headerMap[header] || header;
                 if (key === 'amount') {
                   obj['amount'] = parseFloat(values[index]) || 0;
+                } else if (key === 'category') {
+                  // Xử lý đặc biệt cho category
+                  const categoryValue = values[index];
+                  if (categoryValue.includes('\n')) {
+                    // Nếu có ký tự xuống dòng, đây là giao dịch Transfer
+                    const [from, to] = categoryValue.split('\n').map(part => part.trim());
+                    obj[key] = `${from}\n${to}`; // Giữ nguyên format gốc cho MoneyTransactionClass xử lý
+                  } else {
+                    // Trường hợp category đơn giản
+                    obj[key] = categoryValue.trim();
+                  }
                 } else {
-                  obj[key] = values[index] || '';
+                  obj[key] = values[index] ? values[index].trim() : '';
                 }
               });
 
