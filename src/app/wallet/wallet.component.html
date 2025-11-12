@@ -1,5 +1,7 @@
 <div class="app-container">
-  <div class="main-content" [class.expanded]="isSidebarCollapsed">
+  <div class="main-content" [class.expanded]="isSidebarCollapsed"
+       (touchstart)="onTouchStart($event)"
+       (touchend)="onTouchEnd($event)">
     <ng-container *ngIf="!showCalendar; else calendarView">
       <!-- Wallet view -->
       <div class="header">

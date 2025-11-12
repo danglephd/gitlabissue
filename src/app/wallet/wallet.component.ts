@@ -22,6 +22,16 @@ export class WalletComponent implements OnInit {
   selectedMonthYear = '';
   showCalendar = false;
 
+  // Biến cho tính năng vuốt
+  private touchStartX: number = 0;
+  private touchEndX: number = 0;
+  private touchStartTime: number = 0;
+  private minSwipeDistance = 50; // Khoảng cách tối thiểu để tính là vuốt
+  
+  // Biến cho hiển thị mũi tên
+  showLeftArrow = false;
+  showRightArrow = false;
+
   constructor(
     private moneyService: moneyTransactionCsvService,
     private _snackBar: MatSnackBar,
@@ -187,6 +197,79 @@ export class WalletComponent implements OnInit {
 
   onBackFromCalendar() {
     this.showCalendar = false;
+  }
+
+  // Xử lý sự kiện vuốt
+  onTouchStart(event: TouchEvent) {
+    this.touchStartX = event.touches[0].clientX;
+    this.touchStartTime = Date.now();
+    
+    // Ẩn mũi tên khi bắt đầu vuốt
+    this.showLeftArrow = false;
+    this.showRightArrow = false;
+  }
+
+  onTouchMove(event: TouchEvent) {
+    const currentX = event.touches[0].clientX;
+    const swipeDistance = currentX - this.touchStartX;
+    
+    // Hiển thị mũi tên dựa vào hướng vuốt
+    if (Math.abs(swipeDistance) > this.minSwipeDistance) {
+      this.showLeftArrow = swipeDistance > 0;  // Vuốt phải, hiện mũi tên trái
+      this.showRightArrow = swipeDistance < 0;  // Vuốt trái, hiện mũi tên phải
+    }
+  }
+
+  onTouchEnd(event: TouchEvent) {
+    this.touchEndX = event.changedTouches[0].clientX;
+    this.handleSwipe();
+    
+    // Ẩn mũi tên sau khi vuốt xong
+    setTimeout(() => {
+      this.showLeftArrow = false;
+      this.showRightArrow = false;
+    }, 300);
+  }
+
+  private handleSwipe() {
+    const swipeDistance = this.touchEndX - this.touchStartX;
+    const swipeTime = Date.now() - this.touchStartTime;
+    const velocity = Math.abs(swipeDistance) / swipeTime;
+    
+    // Kiểm tra khoảng cách vuốt và tốc độ vuốt
+    if (Math.abs(swipeDistance) > this.minSwipeDistance && velocity > 0.2) {
+      if (swipeDistance > 0) {
+        // Vuốt phải - chuyển đến tháng trước
+        this.navigateMonth(-1);
+      } else {
+        // Vuốt trái - chuyển đến tháng sau
+        this.navigateMonth(1);
+      }
+    }
+  }
+
+  // Điều hướng tháng (delta: -1 cho tháng trước, 1 cho tháng sau)
+  private navigateMonth(delta: number) {
+    const [year, month] = this.selectedMonthYear.split('-').map(Number);
+    let newMonth = month + delta;
+    let newYear = year;
+
+    if (newMonth > 12) {
+      newMonth = 1;
+      newYear++;
+    } else if (newMonth < 1) {
+      newMonth = 12;
+      newYear--;
+    }
+
+    this.selectedMonthYear = `${newYear}-${newMonth.toString().padStart(2, '0')}`;
+    this.loadTransactions();
+
+    // Hiển thị thông báo
+    const action = delta > 0 ? 'Next' : 'Previous';
+    this._snackBar.open(`${action} month: ${this.getMonthLabel(this.selectedMonthYear)}`, 'OK', {
+      duration: 2000
+    });
   }
 }
 
