@@ -111,7 +111,7 @@ export class moneyTransactionCsvService {
   }
 
   getTransactionsFromCSV(): Observable<MoneyTransactionClass[]> {
-    return this.http.get('assets/data/Money Manager_20251020_1.csv', { responseType: 'text' })
+    return this.http.get('assets/data/Money Manager_20251110_1.csv', { responseType: 'text' })
       .pipe(
         map(text => { 
           // Thay thế category format từ "<From>\n<To>" thành "From => To"

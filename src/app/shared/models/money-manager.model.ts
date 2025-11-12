@@ -15,6 +15,7 @@ export interface MoneyTransaction {
 
 export enum BillType {
     INCOME = 'income',
+    TRANSFER = 'transfer',
     EXPENSES = 'expenses'
 }
 

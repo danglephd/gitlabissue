@@ -1,3 +1,4 @@
+import { log } from 'console';
 import { MoneyTransaction, BillType, Currency } from './money-manager.model';
 
 export class MoneyTransactionClass implements MoneyTransaction {
@@ -16,7 +17,16 @@ export class MoneyTransactionClass implements MoneyTransaction {
 
     constructor(data: any) {
         this.date = new Date(data.date.replace(' ', 'T'));
-        this.category = data.category;
+        if (data.billType?.toLowerCase() === BillType.TRANSFER && data.category) {
+            const accounts = data.category.split('\n');
+            if (accounts.length === 2) {
+                this.category = `${accounts[0]} -> ${accounts[1]}`;
+            } else {
+                this.category = data.category;
+            }
+        } else {
+            this.category = data.category;
+        }
         this.billType = data.billType;
         this.amount = parseFloat(data.amount);
         this.currency = data.currency;
@@ -35,6 +45,10 @@ export class MoneyTransactionClass implements MoneyTransaction {
 
     isIncome(): boolean {
         return this.billType?.toLowerCase() === BillType.INCOME;
+    }
+
+    isTransfer(): boolean {
+        return this.billType?.toLowerCase() === BillType.TRANSFER;
     }
 
     getFormattedAmount(): string {
