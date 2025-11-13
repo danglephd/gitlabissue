@@ -28,9 +28,11 @@
       <span class="label">Accounts</span>
       <span class="value">{{ data.account || 'momo' }}</span>
     </div>
-    <div class="bill-detail-row">
+    <div class="bill-detail-row" *ngIf="data.includedInBudget !== '' && data.includedInBudget !== null && data.includedInBudget !== undefined">
       <span class="label">Included in budget</span>
-      <span class="value"><img src="assets/budget-icon.png" width="24" /></span>
+      <span class="value" >
+        <mat-checkbox [checked]="isIncludedInBudget()" (change)="onIncludedInBudgetChange($event)"></mat-checkbox>
+      </span>
     </div>
     <div class="bill-detail-row">
       <span class="label">Date</span>

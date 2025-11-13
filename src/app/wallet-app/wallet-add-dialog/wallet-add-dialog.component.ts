@@ -114,7 +114,7 @@ export class WalletAddDialogComponent {
         account: 'Cash',
         ledger: '',
         tags: '',
-        includedInBudget: true,
+        includedInBudget: '1',
         id: this.generateId(this.data.isEdit, '', this.activeTab, 'Cash'),
         image: '',
         amount: parseFloat(this.amount.replace(/,/g, ''))

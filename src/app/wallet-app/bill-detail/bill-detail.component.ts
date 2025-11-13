@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatDialog } from '@angular/material/dialog';
 import { WalletConfirmDialogComponent } from '../../confirm-dialog/wallet-confirm-dialog.component';
 import { WalletAddDialogComponent } from '../wallet-add-dialog/wallet-add-dialog.component';
+import { moneyTransactionCsvService } from 'src/app/services/wallet.realtimedb.service';
 
 @Component({
   selector: 'app-bill-detail',
@@ -13,6 +14,7 @@ export class BillDetailComponent {
   constructor(
     public dialogRef: MatDialogRef<BillDetailComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
+    private walletService: moneyTransactionCsvService,
     private dialog: MatDialog
   ) {}
 
@@ -54,5 +56,21 @@ export class BillDetailComponent {
   }
   getIcon(category: string) {
     return 'assets/icons/' + category + '.png';
+  }
+
+  // Hàm cập nhật includedInBudget khi checkbox thay đổi
+  onIncludedInBudgetChange(event: any) {
+    const isChecked = event.checked;
+    // Chuyển đổi giữa "1" (checked) và "0" (unchecked)
+    this.data.includedInBudget = isChecked ? '1' : '0';
+    // gọi service để cập nhật dữ liệu 
+    this.walletService.updateTransactionInLocalStorage(this.data, this.data.id);
+    console.log('Updated transaction:', this.data);
+
+  }
+
+  // Hàm kiểm tra xem includedInBudget có được check hay không
+  isIncludedInBudget(): boolean {
+    return this.data.includedInBudget === '1';
   }
 }

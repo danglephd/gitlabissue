@@ -8,7 +8,7 @@ export interface MoneyTransaction {
     account: string;      // Cash
     ledger: string;      // General
     tags: string;         // Empty or has value
-    includedInBudget: boolean; // 1 or 0
+    includedInBudget: string; // "1", "0", ""
     id: string;          // 1755575646341_...
     image: string;       // /1755572575104 or empty
 }

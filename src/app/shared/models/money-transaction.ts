@@ -11,7 +11,7 @@ export class MoneyTransactionClass implements MoneyTransaction {
     account: string;
     ledger: string;
     tags: string;
-    includedInBudget: boolean;
+    includedInBudget: string;
     id: string;
     image: string;
 
@@ -34,7 +34,7 @@ export class MoneyTransactionClass implements MoneyTransaction {
         this.account = data.account;
         this.ledger = data.ledger;
         this.tags = data.tags || '';
-        this.includedInBudget = data.includedinbudget === '1';
+        this.includedInBudget = data.includedInBudget;
         this.id = data.id;
         this.image = data.image || '';
     }
