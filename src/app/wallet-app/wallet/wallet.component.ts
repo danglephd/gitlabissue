@@ -1,8 +1,8 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { moneyTransactionCsvService } from '../services/wallet.realtimedb.service';
-import { MoneyTransactionClass } from '../shared/models/money-transaction';
+import { moneyTransactionCsvService } from '../../services/wallet.realtimedb.service';
+import { MoneyTransactionClass } from '../../shared/models/money-transaction';
 import { WalletAddDialogComponent } from '../wallet-add-dialog/wallet-add-dialog.component';
 import { BillDetailComponent } from '../bill-detail/bill-detail.component';
 import { SelectMonthDialogComponent } from '../select-month-dialog/select-month-dialog.component';
@@ -25,12 +25,7 @@ export class WalletComponent implements OnInit {
   // Biến cho tính năng vuốt
   private touchStartX: number = 0;
   private touchEndX: number = 0;
-  private touchStartTime: number = 0;
   private minSwipeDistance = 50; // Khoảng cách tối thiểu để tính là vuốt
-  
-  // Biến cho hiển thị mũi tên
-  showLeftArrow = false;
-  showRightArrow = false;
 
   constructor(
     private moneyService: moneyTransactionCsvService,
@@ -202,42 +197,17 @@ export class WalletComponent implements OnInit {
   // Xử lý sự kiện vuốt
   onTouchStart(event: TouchEvent) {
     this.touchStartX = event.touches[0].clientX;
-    this.touchStartTime = Date.now();
-    
-    // Ẩn mũi tên khi bắt đầu vuốt
-    this.showLeftArrow = false;
-    this.showRightArrow = false;
-  }
-
-  onTouchMove(event: TouchEvent) {
-    const currentX = event.touches[0].clientX;
-    const swipeDistance = currentX - this.touchStartX;
-    
-    // Hiển thị mũi tên dựa vào hướng vuốt
-    if (Math.abs(swipeDistance) > this.minSwipeDistance) {
-      this.showLeftArrow = swipeDistance > 0;  // Vuốt phải, hiện mũi tên trái
-      this.showRightArrow = swipeDistance < 0;  // Vuốt trái, hiện mũi tên phải
-    }
   }
 
   onTouchEnd(event: TouchEvent) {
     this.touchEndX = event.changedTouches[0].clientX;
     this.handleSwipe();
-    
-    // Ẩn mũi tên sau khi vuốt xong
-    setTimeout(() => {
-      this.showLeftArrow = false;
-      this.showRightArrow = false;
-    }, 300);
   }
 
   private handleSwipe() {
     const swipeDistance = this.touchEndX - this.touchStartX;
-    const swipeTime = Date.now() - this.touchStartTime;
-    const velocity = Math.abs(swipeDistance) / swipeTime;
     
-    // Kiểm tra khoảng cách vuốt và tốc độ vuốt
-    if (Math.abs(swipeDistance) > this.minSwipeDistance && velocity > 0.2) {
+    if (Math.abs(swipeDistance) > this.minSwipeDistance) {
       if (swipeDistance > 0) {
         // Vuốt phải - chuyển đến tháng trước
         this.navigateMonth(-1);
@@ -249,7 +219,7 @@ export class WalletComponent implements OnInit {
   }
 
   // Điều hướng tháng (delta: -1 cho tháng trước, 1 cho tháng sau)
-  private navigateMonth(delta: number) {
+  navigateMonth(delta: number) {
     const [year, month] = this.selectedMonthYear.split('-').map(Number);
     let newMonth = month + delta;
     let newYear = year;

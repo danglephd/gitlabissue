@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatDialog } from '@angular/material/dialog';
-import { WalletConfirmDialogComponent } from '../confirm-dialog/wallet-confirm-dialog.component';
+import { WalletConfirmDialogComponent } from '../../confirm-dialog/wallet-confirm-dialog.component';
 import { WalletAddDialogComponent } from '../wallet-add-dialog/wallet-add-dialog.component';
 
 @Component({

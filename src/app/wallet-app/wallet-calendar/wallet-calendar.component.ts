@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { moneyTransactionCsvService } from '../services/wallet.realtimedb.service';
+import { moneyTransactionCsvService } from '../../services/wallet.realtimedb.service';
 
 interface CalendarDay {
   date: Date | null;

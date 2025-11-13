@@ -1,8 +1,8 @@
 import { Component, HostListener, Inject } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CalendarDialogComponent } from '../calendar-dialog/calendar-dialog.component';
-import { moneyTransactionCsvService } from '../services/wallet.realtimedb.service';
-import { MoneyTransactionClass } from '../shared/models/money-transaction';
+import { moneyTransactionCsvService } from '../../services/wallet.realtimedb.service';
+import { MoneyTransactionClass } from '../../shared/models/money-transaction';
 
 @Component({
   selector: 'app-wallet-add-dialog',

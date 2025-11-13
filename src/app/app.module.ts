@@ -14,17 +14,17 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
 import { environment } from '../environments/environment';
-import { WalletComponent } from './wallet/wallet.component';
-import { WalletAddDialogComponent } from './wallet-add-dialog/wallet-add-dialog.component';
-import { CalendarDialogComponent } from './calendar-dialog/calendar-dialog.component';
-import { BillDetailComponent } from './bill-detail/bill-detail.component';
+import { WalletComponent } from './wallet-app/wallet/wallet.component';
+import { WalletAddDialogComponent } from './wallet-app/wallet-add-dialog/wallet-add-dialog.component';
+import { CalendarDialogComponent } from './wallet-app/calendar-dialog/calendar-dialog.component';
+import { BillDetailComponent } from './wallet-app/bill-detail/bill-detail.component';
 import { WalletConfirmDialogComponent } from './confirm-dialog/wallet-confirm-dialog.component';
 import { GameTimSoComponent } from './game-tim-so/game-tim-so.component';
 
-import { WalletCalendarComponent } from './wallet-calendar/wallet-calendar.component';
+import { WalletCalendarComponent } from './wallet-app/wallet-calendar/wallet-calendar.component';
 import { NumberShortPipe } from './pipes/number-short.pipe';
-import { DayTransactionsComponent } from './day-transactions/day-transactions.component';
-import { SelectMonthDialogComponent } from './select-month-dialog/select-month-dialog.component';
+import { DayTransactionsComponent } from './wallet-app/day-transactions/day-transactions.component';
+import { SelectMonthDialogComponent } from './wallet-app/select-month-dialog/select-month-dialog.component';
 import { DogWhistleComponent } from './dog-whistle/dog-whistle.component';
 
 
