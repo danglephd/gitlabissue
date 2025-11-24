@@ -26,6 +26,8 @@ import { NumberShortPipe } from './pipes/number-short.pipe';
 import { DayTransactionsComponent } from './wallet-app/day-transactions/day-transactions.component';
 import { SelectMonthDialogComponent } from './wallet-app/select-month-dialog/select-month-dialog.component';
 import { DogWhistleComponent } from './dog-whistle/dog-whistle.component';
+import { SelectAccountDialogComponent } from './wallet-app/select-account-dialog/select-account-dialog.component';
+import { CreateAccountDialogComponent } from './wallet-app/create-account-dialog/create-account-dialog.component';
 
 
 @NgModule({
@@ -43,7 +45,8 @@ import { DogWhistleComponent } from './dog-whistle/dog-whistle.component';
     DayTransactionsComponent,
     SelectMonthDialogComponent,
     NumberShortPipe,
-
+    SelectAccountDialogComponent,
+    CreateAccountDialogComponent,
     DogWhistleComponent
   ],
   imports: [
