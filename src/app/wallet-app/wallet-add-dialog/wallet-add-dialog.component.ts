@@ -1,6 +1,7 @@
 import { Component, HostListener, Inject } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CalendarDialogComponent } from '../calendar-dialog/calendar-dialog.component';
+import { SelectAccountDialogComponent } from '../select-account-dialog/select-account-dialog.component';
 import { moneyTransactionCsvService } from '../../services/wallet.realtimedb.service';
 import { MoneyTransactionClass } from '../../shared/models/money-transaction';
 
@@ -42,6 +43,25 @@ export class WalletAddDialogComponent {
     { "name": "Gift", "icon": "assets/icons/gitlab.svg" },
     { "name": "Other", "icon": "assets/icons/gitlab.svg" }
   ];
+
+  accountCategories = [
+    { "name": "momo", "icon": "assets/icons/gitlab.svg" },
+    { "name": "Vợ", "icon": "assets/icons/gitlab.svg" },
+    { "name": "Vay", "icon": "assets/icons/gitlab.svg" },
+    { "name": "Tiết kiệm account", "icon": "assets/icons/gitlab.svg" },
+    { "name": "hưởng thụ", "icon": "assets/icons/gitlab.svg" },
+    { "name": "giáo dục", "icon": "assets/icons/gitlab.svg" },
+    { "name": "Giáo dục account", "icon": "assets/icons/gitlab.svg" },
+    { "name": "đầu tư", "icon": "assets/icons/gitlab.svg" },
+    { "name": "biếu cho", "icon": "assets/icons/gitlab.svg" },
+    { "name": "Tiết kiệm", "icon": "assets/icons/gitlab.svg" },
+    { "name": "Con", "icon": "assets/icons/gitlab.svg" },
+    { "name": "Gold", "icon": "assets/icons/gitlab.svg" },
+    { "name": "Cash", "icon": "assets/icons/gitlab.svg" },
+    { "name": "vcb", "icon": "assets/icons/gitlab.svg" }
+  ];
+
+  selectedAccount: any = this.accountCategories[0]; // Account mặc định là Cash
 
   transferCategories = [
     { name: 'Bank', icon: 'assets/icons/gitlab.svg' },
@@ -111,7 +131,7 @@ export class WalletAddDialogComponent {
         billType: this.activeTab,
         currency: 'VND',
         notes: this.note || '',
-        account: 'Cash',
+        account: this.selectedAccount?.name || '',
         ledger: '',
         tags: '',
         includedInBudget: '1',
@@ -327,7 +347,14 @@ export class WalletAddDialogComponent {
       this.activeTab = data.billType.toLowerCase() || 'expenses';
       this.note = data.notes || '';
       this.amount = data.amount ? data.amount.toString() : '';
+      this.selectedAccount = this.accountCategories.find(
+          c => c.name === data.account
+        ) || this.accountCategories[0];
       this.selectedDate = data.date ? new Date(data.date) : new Date();
+
+
+      //ghi log kiểm tra data nhận vào
+      console.log('Edit data received:', this.selectedAccount);
 
       // Chọn đúng categories array
       if (this.activeTab === 'expenses') {
@@ -351,6 +378,22 @@ export class WalletAddDialogComponent {
 
   onClose() {
     this.dialogRef.close();
+  }
+
+  openSelectAccountDialog() {
+    const dialogRef = this.dialog.open(SelectAccountDialogComponent, {
+      width: '360px',
+      panelClass: 'select-account-dialog-panel',
+      data: { selectedAccount: this.selectedAccount, accounts: this.accountCategories }
+    });
+
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if (result && result.account) {
+        this.selectedAccount = result.account;
+      }else if (result && result.account === null) {
+        this.selectedAccount = null;
+      }
+    });
   }
 
   patchFormWithData(data: any) {

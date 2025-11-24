@@ -36,7 +36,7 @@
     </div>
   </div>
   <div class="add-dialog-account-row">
-    <button class="account-btn">Cash</button>
+    <button class="account-btn" (click)="openSelectAccountDialog()">{{ selectedAccount?.name || 'Select account' }}</button>
   </div>
   <div class="add-dialog-note-row">
     <button mat-icon-button disabled><mat-icon>photo_camera</mat-icon></button>
