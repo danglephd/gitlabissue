@@ -1,0 +1,48 @@
+<h2 mat-dialog-title>Chỉnh Sửa Thông Tin Phim</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="editForm" class="edit-form">
+    <!-- Tên phim -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Tên Phim</mat-label>
+      <input matInput formControlName="fileName" placeholder="Nhập tên phim" />
+      <mat-error *ngIf="hasError('fileName', 'required')">Tên phim không được bỏ trống</mat-error>
+      <mat-error *ngIf="hasError('fileName', 'minlength')">Tên phim phải có ít nhất 3 ký tự</mat-error>
+    </mat-form-field>
+
+    <!-- Đường dẫn -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Đường Dẫn</mat-label>
+      <input matInput formControlName="path" placeholder="Nhập đường dẫn folder" readonly />
+      <mat-error *ngIf="hasError('path', 'required')">Đường dẫn không được bỏ trống</mat-error>
+    </mat-form-field>
+
+    <!-- Năm sản xuất -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Năm Sản Xuất (tuỳ chọn)</mat-label>
+      <input matInput formControlName="year" placeholder="Nhập năm (vd: 2024)" />
+      <mat-error *ngIf="hasError('year', 'pattern')">Năm phải là số 4 chữ số</mat-error>
+    </mat-form-field>
+
+    <!-- Thẻ/Tags -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Thẻ (Tags) - Cách nhau bằng dấu phẩy</mat-label>
+      <input matInput formControlName="tags" placeholder="vd: action, adventure, 2024" />
+      <mat-hint>Nhập các thẻ cách nhau bằng dấu phẩy</mat-hint>
+    </mat-form-field>
+
+    <!-- Trạng thái -->
+    <div class="checkbox-group">
+      <mat-checkbox formControlName="isProcessed">
+        Đã Xử Lý
+      </mat-checkbox>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Hủy</button>
+  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="editForm.invalid">
+    Lưu
+  </button>
+</mat-dialog-actions>

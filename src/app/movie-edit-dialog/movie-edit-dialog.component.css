@@ -1,0 +1,41 @@
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 10px 0;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.checkbox-group {
+  padding: 15px 0;
+  margin-top: 10px;
+}
+
+mat-checkbox {
+  display: block;
+}
+
+mat-dialog-actions {
+  padding: 15px 0 0 0;
+  border-top: 1px solid #eee;
+  gap: 10px;
+}
+
+::ng-deep .mat-form-field {
+  width: 100%;
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+  color: rgba(0, 0, 0, 0.12);
+}
+
+::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+  color: #667eea;
+}
+
+::ng-deep .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid .mat-form-field-outline-thick {
+  color: #f44336;
+}
