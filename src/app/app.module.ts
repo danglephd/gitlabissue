@@ -26,6 +26,7 @@ import { NumberShortPipe } from './pipes/number-short.pipe';
 import { DayTransactionsComponent } from './day-transactions/day-transactions.component';
 import { SelectMonthDialogComponent } from './select-month-dialog/select-month-dialog.component';
 import { DogWhistleComponent } from './dog-whistle/dog-whistle.component';
+import { MovieManageComponent } from './movie-manage/movie-manage.component';
 
 
 @NgModule({
@@ -44,7 +45,8 @@ import { DogWhistleComponent } from './dog-whistle/dog-whistle.component';
     SelectMonthDialogComponent,
     NumberShortPipe,
 
-    DogWhistleComponent
+    DogWhistleComponent,
+    MovieManageComponent
   ],
   imports: [
     BrowserModule,

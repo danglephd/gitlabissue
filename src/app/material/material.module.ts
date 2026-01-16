@@ -15,6 +15,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 
 const material = [
@@ -31,7 +32,8 @@ const material = [
   MatTableModule, // Cho mat-table
   MatPaginatorModule, // Cho mat-paginator
   ReactiveFormsModule,
-  MatCheckboxModule
+  MatCheckboxModule,
+  MatFormFieldModule // Cho mat-form-field
 ];
 
 @NgModule({
