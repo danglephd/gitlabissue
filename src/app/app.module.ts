@@ -27,6 +27,7 @@ import { DayTransactionsComponent } from './day-transactions/day-transactions.co
 import { SelectMonthDialogComponent } from './select-month-dialog/select-month-dialog.component';
 import { DogWhistleComponent } from './dog-whistle/dog-whistle.component';
 import { MovieManageComponent } from './movie-manage/movie-manage.component';
+import { MovieEditDialogComponent } from './movie-edit-dialog/movie-edit-dialog.component';
 
 
 @NgModule({
@@ -46,7 +47,8 @@ import { MovieManageComponent } from './movie-manage/movie-manage.component';
     NumberShortPipe,
 
     DogWhistleComponent,
-    MovieManageComponent
+    MovieManageComponent,
+    MovieEditDialogComponent
   ],
   imports: [
     BrowserModule,

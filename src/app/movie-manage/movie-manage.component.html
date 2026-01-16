@@ -121,6 +121,10 @@
         </div>
       </mat-card-content>
       <mat-card-actions>
+        <button mat-button (click)="editMovie(movie)" color="accent">
+          <mat-icon>edit</mat-icon>
+          Chỉnh Sửa
+        </button>
         <button mat-button (click)="markAsProcessed(movie)" *ngIf="!movie.isProcessed" color="primary">
           <mat-icon>check_circle</mat-icon>
           Đánh Dấu Đã Xử Lý

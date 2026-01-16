@@ -3,6 +3,8 @@ import { Movie, MovieFilterType } from '../shared/models/movie.model';
 import { MovieRealtimedbService } from '../services/movie.realtimedb.service';
 import { CsvParserService } from '../services/csv-parser.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { MovieEditDialogComponent } from '../movie-edit-dialog/movie-edit-dialog.component';
 
 @Component({
   selector: 'app-movie-manage',
@@ -25,7 +27,8 @@ export class MovieManageComponent implements OnInit {
   constructor(
     private movieService: MovieRealtimedbService,
     private csvParser: CsvParserService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -243,6 +246,34 @@ export class MovieManageComponent implements OnInit {
         this.showMessage('Lỗi khi xóa phim', 'error');
       });
     }
+  }
+
+  /**
+   * Edit movie
+   */
+  editMovie(movie: Movie): void {
+    const dialogRef = this.dialog.open(MovieEditDialogComponent, {
+      width: '500px',
+      data: { movie: { ...movie } } // Pass a copy to avoid direct modification
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // result contains the updated movie data
+        const updatedMovie: Movie = {
+          ...movie,
+          ...result
+        };
+
+        this.movieService.updateMovie(updatedMovie).then(() => {
+          this.showMessage('Đã cập nhật thông tin phim', 'success');
+          this.loadMovies();
+        }).catch(error => {
+          console.error('Error updating movie:', error);
+          this.showMessage('Lỗi khi cập nhật phim', 'error');
+        });
+      }
+    });
   }
 
   /**
