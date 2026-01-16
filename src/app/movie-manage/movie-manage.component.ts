@@ -52,8 +52,6 @@ export class MovieManageComponent implements OnInit {
    * Handle file selection
    */
   onFileSelected(event: any): void {
-    console.log('File selected:', event.target.files);
-
     const files = event.target.files;
     if (files && files.length > 0) {
       this.selectedFile = files[0];
@@ -261,6 +259,7 @@ export class MovieManageComponent implements OnInit {
    * Reset import state
    */
   resetImport(): void {
+    this.isLoading = false;
     this.selectedFile = null;
     this.importProgress = '';
     this.showDuplicateWarning = false;
