@@ -325,7 +325,7 @@
   mat-card-actions {
     display: flex;
     gap: 10px;
-    justify-content: flex-end;
+    justify-content: flex-start;
     margin-top: 15px;
     padding-top: 15px;
     border-top: 1px solid #f0f0f0;
