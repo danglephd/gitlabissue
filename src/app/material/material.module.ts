@@ -16,7 +16,8 @@ import { MatTableModule } from '@angular/material/table';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
-
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatChipsModule} from '@angular/material/chips';
 
 const material = [
   MatSlideToggleModule,
@@ -33,7 +34,9 @@ const material = [
   MatPaginatorModule, // Cho mat-paginator
   ReactiveFormsModule,
   MatCheckboxModule,
-  MatFormFieldModule // Cho mat-form-field
+  MatFormFieldModule, // Cho mat-form-field
+  MatAutocompleteModule, // Cho mat-autocomplete
+  MatChipsModule // Cho mat-chips
 ];
 
 @NgModule({

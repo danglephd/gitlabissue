@@ -33,6 +33,7 @@ export class MovieManageComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadMovies();
+    this.loadTagsFromLocalStorage();
   }
 
   /**
@@ -42,6 +43,7 @@ export class MovieManageComponent implements OnInit {
     this.movieService.getMovies().subscribe(
       (movies: Movie[]) => {
         this.movies = movies || [];
+        this.syncTagsToLocalStorage();
         this.applyFilter();
       },
       (error) => {
@@ -127,6 +129,7 @@ export class MovieManageComponent implements OnInit {
           );
           this.resetImport();
           this.loadMovies();
+          this.syncTagsToLocalStorage();
         }).catch(error => {
           console.error('Error saving movies:', error);
           this.showMessage('Lỗi khi lưu phim vào cơ sở dữ liệu', 'error');
@@ -227,6 +230,7 @@ export class MovieManageComponent implements OnInit {
     movie.isProcessed = true;
     this.movieService.updateMovie(movie).then(() => {
       this.showMessage('Đã cập nhật trạng thái', 'success');
+      this.syncTagsToLocalStorage();
     }).catch(error => {
       console.error('Error updating movie:', error);
       this.showMessage('Lỗi khi cập nhật phim', 'error');
@@ -267,6 +271,7 @@ export class MovieManageComponent implements OnInit {
 
         this.movieService.updateMovie(updatedMovie).then(() => {
           this.showMessage('Đã cập nhật thông tin phim', 'success');
+          this.syncTagsToLocalStorage();
           this.loadMovies();
         }).catch(error => {
           console.error('Error updating movie:', error);
@@ -338,5 +343,99 @@ export class MovieManageComponent implements OnInit {
    */
   getNotProcessedCount(): number {
     return this.movies.filter(m => !m.isProcessed).length;
+  }
+
+  /**
+   * Copy path to clipboard
+   */
+  copyPathToClipboard(path: string): void {
+    this.copyToClipboard(path)
+      .then(() => {
+        this.showMessage(`Đã copy đường dẫn: "${path}"`, 'success');
+      })
+      .catch(() => {
+        this.showMessage('Lỗi khi copy đường dẫn', 'error');
+      });
+  }
+
+  /**
+   * Copy text to clipboard
+   */
+  private copyToClipboard(text: string): Promise<void> {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+
+    return new Promise((resolve, reject) => {
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+
+        textArea.focus();
+        textArea.select();
+        const success = document.execCommand('copy');
+        textArea.remove();
+
+        if (success) {
+          resolve();
+        } else {
+          reject(new Error('Failed to copy text'));
+        }
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
+  /**
+   * Get all tags from movies
+   */
+  getAllTags(): string[] {
+    const tags = new Set<string>();
+    this.movies.forEach(movie => {
+      if (movie.tags && Array.isArray(movie.tags)) {
+        movie.tags.forEach(tag => tags.add(tag));
+      }
+    });
+    return Array.from(tags).sort();
+  }
+
+  /**
+   * Save tags to localStorage
+   */
+  saveTagsToLocalStorage(): void {
+    const tags = this.getAllTags();
+    try {
+      localStorage.setItem('movieTags', JSON.stringify(tags));
+      console.log('Tags saved to localStorage:', tags);
+    } catch (error) {
+      console.error('Error saving tags to localStorage:', error);
+    }
+  }
+
+  /**
+   * Load tags from localStorage
+   */
+  loadTagsFromLocalStorage(): string[] {
+    try {
+      const tagsJson = localStorage.getItem('movieTags');
+      if (tagsJson) {
+        return JSON.parse(tagsJson);
+      }
+    } catch (error) {
+      console.error('Error loading tags from localStorage:', error);
+    }
+    return [];
+  }
+
+  /**
+   * Sync tags when movies are loaded
+   */
+  syncTagsToLocalStorage(): void {
+    this.saveTagsToLocalStorage();
   }
 }

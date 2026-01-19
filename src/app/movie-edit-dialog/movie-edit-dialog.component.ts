@@ -1,7 +1,11 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { Movie } from '../shared/models/movie.model';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatChipInputEvent } from '@angular/material/chips';
 
 @Component({
   selector: 'app-movie-edit-dialog',
@@ -11,6 +15,10 @@ import { Movie } from '../shared/models/movie.model';
 export class MovieEditDialogComponent implements OnInit {
   editForm!: FormGroup;
   movie: Movie;
+  availableTags: string[] = [];
+  selectedTags: string[] = [];
+  tagsInputControl = new FormControl('');
+  filteredTags$!: Observable<string[]>;
 
   constructor(
     public dialogRef: MatDialogRef<MovieEditDialogComponent>,
@@ -21,13 +29,31 @@ export class MovieEditDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadAvailableTags();
     this.initializeForm();
+  }
+
+  /**
+   * Load available tags from localStorage
+   */
+  loadAvailableTags(): void {
+    try {
+      const tagsJson = localStorage.getItem('movieTags');
+      if (tagsJson) {
+        this.availableTags = JSON.parse(tagsJson);
+      }
+    } catch (error) {
+      console.error('Error loading tags from localStorage:', error);
+      this.availableTags = [];
+    }
   }
 
   /**
    * Initialize the form with movie data
    */
   initializeForm(): void {
+    this.selectedTags = this.movie.tags ? [...this.movie.tags] : [];
+    
     this.editForm = this.formBuilder.group({
       fileName: [this.movie.fileName, [Validators.required, Validators.minLength(3)]],
       path: [this.movie.path, Validators.required],
@@ -43,9 +69,75 @@ export class MovieEditDialogComponent implements OnInit {
           return null;
         }
       ])],
-      isProcessed: [this.movie.isProcessed],
-      tags: [this.movie.tags?.join(', ') || '']
+      isProcessed: [this.movie.isProcessed]
     });
+
+    // Setup autocomplete for tags
+    this.setupTagsAutocomplete();
+  }
+
+  /**
+   * Setup autocomplete for tags field
+   */
+  setupTagsAutocomplete(): void {
+    this.filteredTags$ = this.tagsInputControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this.filterTags(value))
+    );
+  }
+
+  /**
+   * Filter tags based on input
+   */
+  filterTags(input: string): string[] {
+    if (!input || typeof input !== 'string') {
+      return this.availableTags.filter(tag => !this.selectedTags.includes(tag));
+    }
+
+    const filterValue = input.toLowerCase();
+    return this.availableTags.filter(tag =>
+      tag.toLowerCase().includes(filterValue) && !this.selectedTags.includes(tag)
+    );
+  }
+
+  /**
+   * Handle tag selection from autocomplete
+   */
+  onTagSelected(event: MatAutocompleteSelectedEvent): void {
+    const tag = event.option.value;
+    if (!this.selectedTags.includes(tag)) {
+      this.selectedTags.push(tag);
+    }
+    this.tagsInputControl.setValue('');
+  }
+
+  /**
+   * Add tag by pressing Enter key
+   */
+  onAddTagByEnter(): void {
+    const inputValue = this.tagsInputControl.value?.trim();
+    if (inputValue && inputValue.length > 0) {
+      // If tag is not in selectedTags, add it
+      if (!this.selectedTags.includes(inputValue)) {
+        this.selectedTags.push(inputValue);
+        this.tagsInputControl.setValue('');
+      } else {
+        // Tag already exists, just clear input
+        this.tagsInputControl.setValue('');
+      }
+    }
+  }
+
+  /**
+   * Remove tag and trigger filter update
+   */
+  removeTag(tag: string): void {
+    const index = this.selectedTags.indexOf(tag);
+    if (index > -1) {
+      this.selectedTags.splice(index, 1);
+      // Trigger filter update to show removed tag in autocomplete
+      this.tagsInputControl.setValue(this.tagsInputControl.value || '');
+    }
   }
 
   /**
@@ -85,7 +177,7 @@ export class MovieEditDialogComponent implements OnInit {
       path: formValue.path,
       year: formValue.year ? parseInt(formValue.year) : undefined,
       isProcessed: formValue.isProcessed,
-      tags: formValue.tags ? formValue.tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag) : []
+      tags: this.selectedTags
     };
 
     // Remove year if undefined to avoid Firebase errors
@@ -93,7 +185,37 @@ export class MovieEditDialogComponent implements OnInit {
       delete (updatedData as any).year;
     }
 
+    // Check and save new tags to localStorage
+    this.saveNewTagsToLocalStorage();
+
     this.dialogRef.close(updatedData);
+  }
+
+  /**
+   * Save new tags to localStorage
+   */
+  private saveNewTagsToLocalStorage(): void {
+    try {
+      const updatedTags = new Set(this.availableTags);
+      let hasNewTags = false;
+
+      // Add any new tags from selectedTags
+      this.selectedTags.forEach(tag => {
+        if (!this.availableTags.includes(tag)) {
+          updatedTags.add(tag);
+          hasNewTags = true;
+        }
+      });
+
+      // Save updated tags to localStorage if there are new tags
+      if (hasNewTags) {
+        const sortedTags = Array.from(updatedTags).sort();
+        localStorage.setItem('movieTags', JSON.stringify(sortedTags));
+        console.log('New tags saved to localStorage:', sortedTags);
+      }
+    } catch (error) {
+      console.error('Error saving tags to localStorage:', error);
+    }
   }
 
   /**

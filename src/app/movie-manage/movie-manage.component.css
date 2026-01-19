@@ -245,6 +245,8 @@
   }
   
   mat-card-content {
+    padding: 16px;
+    
     .movie-info {
       font-size: 0.95rem;
       
@@ -265,16 +267,32 @@
           font-weight: 600;
           color: #666;
           min-width: 100px;
+          flex-shrink: 0;
         }
         
         .value {
           color: #333;
           word-break: break-word;
           flex: 1;
+          overflow-wrap: break-word;
           
           &.processed {
             color: #28a745;
             font-weight: bold;
+          }
+          
+          &.path-value {
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            transition: all 0.3s ease;
+            
+            &:hover {
+              color: #667eea;
+              text-decoration: underline;
+            }
           }
         }
       }
@@ -333,5 +351,158 @@
   
   .movies-list {
     grid-template-columns: 1fr;
+  }
+  
+  .movie-card {
+    mat-card-content {
+      padding: 12px;
+      
+      .movie-info {
+        font-size: 0.9rem;
+        
+        .info-row {
+          flex-direction: column;
+          gap: 4px;
+          margin-bottom: 10px;
+          padding-bottom: 6px;
+          
+          .label {
+            min-width: auto;
+            margin-bottom: 2px;
+          }
+          
+          .value {
+            padding-left: 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .movie-manage-container {
+    padding: 10px;
+  }
+  
+  .header {
+    margin-bottom: 20px;
+    
+    h1 {
+      font-size: 1.5rem;
+    }
+    
+    .subtitle {
+      font-size: 0.9rem;
+    }
+  }
+  
+  .stats-container {
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .stat-card {
+    padding: 15px;
+    
+    .stat-value {
+      font-size: 2rem;
+    }
+    
+    .stat-label {
+      font-size: 0.85rem;
+    }
+  }
+  
+  .import-section {
+    margin-bottom: 20px;
+  }
+  
+  .file-input-wrapper {
+    min-width: 100%;
+    
+    label {
+      font-size: 0.9rem;
+    }
+  }
+  
+  .filter-section {
+    gap: 10px;
+    margin-bottom: 20px;
+    
+    mat-form-field {
+      min-width: 100%;
+    }
+  }
+  
+  .movies-list {
+    gap: 15px;
+  }
+  
+  .movie-card {
+    mat-card-header {
+      margin-bottom: 10px;
+      
+      mat-card-title {
+        font-size: 1rem;
+      }
+      
+      mat-card-subtitle {
+        gap: 10px;
+        flex-wrap: wrap;
+        
+        .year {
+          padding: 3px 10px;
+          font-size: 0.75rem;
+        }
+        
+        .size {
+          font-size: 0.8rem;
+        }
+      }
+    }
+    
+    mat-card-content {
+      padding: 10px;
+      
+      .movie-info {
+        font-size: 0.85rem;
+        
+        .info-row {
+          margin-bottom: 8px;
+          padding-bottom: 4px;
+          
+          .label {
+            font-size: 0.8rem;
+          }
+          
+          .value {
+            font-size: 0.85rem;
+          }
+        }
+      }
+    }
+    
+    mat-card-actions {
+      gap: 5px;
+      margin-top: 10px;
+      padding-top: 10px;
+      flex-wrap: wrap;
+      
+      button {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+        min-width: auto;
+        flex: 1;
+        min-width: calc(50% - 3px);
+        
+        mat-icon {
+          width: 18px;
+          height: 18px;
+          font-size: 18px;
+          margin-right: 3px;
+        }
+      }
+    }
   }
 }
