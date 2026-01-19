@@ -296,6 +296,29 @@
           }
         }
       }
+      
+      .tags-row {
+        align-items: flex-start;
+        flex-wrap: wrap;
+        
+        .tags-display {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          flex: 1;
+          
+          .tag-chip {
+            display: inline-block;
+            background-color: #667eea;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            white-space: nowrap;
+          }
+        }
+      }
     }
   }
   

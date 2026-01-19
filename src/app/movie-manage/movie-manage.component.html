@@ -105,9 +105,15 @@
             <span class="value path-value" [title]="movie.path" (click)="copyPathToClipboard(movie.path)" 
                   matTooltip="Click để copy đường dẫn" matTooltipPosition="above">{{ movie.path }}</span>
           </div>
-          <div class="info-row">
-            <span class="label">Sửa đổi:</span>
-            <span class="value">{{ movie.modified | date: 'dd/MM/yyyy HH:mm' }}</span>
+          <div class="info-row tags-row" *ngIf="movie.tags && movie.tags.length > 0">
+            <span class="label">Thẻ:</span>
+            <div class="tags-display">
+              <span class="tag-chip" *ngFor="let tag of movie.tags">{{ tag }}</span>
+            </div>
+          </div>
+          <div class="info-row" *ngIf="!movie.tags || movie.tags.length === 0">
+            <span class="label">Thẻ:</span>
+            <span class="value" style="color: #999; font-style: italic;">Không có thẻ</span>
           </div>
           <div class="info-row">
             <span class="label">Trạng thái:</span>
