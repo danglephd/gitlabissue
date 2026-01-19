@@ -206,10 +206,19 @@
 .movie-card {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  position: relative;
+  cursor: pointer;
   
   &:hover {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     transform: translateY(-2px);
+  }
+  
+  .delete-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 10;
   }
   
   mat-card-header {
@@ -373,7 +382,9 @@
   }
   
   .movies-list {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: unset;
   }
   
   .movie-card {
