@@ -1,0 +1,146 @@
+<div class="movie-manage-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>Quản Lý Phim</h1>
+    <p class="subtitle">Nhập, quản lý và theo dõi thư viện phim của bạn</p>
+  </div>
+
+  <!-- Statistics -->
+  <div class="stats-container">
+    <div class="stat-card">
+      <div class="stat-value">{{ getTotalCount() }}</div>
+      <div class="stat-label">Tổng Phim</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ getProcessedCount() }}</div>
+      <div class="stat-label">Đã Xử Lý</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ getNotProcessedCount() }}</div>
+      <div class="stat-label">Chưa Xử Lý</div>
+    </div>
+  </div>
+
+  <!-- Import Section -->
+  <mat-card class="import-section">
+    <mat-card-header>
+      <mat-card-title>Nhập Từ File CSV</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="import-form">
+        <div class="file-input-wrapper">
+          <input type="file" accept=".csv" (change)="onFileSelected($event)" #fileInput id="csvFileInput" />
+          <label (click)="fileInput.click()">{{ selectedFile ? selectedFile.name : 'Chọn file CSV...' }}</label>
+        </div>
+        <button mat-raised-button color="primary" (click)="importFromCsv()" [disabled]="isLoading || !selectedFile">
+          <span *ngIf="!isLoading">Nhập Dữ Liệu</span>
+          <span *ngIf="isLoading">{{ importProgress }}</span>
+        </button>
+      </div>
+
+      <!-- Duplicate Warning -->
+      <div *ngIf="showDuplicateWarning" class="warning-box">
+        <div class="warning-title">⚠️ Cảnh báo: {{ duplicateMovies.length }} phim đã tồn tại</div>
+        <div class="warning-list">
+          <div *ngFor="let movie of duplicateMovies" class="duplicate-item">
+            <span>{{ movie.fileName }}</span>
+            <span class="year" *ngIf="movie.year">({{ movie.year }})</span>
+          </div>
+        </div>
+        <div class="warning-actions">
+          <button mat-button (click)="ignoreDuplicates()">Bỏ Qua</button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Search and Filter Section -->
+  <div class="filter-section">
+    <mat-form-field appearance="outline">
+      <mat-label>Tìm kiếm phim...</mat-label>
+      <input matInput [(ngModel)]="searchQuery" (keyup)="searchMovies()" />
+      <button mat-icon-button matSuffix (click)="clearSearch()" *ngIf="searchQuery">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <div class="filter-buttons">
+      <button mat-stroked-button 
+          [class.active]="filterType === MovieFilterType.ALL"
+          (click)="changeFilter(MovieFilterType.ALL)">
+        Tất Cả ({{ getTotalCount() }})
+      </button>
+      <button mat-stroked-button 
+          [class.active]="filterType === MovieFilterType.PROCESSED"
+          (click)="changeFilter(MovieFilterType.PROCESSED)">
+        Đã Xử Lý ({{ getProcessedCount() }})
+      </button>
+      <button mat-stroked-button 
+          [class.active]="filterType === MovieFilterType.NOT_PROCESSED"
+          (click)="changeFilter(MovieFilterType.NOT_PROCESSED)">
+        Chưa Xử Lý ({{ getNotProcessedCount() }})
+      </button>
+    </div>
+  </div>
+
+  <!-- Movies List -->
+  <div class="movies-list">
+    <div *ngIf="filteredMovies.length === 0" class="empty-state">
+      <mat-icon>movie</mat-icon>
+      <p>Không tìm thấy phim nào</p>
+    </div>
+
+    <mat-card *ngFor="let movie of filteredMovies" class="movie-card">
+      <mat-card-header>
+        <mat-card-title>{{ movie.fileName }}</mat-card-title>
+        <mat-card-subtitle>
+          <span *ngIf="movie.year" class="year">{{ movie.year }}</span>
+          <span class="size">{{ getReadableSize(movie.size) }}</span>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="movie-info">
+          <div class="info-row">
+            <span class="label">Đường dẫn:</span>
+            <span class="value path-value" [title]="movie.path" (click)="copyPathToClipboard(movie.path)" 
+                  matTooltip="Click để copy đường dẫn" matTooltipPosition="above">{{ movie.path }}</span>
+          </div>
+          <div class="info-row tags-row" *ngIf="movie.tags && movie.tags.length > 0">
+            <span class="label">Thẻ:</span>
+            <div class="tags-display">
+              <span class="tag-chip" *ngFor="let tag of movie.tags">{{ tag }}</span>
+            </div>
+          </div>
+          <div class="info-row" *ngIf="!movie.tags || movie.tags.length === 0">
+            <span class="label">Thẻ:</span>
+            <span class="value" style="color: #999; font-style: italic;">Không có thẻ</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Trạng thái:</span>
+            <span class="value" [class.processed]="movie.isProcessed">
+              {{ movie.isProcessed ? '✓ Đã Xử Lý' : '○ Chưa Xử Lý' }}
+            </span>
+          </div>
+          <div class="info-row" *ngIf="movie.files > 0">
+            <span class="label">File:</span>
+            <span class="value">{{ movie.files }} file | {{ movie.folders }} thư mục</span>
+          </div>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button (click)="editMovie(movie)" color="accent">
+          <mat-icon>edit</mat-icon>
+          Chỉnh Sửa
+        </button>
+        <button mat-button (click)="markAsProcessed(movie)" *ngIf="!movie.isProcessed" color="primary">
+          <mat-icon>check_circle</mat-icon>
+          Đánh Dấu Đã Xử Lý
+        </button>
+        <button mat-button (click)="deleteMovie(movie.id)" color="warn">
+          <mat-icon>delete</mat-icon>
+          Xóa
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

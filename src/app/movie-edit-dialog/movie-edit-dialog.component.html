@@ -1,0 +1,72 @@
+<h2 mat-dialog-title>Chỉnh Sửa Thông Tin Phim</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="editForm" class="edit-form">
+    <!-- Tên phim -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Tên Phim</mat-label>
+      <input matInput formControlName="fileName" placeholder="Nhập tên phim" />
+      <mat-error *ngIf="hasError('fileName', 'required')">Tên phim không được bỏ trống</mat-error>
+      <mat-error *ngIf="hasError('fileName', 'minlength')">Tên phim phải có ít nhất 3 ký tự</mat-error>
+    </mat-form-field>
+
+    <!-- Đường dẫn -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Đường Dẫn</mat-label>
+      <input matInput formControlName="path" placeholder="Nhập đường dẫn folder" readonly />
+      <mat-error *ngIf="hasError('path', 'required')">Đường dẫn không được bỏ trống</mat-error>
+    </mat-form-field>
+
+    <!-- Năm sản xuất -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Năm Sản Xuất (tuỳ chọn)</mat-label>
+      <input matInput formControlName="year" placeholder="Nhập năm (vd: 2024)" />
+      <mat-error *ngIf="hasError('year', 'pattern')">Năm phải là số 4 chữ số</mat-error>
+    </mat-form-field>
+
+    <!-- Thẻ/Tags - Multi-select -->
+    <div class="tags-container">
+      <label class="tags-label">Thẻ (Tags)</label>
+      
+      <!-- Selected tags as chips -->
+      <mat-chip-list aria-label="Selected tags" class="tags-chip-list">
+        <mat-chip 
+          *ngFor="let tag of selectedTags" 
+          (removed)="removeTag(tag)"
+          removable>
+          {{ tag }}
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+      </mat-chip-list>
+
+      <!-- Input field with autocomplete -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Thêm thẻ</mat-label>
+        <input matInput 
+               [formControl]="tagsInputControl"
+               [matAutocomplete]="auto"
+               (keyup.enter)="onAddTagByEnter()"
+               placeholder="Gõ để tìm thẻ..." />
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onTagSelected($event)">
+          <mat-option *ngFor="let tag of filteredTags$ | async" [value]="tag">
+            {{ tag }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+
+    <!-- Trạng thái -->
+    <div class="checkbox-group">
+      <mat-checkbox formControlName="isProcessed">
+        Đã Xử Lý
+      </mat-checkbox>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Hủy</button>
+  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="editForm.invalid">
+    Lưu
+  </button>
+</mat-dialog-actions>
