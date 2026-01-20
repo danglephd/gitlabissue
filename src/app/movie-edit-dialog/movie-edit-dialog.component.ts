@@ -176,6 +176,7 @@ export class MovieEditDialogComponent implements OnInit {
     const updatedData = {
       fileName: formValue.fileName,
       path: formValue.path,
+      IMDBlink: formValue.IMDBlink,
       year: formValue.year ? parseInt(formValue.year) : undefined,
       isProcessed: formValue.isProcessed,
       tags: this.selectedTags

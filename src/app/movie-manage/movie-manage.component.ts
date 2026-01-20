@@ -419,7 +419,7 @@ export class MovieManageComponent implements OnInit {
     const tags = this.getAllTags();
     try {
       localStorage.setItem('movieTags', JSON.stringify(tags));
-      console.log('Tags saved to localStorage:', tags);
+      // console.log('Tags saved to localStorage:', tags);
     } catch (error) {
       console.error('Error saving tags to localStorage:', error);
     }
