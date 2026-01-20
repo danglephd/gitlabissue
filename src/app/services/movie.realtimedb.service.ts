@@ -17,12 +17,14 @@ export class MovieRealtimedbService {
     }
 
     /**
-     * Load all movies from database
+     * Load all movies from database (excluding deleted ones)
      */
     loadMovies(): void {
         this.db.list<Movie>(this.DB_PATH).valueChanges().subscribe(
             (movies: Movie[]) => {
-                this.moviesSubject.next(movies || []);
+                // Filter out deleted movies (only show active movies)
+                const activeMovies = (movies || []).filter(m => !m.deleted);
+                this.moviesSubject.next(activeMovies);
             },
             (error) => {
                 console.error('Error loading movies:', error);
