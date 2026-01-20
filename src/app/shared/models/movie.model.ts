@@ -11,6 +11,7 @@ export interface Movie {
     year?: number;          // Production year (extracted from fileName)
     createdAt: Date;        // When added to database
     isProcessed: boolean;   // Whether it has been processed
+    deleted?: boolean;      // Soft delete flag (true = deleted, false/undefined = active)
     tags?: string[];        // Optional tags for categorization
 }
 

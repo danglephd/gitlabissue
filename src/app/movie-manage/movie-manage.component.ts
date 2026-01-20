@@ -174,6 +174,9 @@ export class MovieManageComponent implements OnInit {
   applyFilter(): void {
     let filtered = [...this.movies];
 
+    // Filter out deleted movies (soft delete)
+    filtered = filtered.filter(m => !m.deleted);
+
     // Apply filter type
     switch (this.filterType) {
       case MovieFilterType.PROCESSED:
