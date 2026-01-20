@@ -103,6 +103,19 @@
       </mat-card-header>
       <mat-card-content>
         <div class="movie-info">
+          <!-- IMDB Link -->
+          <div class="info-row imdb-row" *ngIf="movie.IMDBlink && movie.IMDBlink.trim()">
+            <span class="label">IMDB:</span>
+            <a [href]="movie.IMDBlink" target="_blank" rel="noopener noreferrer" class="imdb-link" (click)="$event.stopPropagation()">
+              <mat-icon>open_in_new</mat-icon>
+              <span>Xem trên IMDB</span>
+            </a>
+          </div>
+          <div class="info-row imdb-row" *ngIf="!movie.IMDBlink || !movie.IMDBlink.trim()">
+            <span class="label">IMDB:</span>
+            <span class="value" style="color: #999; font-style: italic;">Chưa cập nhật</span>
+          </div>
+          <!-- Tags -->
           <div class="info-row tags-row" *ngIf="movie.tags && movie.tags.length > 0">
             <div class="tags-display">
               <span class="tag-chip" *ngFor="let tag of movie.tags">{{ tag }}</span>

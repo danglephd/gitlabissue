@@ -24,6 +24,19 @@
       <mat-error *ngIf="hasError('year', 'pattern')">Năm phải là số 4 chữ số</mat-error>
     </mat-form-field>
 
+    <!-- IMDB Link -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>IMDB Link (tuỳ chọn)</mat-label>
+      <input matInput formControlName="IMDBlink" placeholder="https://www.imdb.com/title/tt..." />
+      <mat-icon matSuffix *ngIf="editForm.get('IMDBlink')?.value" 
+                 matTooltip="Mở IMDB" 
+                 class="imdb-icon"
+                 (click)="openIMDBLink()" 
+                 style="cursor: pointer; color: #FFB000;">
+        open_in_new
+      </mat-icon>
+    </mat-form-field>
+
     <!-- Thẻ/Tags - Multi-select -->
     <div class="tags-container">
       <label class="tags-label">Thẻ (Tags)</label>

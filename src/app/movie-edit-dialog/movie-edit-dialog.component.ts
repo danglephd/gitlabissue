@@ -69,6 +69,7 @@ export class MovieEditDialogComponent implements OnInit {
           return null;
         }
       ])],
+      IMDBlink: [this.movie.IMDBlink || ''],
       isProcessed: [this.movie.isProcessed]
     });
 
@@ -215,6 +216,16 @@ export class MovieEditDialogComponent implements OnInit {
       }
     } catch (error) {
       console.error('Error saving tags to localStorage:', error);
+    }
+  }
+
+  /**
+   * Open IMDB link in new tab
+   */
+  openIMDBLink(): void {
+    const imdbLink = this.editForm.get('IMDBlink')?.value;
+    if (imdbLink && imdbLink.trim()) {
+      window.open(imdbLink, '_blank', 'noopener,noreferrer');
     }
   }
 
