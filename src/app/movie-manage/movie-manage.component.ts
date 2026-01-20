@@ -200,6 +200,9 @@ export class MovieManageComponent implements OnInit {
       );
     }
 
+    // Sort by clickCount in ascending order
+    filtered.sort((a, b) => (a.clickCount || 0) - (b.clickCount || 0));
+
     this.filteredMovies = filtered;
   }
 
@@ -267,9 +270,11 @@ export class MovieManageComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         // result contains the updated movie data
+        // Increment clickCount by 1
         const updatedMovie: Movie = {
           ...movie,
-          ...result
+          ...result,
+          clickCount: (movie.clickCount || 0) + 1
         };
 
         this.movieService.updateMovie(updatedMovie).then(() => {

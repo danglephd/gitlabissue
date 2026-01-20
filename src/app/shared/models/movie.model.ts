@@ -12,6 +12,7 @@ export interface Movie {
     createdAt: Date;        // When added to database
     isProcessed: boolean;   // Whether it has been processed
     deleted?: boolean;      // Soft delete flag (true = deleted, false/undefined = active)
+    clickCount?: number;    // Number of times edit dialog was opened (starts from 0)
     tags?: string[];        // Optional tags for categorization
 }
 
