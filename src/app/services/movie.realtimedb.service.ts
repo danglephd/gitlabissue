@@ -76,19 +76,19 @@ export class MovieRealtimedbService {
     }
 
     /**
-     * Delete a movie
+     * Delete a movie (soft delete - set deleted flag to true)
      */
     deleteMovie(movieId: string): Promise<void> {
-        return this.db.object(`${this.DB_PATH}/${movieId}`).remove();
+        return this.db.object(`${this.DB_PATH}/${movieId}`).update({ deleted: true });
     }
 
     /**
-     * Delete multiple movies
+     * Delete multiple movies (soft delete - set deleted flag to true)
      */
     deleteMovies(movieIds: string[]): Promise<any> {
         const updates: any = {};
         movieIds.forEach(id => {
-            updates[`${this.DB_PATH}/${id}`] = null;
+            updates[`${this.DB_PATH}/${id}/deleted`] = true;
         });
         return this.db.database.ref().update(updates);
     }
