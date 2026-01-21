@@ -56,7 +56,7 @@ export class MovieEditDialogComponent implements OnInit {
     
     this.editForm = this.formBuilder.group({
       fileName: [this.movie.fileName, [Validators.required, Validators.minLength(3)]],
-      path: [this.movie.path, Validators.required],
+      path: [this.movie.path || ''],
       year: [this.movie.year || '', Validators.compose([
         Validators.pattern(/^\d{4}$/),
         (control: any) => {
