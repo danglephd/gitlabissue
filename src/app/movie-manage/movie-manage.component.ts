@@ -30,6 +30,9 @@ export class MovieManageComponent implements OnInit {
   pageSize = 10;
   displayedCount = 10;
   
+  // Scroll to top properties
+  showScrollToTopButton = false;
+  
   @ViewChild('moviesListContainer') moviesListContainer!: ElementRef;
 
   constructor(
@@ -339,6 +342,19 @@ export class MovieManageComponent implements OnInit {
         this.loadMore();
       }
     }
+    
+    // Check if should show scroll to top button
+    this.showScrollToTopButton = window.scrollY > 300;
+  }
+
+  /**
+   * Scroll to top of page
+   */
+  scrollToTop(): void {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   }
 
   /**

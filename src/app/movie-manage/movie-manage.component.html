@@ -172,4 +172,13 @@
   <div class="loading-more-indicator" *ngIf="displayedCount < filteredMovies.length">
     <p>Scroll xuống để tải thêm...</p>
   </div>
+
+  <!-- Scroll To Top Button -->
+  <button class="scroll-to-top-button" 
+          *ngIf="showScrollToTopButton" 
+          (click)="scrollToTop()"
+          matTooltip="Lên đầu trang"
+          matTooltipPosition="left">
+    <mat-icon>arrow_upward</mat-icon>
+  </button>
 </div>
