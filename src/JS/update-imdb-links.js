@@ -59,7 +59,6 @@ function getIMDBLink(movieName, year) {
           } else {
             console.log(`⚠️  Không tìm thấy: ${movieName}`);
             resolve('');
-            return;
           }
         } catch (error) {
           console.error(`❌ Lỗi parse JSON cho ${movieName}:`, error.message);
