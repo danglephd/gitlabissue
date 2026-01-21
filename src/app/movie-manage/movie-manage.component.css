@@ -144,33 +144,81 @@
 .filter-section {
   margin-bottom: 30px;
   display: flex;
+  flex-direction: column;
   gap: 15px;
-  align-items: center;
-  flex-wrap: wrap;
   
-  mat-form-field {
-    flex: 1;
-    min-width: 250px;
-  }
-  
-  .filter-buttons {
+  .filter-row-1 {
     display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+    
+    mat-form-field {
+      flex: 1;
+      min-width: 250px;
+    }
+    
+    .filter-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      
+      button {
+        border: 2px solid #ddd;
+        color: #666;
+        
+        &.active {
+          background-color: #667eea;
+          color: white;
+          border-color: #667eea;
+        }
+        
+        &:hover:not(.active) {
+          border-color: #667eea;
+          color: #667eea;
+        }
+      }
+    }
+  }
+
+  .filter-row-2 {
+    display: flex;
+    align-items: center;
     gap: 10px;
     flex-wrap: wrap;
     
-    button {
-      border: 2px solid #ddd;
-      color: #666;
+    .selected-tags-container {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
       
-      &.active {
+      .tag-filter-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
         background-color: #667eea;
         color: white;
-        border-color: #667eea;
-      }
-      
-      &:hover:not(.active) {
-        border-color: #667eea;
-        color: #667eea;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        
+        button {
+          padding: 0;
+          min-width: 24px;
+          width: 24px;
+          height: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+            color: white;
+          }
+        }
       }
     }
   }
@@ -244,6 +292,14 @@
         border-radius: 20px;
         font-size: 0.85rem;
         font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          background-color: #5568d3;
+          transform: scale(1.05);
+          box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
       }
       
       .size {
@@ -313,8 +369,8 @@
         .tags-display {
           display: flex;
           gap: 5px;
-          overflow-x: hidden;
           flex: 1;
+          flex-wrap: wrap;
           
           .tag-chip {
             display: inline-block;
@@ -325,6 +381,21 @@
             font-size: 0.85rem;
             font-weight: 500;
             white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            
+            &:hover {
+              background-color: #5568d3;
+              transform: scale(1.05);
+              box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+            }
+            
+            &.active {
+              background-color: #764ba2;
+              border-color: #fff;
+              box-shadow: 0 2px 8px rgba(118, 75, 162, 0.4);
+            }
           }
         }
       }
@@ -529,7 +600,6 @@
         .info-row {
           margin-bottom: 8px;
           padding-bottom: 4px;
-          overflow: hidden;
           
           .label {
             font-size: 0.8rem;

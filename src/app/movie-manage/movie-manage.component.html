@@ -56,30 +56,44 @@
 
   <!-- Search and Filter Section -->
   <div class="filter-section">
-    <mat-form-field appearance="outline">
-      <mat-label>Tìm kiếm phim...</mat-label>
-      <input matInput [(ngModel)]="searchQuery" (keyup)="searchMovies()" />
-      <button mat-icon-button matSuffix (click)="clearSearch()" *ngIf="searchQuery">
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
+    <div class="filter-row-1">
+      <mat-form-field appearance="outline">
+        <mat-label>Tìm kiếm phim...</mat-label>
+        <input matInput [(ngModel)]="searchQuery" (keyup)="searchMovies()" />
+        <button mat-icon-button matSuffix (click)="clearSearch()" *ngIf="searchQuery">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
 
-    <div class="filter-buttons">
-      <button mat-stroked-button 
-          [class.active]="filterType === MovieFilterType.ALL"
-          (click)="changeFilter(MovieFilterType.ALL)">
-        Tất Cả ({{ getTotalCount() }})
-      </button>
-      <button mat-stroked-button 
-          [class.active]="filterType === MovieFilterType.PROCESSED"
-          (click)="changeFilter(MovieFilterType.PROCESSED)">
-        Đã Xử Lý ({{ getProcessedCount() }})
-      </button>
-      <button mat-stroked-button 
-          [class.active]="filterType === MovieFilterType.NOT_PROCESSED"
-          (click)="changeFilter(MovieFilterType.NOT_PROCESSED)">
-        Chưa Xử Lý ({{ getNotProcessedCount() }})
-      </button>
+      <div class="filter-buttons">
+        <button mat-stroked-button 
+            [class.active]="filterType === MovieFilterType.ALL"
+            (click)="changeFilter(MovieFilterType.ALL)">
+          Tất Cả ({{ getTotalCount() }})
+        </button>
+        <button mat-stroked-button 
+            [class.active]="filterType === MovieFilterType.PROCESSED"
+            (click)="changeFilter(MovieFilterType.PROCESSED)">
+          Đã Xử Lý ({{ getProcessedCount() }})
+        </button>
+        <button mat-stroked-button 
+            [class.active]="filterType === MovieFilterType.NOT_PROCESSED"
+            (click)="changeFilter(MovieFilterType.NOT_PROCESSED)">
+          Chưa Xử Lý ({{ getNotProcessedCount() }})
+        </button>
+      </div>
+    </div>
+
+    <!-- Tag Filter Row -->
+    <div class="filter-row-2" *ngIf="selectedTags.length > 0">
+      <div class="selected-tags-container">
+        <span class="tag-filter-badge" *ngFor="let tag of selectedTags">
+          {{ tag }}
+          <button mat-icon-button (click)="removeTagFilter(tag)" matTooltip="Xóa tag" matTooltipPosition="above">
+            <mat-icon>close</mat-icon>
+          </button>
+        </span>
+      </div>
     </div>
   </div>
 
@@ -97,7 +111,7 @@
       <mat-card-header>
         <mat-card-title>{{ movie.fileName }}</mat-card-title>
         <mat-card-subtitle>
-          <span *ngIf="movie.year" class="year">{{ movie.year }}</span>
+          <span *ngIf="movie.year" class="year" (click)="filterByYear(movie.year); $event.stopPropagation()" matTooltip="Click để lọc theo năm">{{ movie.year }}</span>
           <span class="size" *ngIf="movie.size && movie.size > 0">{{ getReadableSize(movie.size) }}</span>
         </mat-card-subtitle>
       </mat-card-header>
@@ -118,7 +132,14 @@
           <!-- Tags -->
           <div class="info-row tags-row" *ngIf="movie.tags && movie.tags.length > 0">
             <div class="tags-display">
-              <span class="tag-chip" *ngFor="let tag of movie.tags">{{ tag }}</span>
+              <span class="tag-chip" 
+                    *ngFor="let tag of movie.tags" 
+                    (click)="filterByTag(tag); $event.stopPropagation()"
+                    [class.active]="selectedTags.includes(tag)"
+                    matTooltip="Click để lọc theo tag này"
+                    matTooltipPosition="above">
+                {{ tag }}
+              </span>
             </div>
           </div>
           <div class="info-row" *ngIf="!movie.tags || movie.tags.length === 0">

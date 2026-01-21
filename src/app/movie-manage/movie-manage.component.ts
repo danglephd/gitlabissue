@@ -23,6 +23,7 @@ export class MovieManageComponent implements OnInit {
   showDuplicateWarning = false;
   public MovieFilterType = MovieFilterType;
   displayedColumns: string[] = ['fileName', 'year', 'size', 'modified', 'isProcessed', 'actions'];
+  selectedTags: string[] = [];
 
   constructor(
     private movieService: MovieRealtimedbService,
@@ -200,6 +201,13 @@ export class MovieManageComponent implements OnInit {
       );
     }
 
+    // Apply tag filter - if any tags are selected, show only movies that have ALL of the selected tags (AND logic)
+    if (this.selectedTags.length > 0) {
+      filtered = filtered.filter(m =>
+        m.tags && Array.isArray(m.tags) && this.selectedTags.every(tag => m.tags!.includes(tag))
+      );
+    }
+
     // Sort by clickCount in ascending order
     filtered.sort((a, b) => (a.clickCount || 0) - (b.clickCount || 0));
 
@@ -227,6 +235,50 @@ export class MovieManageComponent implements OnInit {
   clearSearch(): void {
     this.searchQuery = '';
     this.applyFilter();
+  }
+
+  /**
+   * Filter movies by tag
+   */
+  filterByTag(tag: string): void {
+    const index = this.selectedTags.indexOf(tag);
+    if (index > -1) {
+      // If tag is already selected, remove it
+      this.selectedTags.splice(index, 1);
+    } else {
+      // Add tag to filter
+      this.selectedTags.push(tag);
+    }
+    this.applyFilter();
+  }
+
+  /**
+   * Remove a specific tag from filter
+   */
+  removeTagFilter(tag: string): void {
+    const index = this.selectedTags.indexOf(tag);
+    if (index > -1) {
+      this.selectedTags.splice(index, 1);
+      this.applyFilter();
+    }
+  }
+
+  /**
+   * Clear all tag filters
+   */
+  clearAllTagFilters(): void {
+    this.selectedTags = [];
+    this.applyFilter();
+  }
+
+  /**
+   * Filter movies by year
+   */
+  filterByYear(year: number | undefined): void {
+    if (year) {
+      this.searchQuery = year.toString();
+      this.applyFilter();
+    }
   }
 
   /**
