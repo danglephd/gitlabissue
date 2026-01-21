@@ -98,7 +98,7 @@
         <mat-card-title>{{ movie.fileName }}</mat-card-title>
         <mat-card-subtitle>
           <span *ngIf="movie.year" class="year">{{ movie.year }}</span>
-          <span class="size">{{ getReadableSize(movie.size) }}</span>
+          <span class="size" *ngIf="movie.size && movie.size > 0">{{ getReadableSize(movie.size) }}</span>
         </mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
@@ -108,7 +108,7 @@
             <span class="label">IMDB:</span>
             <a [href]="movie.IMDBlink" target="_blank" rel="noopener noreferrer" class="imdb-link" (click)="$event.stopPropagation()">
               <mat-icon>open_in_new</mat-icon>
-              <span>Xem trên IMDB</span>
+              <span>{{ movie.IMDbRating ? movie.IMDbRating + ' ⭐' : 'Xem trên IMDB' }}</span>
             </a>
           </div>
           <div class="info-row imdb-row" *ngIf="!movie.IMDBlink || !movie.IMDBlink.trim()">

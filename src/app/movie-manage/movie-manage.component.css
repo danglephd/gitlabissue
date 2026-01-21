@@ -312,7 +312,7 @@
         
         .tags-display {
           display: flex;
-          gap: 8px;
+          gap: 5px;
           overflow-x: hidden;
           flex: 1;
           
@@ -529,6 +529,7 @@
         .info-row {
           margin-bottom: 8px;
           padding-bottom: 4px;
+          overflow: hidden;
           
           .label {
             font-size: 0.8rem;

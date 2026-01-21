@@ -14,6 +14,7 @@ export interface Movie {
     deleted?: boolean;      // Soft delete flag (true = deleted, false/undefined = active)
     clickCount?: number;    // Number of times edit dialog was opened (starts from 0)
     IMDBlink?: string;      // IMDB link for the movie (e.g., https://www.imdb.com/title/tt13320662/)
+    IMDbRating?: string;      // IMDb rating as a string (e.g., "8.5/10")
     tags?: string[];        // Optional tags for categorization
 }
 

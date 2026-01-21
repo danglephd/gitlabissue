@@ -424,7 +424,7 @@ export class MovieManageComponent implements OnInit {
       console.error('Error saving tags to localStorage:', error);
     }
   }
-
+                                    
   /**
    * Load tags from localStorage
    */
