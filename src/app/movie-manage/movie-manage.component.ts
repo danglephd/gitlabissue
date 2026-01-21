@@ -14,6 +14,7 @@ import { MovieEditDialogComponent } from '../movie-edit-dialog/movie-edit-dialog
 export class MovieManageComponent implements OnInit {
   movies: Movie[] = [];
   filteredMovies: Movie[] = [];
+  paginatedMovies: Movie[] = [];
   filterType: MovieFilterType = MovieFilterType.ALL;
   isLoading = false;
   searchQuery = '';
@@ -24,6 +25,11 @@ export class MovieManageComponent implements OnInit {
   public MovieFilterType = MovieFilterType;
   displayedColumns: string[] = ['fileName', 'year', 'size', 'modified', 'isProcessed', 'actions'];
   selectedTags: string[] = [];
+  
+  // Pagination properties
+  pageSize = 10;
+  currentPage = 1;
+  totalPages = 0;
 
   constructor(
     private movieService: MovieRealtimedbService,
@@ -212,6 +218,9 @@ export class MovieManageComponent implements OnInit {
     filtered.sort((a, b) => (a.clickCount || 0) - (b.clickCount || 0));
 
     this.filteredMovies = filtered;
+    
+    // Reset pagination and calculate pages
+    this.resetPagination();
   }
 
   /**
@@ -279,6 +288,54 @@ export class MovieManageComponent implements OnInit {
       this.searchQuery = year.toString();
       this.applyFilter();
     }
+  }
+
+  /**
+   * Calculate pagination based on filtered movies
+   */
+  calculatePagination(): void {
+    this.totalPages = Math.ceil(this.filteredMovies.length / this.pageSize);
+    if (this.currentPage > this.totalPages && this.totalPages > 0) {
+      this.currentPage = this.totalPages;
+    }
+    this.updatePaginatedMovies();
+  }
+
+  /**
+   * Update paginatedMovies based on currentPage
+   */
+  updatePaginatedMovies(): void {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.paginatedMovies = this.filteredMovies.slice(startIndex, endIndex);
+  }
+
+  /**
+   * Load next page
+   */
+  loadNextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePaginatedMovies();
+    }
+  }
+
+  /**
+   * Load previous page
+   */
+  loadPreviousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePaginatedMovies();
+    }
+  }
+
+  /**
+   * Reset to first page
+   */
+  resetPagination(): void {
+    this.currentPage = 1;
+    this.calculatePagination();
   }
 
   /**
