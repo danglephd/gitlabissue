@@ -104,7 +104,7 @@
       <p>Không tìm thấy phim nào</p>
     </div>
 
-    <mat-card *ngFor="let movie of paginatedMovies" class="movie-card" (click)="editMovie(movie)">
+    <mat-card *ngFor="let movie of itemsToDisplay" class="movie-card" (click)="editMovie(movie)">
       <button mat-icon-button class="delete-button" (click)="deleteMovie(movie.id); $event.stopPropagation()" color="warn" matTooltip="Xóa" matTooltipPosition="below">
         <mat-icon>close</mat-icon>
       </button>
@@ -168,21 +168,8 @@
     </mat-card>
   </div>
 
-  <!-- Pagination Controls -->
-  <div class="pagination-container" *ngIf="filteredMovies.length > 0">
-    <div class="pagination-info">
-      <span>Trang {{ currentPage }} / {{ totalPages }} ({{ filteredMovies.length }} phim)</span>
-    </div>
-    <div class="pagination-controls">
-      <button mat-stroked-button (click)="loadPreviousPage()" [disabled]="currentPage === 1">
-        <mat-icon>navigate_before</mat-icon>
-        Trang trước
-      </button>
-      <span class="page-counter">{{ (currentPage - 1) * pageSize + 1 }} - {{ currentPage * pageSize > filteredMovies.length ? filteredMovies.length : currentPage * pageSize }}</span>
-      <button mat-stroked-button (click)="loadNextPage()" [disabled]="currentPage === totalPages">
-        Trang sau
-        <mat-icon>navigate_next</mat-icon>
-      </button>
-    </div>
+  <!-- Loading More Indicator -->
+  <div class="loading-more-indicator" *ngIf="displayedCount < filteredMovies.length">
+    <p>Scroll xuống để tải thêm...</p>
   </div>
 </div>

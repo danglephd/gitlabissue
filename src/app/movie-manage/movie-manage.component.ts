@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { Movie, MovieFilterType } from '../shared/models/movie.model';
 import { MovieRealtimedbService } from '../services/movie.realtimedb.service';
 import { CsvParserService } from '../services/csv-parser.service';
@@ -14,7 +14,7 @@ import { MovieEditDialogComponent } from '../movie-edit-dialog/movie-edit-dialog
 export class MovieManageComponent implements OnInit {
   movies: Movie[] = [];
   filteredMovies: Movie[] = [];
-  paginatedMovies: Movie[] = [];
+  itemsToDisplay: Movie[] = [];
   filterType: MovieFilterType = MovieFilterType.ALL;
   isLoading = false;
   searchQuery = '';
@@ -26,10 +26,11 @@ export class MovieManageComponent implements OnInit {
   displayedColumns: string[] = ['fileName', 'year', 'size', 'modified', 'isProcessed', 'actions'];
   selectedTags: string[] = [];
   
-  // Pagination properties
+  // Lazy loading properties
   pageSize = 10;
-  currentPage = 1;
-  totalPages = 0;
+  displayedCount = 10;
+  
+  @ViewChild('moviesListContainer') moviesListContainer!: ElementRef;
 
   constructor(
     private movieService: MovieRealtimedbService,
@@ -219,8 +220,8 @@ export class MovieManageComponent implements OnInit {
 
     this.filteredMovies = filtered;
     
-    // Reset pagination and calculate pages
-    this.resetPagination();
+    // Reset lazy loading and initialize items to display
+    this.initializeItemsToDisplay();
   }
 
   /**
@@ -291,51 +292,53 @@ export class MovieManageComponent implements OnInit {
   }
 
   /**
-   * Calculate pagination based on filtered movies
+   * Initialize itemsToDisplay with first 10 items
    */
-  calculatePagination(): void {
-    this.totalPages = Math.ceil(this.filteredMovies.length / this.pageSize);
-    if (this.currentPage > this.totalPages && this.totalPages > 0) {
-      this.currentPage = this.totalPages;
-    }
-    this.updatePaginatedMovies();
+  initializeItemsToDisplay(): void {
+    this.displayedCount = Math.min(this.pageSize, this.filteredMovies.length);
+    this.itemsToDisplay = this.filteredMovies.slice(0, this.displayedCount);
   }
 
   /**
-   * Update paginatedMovies based on currentPage
+   * Load more items (lazy loading)
    */
-  updatePaginatedMovies(): void {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    this.paginatedMovies = this.filteredMovies.slice(startIndex, endIndex);
+  loadMore(): void {
+    //ghi log 
+    console.log('Loading more movies...');
+    const nextCount = Math.min(this.displayedCount + this.pageSize, this.filteredMovies.length);
+    this.displayedCount = nextCount;
+    this.itemsToDisplay = this.filteredMovies.slice(0, nextCount);
   }
 
   /**
-   * Load next page
+   * Check if need to load more items
    */
-  loadNextPage(): void {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-      this.updatePaginatedMovies();
-    }
-  }
-
-  /**
-   * Load previous page
-   */
-  loadPreviousPage(): void {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-      this.updatePaginatedMovies();
+  onScroll(event: any): void {
+    const element = event.target;
+    // Check if scrolled to bottom (within 200px)
+    console.log('Scroll event detected. ScrollTop:', element.scrollTop, 'ScrollHeight:', element.scrollHeight, 'ClientHeight:', element.clientHeight);
+    if (element.scrollHeight - element.scrollTop <= element.clientHeight + 200) {
+      if (this.displayedCount < this.filteredMovies.length) {
+        this.loadMore();
+      }
     }
   }
 
   /**
-   * Reset to first page
+   * HostListener for window scroll event
    */
-  resetPagination(): void {
-    this.currentPage = 1;
-    this.calculatePagination();
+  @HostListener('window:scroll', ['$event'])
+  onWindowScroll(): void {
+    // Get document height and current scroll position
+    const scrollPosition = window.innerHeight + window.scrollY;
+    const documentHeight = document.documentElement.scrollHeight;
+    
+    // Check if scrolled to bottom (within 500px)
+    if (scrollPosition >= documentHeight - 500) {
+      if (this.displayedCount < this.filteredMovies.length) {
+        this.loadMore();
+      }
+    }
   }
 
   /**

@@ -696,3 +696,15 @@
     }
   }
 }
+
+/* Loading More Indicator */
+.loading-more-indicator {
+  text-align: center;
+  padding: 30px 20px;
+  color: #999;
+  font-size: 0.95rem;
+  
+  p {
+    margin: 0;
+  }
+}
