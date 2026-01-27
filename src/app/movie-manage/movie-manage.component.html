@@ -85,11 +85,15 @@
     </div>
 
     <!-- Tag Filter Row -->
-    <div class="filter-row-2" *ngIf="selectedTags.length > 0">
+    <div class="filter-row-2" *ngIf="(selectedTags | keyvalue).length > 0">
       <div class="selected-tags-container">
-        <span class="tag-filter-badge" *ngFor="let tag of selectedTags">
-          {{ tag }}
-          <button mat-icon-button (click)="removeTagFilter(tag)" matTooltip="Xóa tag" matTooltipPosition="above">
+        <span class="tag-filter-badge" 
+              *ngFor="let item of selectedTags | keyvalue" 
+              [class.include]="item.value === 'include'"
+              [class.exclude]="item.value === 'exclude'"
+              matTooltipPosition="above">
+          <span class="tag-name" (click)="toggleTagFilterStatus(item.key)">{{ item.key }}</span>
+          <button mat-icon-button (click)="removeTagFilter(item.key)" matTooltip="Xóa tag" matTooltipPosition="above">
             <mat-icon>close</mat-icon>
           </button>
         </span>
@@ -135,7 +139,7 @@
               <span class="tag-chip" 
                     *ngFor="let tag of movie.tags" 
                     (click)="filterByTag(tag); $event.stopPropagation()"
-                    [class.active]="selectedTags.includes(tag)"
+                    [class.active]="selectedTags[tag]"
                     matTooltip="Click để lọc theo tag này"
                     matTooltipPosition="above">
                 {{ tag }}

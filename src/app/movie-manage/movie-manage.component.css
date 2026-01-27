@@ -202,6 +202,33 @@
         border-radius: 20px;
         font-size: 0.9rem;
         font-weight: 500;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        
+        &.include {
+          background-color: #28a745;
+          border: 2px solid #20c997;
+          
+          &:hover {
+            background-color: #218838;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.4);
+          }
+        }
+        
+        &.exclude {
+          background-color: #dc3545;
+          border: 2px solid #e74c3c;
+          
+          &:hover {
+            background-color: #c82333;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4);
+          }
+        }
+        
+        .tag-name {
+          cursor: pointer;
+          flex: 1;
+        }
         
         button {
           padding: 0;
@@ -211,6 +238,7 @@
           display: flex;
           align-items: center;
           justify-content: center;
+          flex-shrink: 0;
           
           mat-icon {
             font-size: 16px;

@@ -24,7 +24,8 @@ export class MovieManageComponent implements OnInit {
   showDuplicateWarning = false;
   public MovieFilterType = MovieFilterType;
   displayedColumns: string[] = ['fileName', 'year', 'size', 'modified', 'isProcessed', 'actions'];
-  selectedTags: string[] = [];
+  // Tag filter with status: 'include' or 'exclude'
+  selectedTags: { [key: string]: 'include' | 'exclude' } = {};
   
   // Lazy loading properties
   pageSize = 10;
@@ -211,11 +212,35 @@ export class MovieManageComponent implements OnInit {
       );
     }
 
-    // Apply tag filter - if any tags are selected, show only movies that have ALL of the selected tags (AND logic)
-    if (this.selectedTags.length > 0) {
-      filtered = filtered.filter(m =>
-        m.tags && Array.isArray(m.tags) && this.selectedTags.every(tag => m.tags!.includes(tag))
-      );
+    // Apply tag filter - Include/Exclude logic
+    // Movie must match all Include tags AND must NOT match any Exclude tags
+    const selectedTagKeys = Object.keys(this.selectedTags);
+    if (selectedTagKeys.length > 0) {
+      filtered = filtered.filter(m => {
+        if (!m.tags || !Array.isArray(m.tags)) {
+          return false; // Movie must have tags
+        }
+        
+        // Check Include tags - movie must have ALL include tags
+        for (const tag of selectedTagKeys) {
+          if (this.selectedTags[tag] === 'include') {
+            if (!m.tags.includes(tag)) {
+              return false;
+            }
+          }
+        }
+        
+        // Check Exclude tags - movie must NOT have any exclude tags
+        for (const tag of selectedTagKeys) {
+          if (this.selectedTags[tag] === 'exclude') {
+            if (m.tags.includes(tag)) {
+              return false;
+            }
+          }
+        }
+        
+        return true;
+      });
     }
 
     // Sort by clickCount in ascending order
@@ -251,16 +276,32 @@ export class MovieManageComponent implements OnInit {
   }
 
   /**
-   * Filter movies by tag
+   * Filter movies by tag from movie card - toggle between include and remove
+   * Click 1: Include tag
+   * Click 2: Remove tag
    */
   filterByTag(tag: string): void {
-    const index = this.selectedTags.indexOf(tag);
-    if (index > -1) {
-      // If tag is already selected, remove it
-      this.selectedTags.splice(index, 1);
+    if (this.selectedTags[tag]) {
+      // If tag exists in filter, remove it
+      delete this.selectedTags[tag];
     } else {
-      // Add tag to filter
-      this.selectedTags.push(tag);
+      // Add tag with include status
+      this.selectedTags[tag] = 'include';
+    }
+    this.applyFilter();
+  }
+
+  /**
+   * Toggle tag filter status - toggle between include, exclude
+   */
+  toggleTagFilterStatus(tag: string): void {
+    if (this.selectedTags[tag]) {
+      // If tag exists, toggle between include and exclude
+      if (this.selectedTags[tag] === 'include') {
+        this.selectedTags[tag] = 'exclude';
+      } else {
+        this.selectedTags[tag] = 'include';
+      }
     }
     this.applyFilter();
   }
@@ -269,18 +310,15 @@ export class MovieManageComponent implements OnInit {
    * Remove a specific tag from filter
    */
   removeTagFilter(tag: string): void {
-    const index = this.selectedTags.indexOf(tag);
-    if (index > -1) {
-      this.selectedTags.splice(index, 1);
-      this.applyFilter();
-    }
+    delete this.selectedTags[tag];
+    this.applyFilter();
   }
 
   /**
    * Clear all tag filters
    */
   clearAllTagFilters(): void {
-    this.selectedTags = [];
+    this.selectedTags = {};
     this.applyFilter();
   }
 
