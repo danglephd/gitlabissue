@@ -35,6 +35,9 @@ export class MovieManageComponent implements OnInit {
   // Scroll to top properties
   showScrollToTopButton = false;
   
+  // Mobile detection
+  isMobileView = false;
+  
   @ViewChild('moviesListContainer') moviesListContainer!: ElementRef;
 
   constructor(
@@ -47,6 +50,15 @@ export class MovieManageComponent implements OnInit {
   ngOnInit(): void {
     this.loadMovies();
     this.loadTagsFromLocalStorage();
+    this.detectMobileView();
+  }
+
+  /**
+   * Detect if device is in mobile view
+   */
+  @HostListener('window:resize', ['$event'])
+  detectMobileView(): void {
+    this.isMobileView = window.innerWidth < 768;
   }
 
   /**

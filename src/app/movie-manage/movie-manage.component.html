@@ -7,7 +7,9 @@
 
   <!-- Statistics -->
   <div class="stats-container">
-    <div class="stat-card" (click)="openImportDialog()" style="cursor: pointer;">
+    <div class="stat-card" 
+         (click)="!isMobileView && openImportDialog()"
+         [style.cursor]="isMobileView ? 'default' : 'pointer'">
       <div class="stat-value">{{ getTotalCount() }}</div>
       <div class="stat-label">Tổng Phim</div>
     </div>
