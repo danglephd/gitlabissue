@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>Nhập Phim Từ File CSV</h2>
+
+<mat-dialog-content>
+  <div class="import-form">
+    <div class="file-input-wrapper">
+      <input type="file" accept=".csv" (change)="onFileSelected($event)" #fileInput id="csvFileInput" />
+      <label (click)="fileInput.click()">{{ selectedFile ? selectedFile.name : 'Chọn file CSV...' }}</label>
+    </div>
+    <button mat-raised-button color="primary" (click)="importFromCsv()" [disabled]="isLoading || !selectedFile">
+      <span *ngIf="!isLoading">Nhập Dữ Liệu</span>
+      <span *ngIf="isLoading">{{ importProgress }}</span>
+    </button>
+  </div>
+
+  <!-- Duplicate Warning -->
+  <div *ngIf="showDuplicateWarning" class="warning-box">
+    <div class="warning-title">⚠️ Cảnh báo: {{ duplicateMovies.length }} phim đã tồn tại</div>
+    <div class="warning-list">
+      <div *ngFor="let movie of duplicateMovies" class="duplicate-item">
+        <span>{{ movie.fileName }}</span>
+        <span class="year" *ngIf="movie.year">({{ movie.year }})</span>
+      </div>
+    </div>
+    <div class="warning-actions">
+      <button mat-button (click)="ignoreDuplicates()">Bỏ Qua</button>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Đóng</button>
+</mat-dialog-actions>

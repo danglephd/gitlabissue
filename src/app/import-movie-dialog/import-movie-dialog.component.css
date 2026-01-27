@@ -1,0 +1,81 @@
+.import-form {
+  display: flex;
+  gap: 15px;
+  align-items: flex-end;
+  margin-bottom: 20px;
+
+  .file-input-wrapper {
+    flex: 1;
+    position: relative;
+
+    input[type='file'] {
+      display: none;
+    }
+
+    label {
+      display: block;
+      padding: 12px 16px;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #666;
+      font-size: 0.95rem;
+
+      &:hover {
+        border-color: #667eea;
+        background-color: #f0f0ff;
+        color: #667eea;
+      }
+    }
+  }
+
+  button {
+    height: 46px;
+  }
+}
+
+.warning-box {
+  margin-top: 20px;
+  padding: 16px;
+  border: 2px solid #ffc107;
+  border-radius: 8px;
+  background-color: #fffbf0;
+
+  .warning-title {
+    font-weight: 600;
+    color: #ff9800;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+  }
+
+  .warning-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+
+    .duplicate-item {
+      display: flex;
+      gap: 10px;
+      padding: 8px 0;
+      color: #666;
+      font-size: 0.9rem;
+      border-bottom: 1px solid #ffe0b2;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .year {
+        color: #999;
+      }
+    }
+  }
+
+  .warning-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+}

@@ -36,6 +36,7 @@
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
+  transition: all 0.3s ease;
   
   .stat-value {
     font-size: 2.5rem;
@@ -46,6 +47,24 @@
   .stat-label {
     font-size: 0.95rem;
     opacity: 0.9;
+  }
+
+  &:has(+ .stat-card:nth-child(1)) {
+    // This will be the first card (Tổng Phim)
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+    }
+  }
+}
+
+.stat-card:first-child {
+  // Hover effect for the Tổng Phim card (first card)
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
   }
 }
 
