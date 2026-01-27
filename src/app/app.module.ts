@@ -28,6 +28,7 @@ import { SelectMonthDialogComponent } from './select-month-dialog/select-month-d
 import { DogWhistleComponent } from './dog-whistle/dog-whistle.component';
 import { MovieManageComponent } from './movie-manage/movie-manage.component';
 import { MovieEditDialogComponent } from './movie-edit-dialog/movie-edit-dialog.component';
+import { ImportMovieDialogComponent } from './import-movie-dialog/import-movie-dialog.component';
 
 
 @NgModule({
@@ -48,7 +49,8 @@ import { MovieEditDialogComponent } from './movie-edit-dialog/movie-edit-dialog.
 
     DogWhistleComponent,
     MovieManageComponent,
-    MovieEditDialogComponent
+    MovieEditDialogComponent,
+    ImportMovieDialogComponent
   ],
   imports: [
     BrowserModule,
