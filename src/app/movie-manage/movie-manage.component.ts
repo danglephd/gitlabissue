@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MovieEditDialogComponent } from '../movie-edit-dialog/movie-edit-dialog.component';
 import { ImportMovieDialogComponent } from '../import-movie-dialog/import-movie-dialog.component';
+import { OmdbSearchDialogComponent } from '../omdb-search-dialog/omdb-search-dialog.component';
 
 @Component({
   selector: 'app-movie-manage',
@@ -639,6 +640,25 @@ export class MovieManageComponent implements OnInit {
       if (result && result.imported) {
         this.showMessage(`Đã nhập ${result.count} phim`, 'success');
         this.loadMovies();
+      }
+    });
+  }
+
+  /**
+   * Open OMDb search dialog
+   */
+  openOmdbSearchDialog(): void {
+    const dialogRef = this.dialog.open(OmdbSearchDialogComponent, {
+      width: '800px',
+      maxHeight: '90vh',
+      data: { searchQuery: this.searchQuery }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.movieInfo) {
+        // Movie info was selected, you can use it as needed
+        console.log('Selected movie from OMDb:', result.movieInfo);
+        this.showMessage('Thông tin phim đã được lấy từ OMDb', 'success');
       }
     });
   }

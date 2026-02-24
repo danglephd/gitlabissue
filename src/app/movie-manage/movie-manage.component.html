@@ -50,6 +50,13 @@
             (click)="changeFilter(MovieFilterType.NOT_PROCESSED)">
           Chưa Xử Lý ({{ getNotProcessedCount() }})
         </button>
+        <button mat-icon-button 
+                (click)="openOmdbSearchDialog()"
+                matTooltip="Tìm kiếm thông tin phim trên OMDb"
+                matTooltipPosition="above"
+                class="omdb-search-button">
+          <mat-icon>search</mat-icon>
+        </button>
       </div>
     </div>
 

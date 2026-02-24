@@ -195,6 +195,19 @@
           color: #667eea;
         }
       }
+
+      .omdb-search-button {
+        color: #ffc107;
+        border: 2px solid #ffc107;
+        background-color: transparent;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background-color: #fffbf0;
+          color: #ff9800;
+          border-color: #ff9800;
+        }
+      }
     }
   }
 
