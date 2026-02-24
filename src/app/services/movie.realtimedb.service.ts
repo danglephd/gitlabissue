@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { Movie } from '../shared/models/movie.model';
 import { Observable, BehaviorSubject } from 'rxjs';
@@ -11,8 +12,9 @@ export class MovieRealtimedbService {
     public movies$ = this.moviesSubject.asObservable();
 
     private readonly DB_PATH = 'movies';
+    private readonly OMDB_API_KEY = '25b60885'; // Free API key - consider moving to environment
 
-    constructor(private db: AngularFireDatabase) {
+    constructor(private db: AngularFireDatabase, private http: HttpClient) {
         this.loadMovies();
     }
 
@@ -136,5 +138,31 @@ export class MovieRealtimedbService {
      */
     getMovieCount(): number {
         return this.getCurrentMovies().length;
+    }
+
+    /**
+     * Get movie info from OMDb API
+     * @param title - Movie title
+     * @param year - Movie release year (optional)
+     */
+    getOMDbMovieInfo(title: string, year?: string): Promise<any> {
+        const params = new URLSearchParams();
+        params.append('apikey', this.OMDB_API_KEY);
+        params.append('t', title); // Search by title
+        params.append('type', 'movie');
+        
+        if (year) {
+            params.append('y', year);
+        }
+
+        const url = `https://www.omdbapi.com/?${params.toString()}`;
+
+        return this.http.get<any>(url).toPromise().then(
+            (response) => response,
+            (error) => {
+                console.error('Error fetching from OMDb:', error);
+                throw error;
+            }
+        );
     }
 }
