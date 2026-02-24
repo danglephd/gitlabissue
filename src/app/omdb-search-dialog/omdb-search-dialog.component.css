@@ -1,3 +1,33 @@
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  h2 {
+    flex: 1;
+    margin: 0;
+  }
+
+  .close-dialog-button {
+    flex-shrink: 0;
+    color: #666;
+    transition: all 0.3s ease;
+
+    &:hover {
+      color: #333;
+      background-color: #f0f0f0;
+    }
+
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
 .search-form {
   display: flex;
   flex-direction: column;
@@ -50,6 +80,13 @@
         height: auto;
         border-radius: 4px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: scale(1.05);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        }
       }
     }
 
@@ -208,12 +245,90 @@
 }
 
 mat-dialog-content {
-  max-height: 600px;
-  overflow-y: auto;
+  max-height: 565px;
 }
 
 mat-form-field {
   .full-width {
     width: 100%;
   }
+}
+
+/* Fullscreen Poster Viewer */
+.fullscreen-poster-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease;
+
+  .fullscreen-poster-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 90vw;
+    max-height: 90vh;
+
+    .close-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      z-index: 10001;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.4);
+        transform: scale(1.1);
+      }
+
+      mat-icon {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+      }
+    }
+
+    .fullscreen-poster {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      animation: zoomIn 0.3s ease;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Hide dialog actions */
+.hidden {
+  display: none !important;
 }

@@ -42,6 +42,8 @@ export class OmdbSearchDialogComponent implements OnInit {
   isSearching = false;
   searchResult: OMDbMovie | null = null;
   errorMessage = '';
+  showFullscreenPoster = false;
+  fullscreenPosterUrl = '';
 
   constructor(
     public dialogRef: MatDialogRef<OmdbSearchDialogComponent>,
@@ -148,5 +150,25 @@ export class OmdbSearchDialogComponent implements OnInit {
    */
   useMovieInfo(): void {
     this.dialogRef.close({ movieInfo: this.searchResult });
+  }
+
+  /**
+   * Open poster in fullscreen
+   */
+  openFullscreenPoster(posterUrl?: string): void {
+    if (posterUrl || this.searchResult?.Poster) {
+      this.fullscreenPosterUrl = posterUrl || this.searchResult?.Poster || '';
+      this.showFullscreenPoster = true;
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  /**
+   * Close fullscreen poster
+   */
+  closeFullscreenPoster(): void {
+    this.showFullscreenPoster = false;
+    this.fullscreenPosterUrl = '';
+    document.body.style.overflow = '';
   }
 }

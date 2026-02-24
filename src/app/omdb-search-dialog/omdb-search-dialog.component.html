@@ -1,4 +1,9 @@
-<h2 mat-dialog-title>Tìm Kiếm Phim Trên OMDb</h2>
+<div class="dialog-header">
+  <h2 mat-dialog-title>Tìm Kiếm Phim Trên OMDb</h2>
+  <button mat-icon-button class="close-dialog-button" (click)="onCancel()" matTooltip="Đóng" matTooltipPosition="below">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
 
 <mat-dialog-content>
   <!-- Search Form -->
@@ -29,7 +34,12 @@
   <div *ngIf="searchResult" class="movie-result">
     <div class="result-header">
       <div class="poster-section" *ngIf="searchResult.Poster">
-        <img [src]="searchResult.Poster" alt="{{ searchResult.Title }}" class="movie-poster" />
+        <img [src]="searchResult.Poster" 
+             alt="{{ searchResult.Title }}" 
+             class="movie-poster"
+             (click)="openFullscreenPoster()"
+             matTooltip="Click để xem ảnh toàn màn hình"
+             matTooltipPosition="above" />
       </div>
 
       <div class="info-section">
@@ -112,9 +122,19 @@
   </div>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
+<mat-dialog-actions align="end" class="hidden">
   <button mat-button (click)="onCancel()">Đóng</button>
   <button mat-raised-button color="primary" (click)="useMovieInfo()" *ngIf="searchResult" class="use-button">
     Sử Dụng Thông Tin Này
   </button>
 </mat-dialog-actions>
+
+<!-- Fullscreen Poster Viewer -->
+<div class="fullscreen-poster-overlay" *ngIf="showFullscreenPoster" (click)="closeFullscreenPoster()">
+  <div class="fullscreen-poster-container" (click)="$event.stopPropagation()">
+    <button mat-icon-button class="close-button" (click)="closeFullscreenPoster()" matTooltip="Đóng" matTooltipPosition="above">
+      <mat-icon>close</mat-icon>
+    </button>
+    <img [src]="fullscreenPosterUrl" alt="Full screen poster" class="fullscreen-poster" />
+  </div>
+</div>
