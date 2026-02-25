@@ -1,0 +1,140 @@
+<div class="dialog-header">
+  <h2 mat-dialog-title>Tìm Kiếm Phim Trên OMDb</h2>
+  <button mat-icon-button class="close-dialog-button" (click)="onCancel()" matTooltip="Đóng" matTooltipPosition="below">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<mat-dialog-content>
+  <!-- Search Form -->
+  <div class="search-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Tên Phim</mat-label>
+      <input matInput [(ngModel)]="movieTitle" (keyup.enter)="searchOMDb()" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Năm Sản Xuất (tuỳ chọn)</mat-label>
+      <input matInput [(ngModel)]="releaseYear" type="number" min="1900" max="2099" (keyup.enter)="searchOMDb()" />
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" (click)="searchOMDb()" [disabled]="isSearching" class="full-width">
+      <span *ngIf="!isSearching">🔍 Tìm Kiếm OMDb</span>
+      <span *ngIf="isSearching">Đang tìm kiếm...</span>
+    </button>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-message">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <!-- Search Results -->
+  <div *ngIf="searchResult" class="movie-result">
+    <div class="result-header">
+      <div class="poster-section" *ngIf="searchResult.Poster">
+        <img [src]="searchResult.Poster" 
+             alt="{{ searchResult.Title }}" 
+             class="movie-poster"
+             (click)="openFullscreenPoster()"
+             matTooltip="Click để xem ảnh toàn màn hình"
+             matTooltipPosition="above" />
+      </div>
+
+      <div class="info-section">
+        <h3 class="movie-title">{{ searchResult.Title }}</h3>
+        
+        <div class="basic-info">
+          <div class="info-item">
+            <span class="label">Năm:</span>
+            <span class="value">{{ searchResult.Year }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Thời lượng:</span>
+            <span class="value">{{ searchResult.Runtime }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Đánh giá:</span>
+            <span class="value">{{ searchResult.imdbRating }}/10</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Thể loại:</span>
+            <span class="value">{{ searchResult.Genre }}</span>
+          </div>
+        </div>
+
+        <!-- Ratings -->
+        <div class="ratings-section">
+          <div class="rating-item">
+            <span class="rating-source">IMDb:</span>
+            <span class="rating-value">{{ getRatingBySource('Internet Movie Database') }}</span>
+          </div>
+          <div class="rating-item">
+            <span class="rating-source">Rotten Tomatoes:</span>
+            <span class="rating-value">{{ getRatingBySource('Rotten Tomatoes') }}</span>
+          </div>
+          <div class="rating-item">
+            <span class="rating-source">Metacritic:</span>
+            <span class="rating-value">{{ getRatingBySource('Metacritic') }}</span>
+          </div>
+        </div>
+
+        <!-- Key Info -->
+        <div class="key-info">
+          <div class="info-row">
+            <span class="label">Đạo diễn:</span>
+            <span class="value">{{ searchResult.Director }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Diễn viên:</span>
+            <span class="value">{{ searchResult.Actors }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Quốc gia:</span>
+            <span class="value">{{ searchResult.Country }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Ngôn ngữ:</span>
+            <span class="value">{{ searchResult.Language }}</span>
+          </div>
+          <div class="info-row" *ngIf="searchResult.Awards">
+            <span class="label">Giải thưởng:</span>
+            <span class="value">{{ searchResult.Awards }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Plot -->
+    <div class="plot-section" *ngIf="searchResult.Plot">
+      <h4>Nội Dung</h4>
+      <p class="plot-text">{{ searchResult.Plot }}</p>
+    </div>
+
+    <!-- IMDb Link -->
+    <div class="imdb-link-section" *ngIf="getIMDbLink()">
+      <a [href]="getIMDbLink()" target="_blank" rel="noopener noreferrer" class="imdb-link">
+        <mat-icon>open_in_new</mat-icon>
+        <span>Xem trên IMDb</span>
+      </a>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="hidden">
+  <button mat-button (click)="onCancel()">Đóng</button>
+  <button mat-raised-button color="primary" (click)="useMovieInfo()" *ngIf="searchResult" class="use-button">
+    Sử Dụng Thông Tin Này
+  </button>
+</mat-dialog-actions>
+
+<!-- Fullscreen Poster Viewer -->
+<div class="fullscreen-poster-overlay" *ngIf="showFullscreenPoster" (click)="closeFullscreenPoster()">
+  <div class="fullscreen-poster-container" (click)="$event.stopPropagation()">
+    <button mat-icon-button class="close-button" (click)="closeFullscreenPoster()" matTooltip="Đóng" matTooltipPosition="above">
+      <mat-icon>close</mat-icon>
+    </button>
+    <img [src]="fullscreenPosterUrl" alt="Full screen poster" class="fullscreen-poster" />
+  </div>
+</div>

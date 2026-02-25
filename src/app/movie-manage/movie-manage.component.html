@@ -1,0 +1,164 @@
+<div class="movie-manage-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>Quản Lý Phim</h1>
+    <p class="subtitle">Nhập, quản lý và theo dõi thư viện phim của bạn</p>
+  </div>
+
+  <!-- Statistics -->
+  <div class="stats-container">
+    <div class="stat-card" 
+         (click)="!isMobileView && openImportDialog()"
+         [style.cursor]="isMobileView ? 'default' : 'pointer'">
+      <div class="stat-value">{{ getTotalCount() }}</div>
+      <div class="stat-label">Tổng Phim</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ getProcessedCount() }}</div>
+      <div class="stat-label">Đã Xử Lý</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ getNotProcessedCount() }}</div>
+      <div class="stat-label">Chưa Xử Lý</div>
+    </div>
+  </div>
+
+  <!-- Search and Filter Section -->
+  <div class="filter-section">
+    <div class="filter-row-1">
+      <mat-form-field appearance="outline">
+        <mat-label>Tìm kiếm phim...</mat-label>
+        <input matInput [(ngModel)]="searchQuery" (keyup)="searchMovies()" />
+        <button mat-icon-button matSuffix (click)="clearSearch()" *ngIf="searchQuery">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <div class="filter-buttons">
+        <button mat-stroked-button 
+            [class.active]="filterType === MovieFilterType.ALL"
+            (click)="changeFilter(MovieFilterType.ALL)">
+          Tất Cả ({{ getTotalCount() }})
+        </button>
+        <button mat-stroked-button 
+            [class.active]="filterType === MovieFilterType.PROCESSED"
+            (click)="changeFilter(MovieFilterType.PROCESSED)">
+          Đã Xử Lý ({{ getProcessedCount() }})
+        </button>
+        <button mat-stroked-button 
+            [class.active]="filterType === MovieFilterType.NOT_PROCESSED"
+            (click)="changeFilter(MovieFilterType.NOT_PROCESSED)">
+          Chưa Xử Lý ({{ getNotProcessedCount() }})
+        </button>
+        <button mat-icon-button 
+                (click)="openOmdbSearchDialog()"
+                matTooltip="Tìm kiếm thông tin phim trên OMDb"
+                matTooltipPosition="above"
+                class="omdb-search-button">
+          <mat-icon>search</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tag Filter Row -->
+    <div class="filter-row-2" *ngIf="(selectedTags | keyvalue).length > 0">
+      <div class="selected-tags-container">
+        <span class="tag-filter-badge" 
+              *ngFor="let item of selectedTags | keyvalue" 
+              [class.include]="item.value === 'include'"
+              [class.exclude]="item.value === 'exclude'"
+              matTooltipPosition="above">
+          <span class="tag-name" (click)="toggleTagFilterStatus(item.key)">{{ item.key }}</span>
+          <button mat-icon-button (click)="removeTagFilter(item.key)" matTooltip="Xóa tag" matTooltipPosition="above">
+            <mat-icon>close</mat-icon>
+          </button>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Movies List -->
+  <div class="movies-list">
+    <div *ngIf="filteredMovies.length === 0" class="empty-state">
+      <mat-icon>movie</mat-icon>
+      <p>Không tìm thấy phim nào</p>
+    </div>
+
+    <mat-card *ngFor="let movie of itemsToDisplay" class="movie-card" (click)="editMovie(movie)">
+      <button mat-icon-button class="delete-button" (click)="deleteMovie(movie.id); $event.stopPropagation()" color="warn" matTooltip="Xóa" matTooltipPosition="below">
+        <mat-icon>close</mat-icon>
+      </button>
+      <mat-card-header>
+        <mat-card-title>{{ movie.fileName }}</mat-card-title>
+        <mat-card-subtitle>
+          <span *ngIf="movie.year" class="year" (click)="filterByYear(movie.year); $event.stopPropagation()" matTooltip="Click để lọc theo năm">{{ movie.year }}</span>
+          <span class="size" *ngIf="movie.size && movie.size > 0">{{ getReadableSize(movie.size) }}</span>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="movie-info">
+          <!-- IMDB Link -->
+          <div class="info-row imdb-row" *ngIf="movie.IMDBlink && movie.IMDBlink.trim()">
+            <span class="label">IMDB:</span>
+            <a [href]="movie.IMDBlink" target="_blank" rel="noopener noreferrer" class="imdb-link" (click)="$event.stopPropagation()">
+              <mat-icon>open_in_new</mat-icon>
+              <span>{{ movie.IMDbRating ? movie.IMDbRating + ' ⭐' : 'Xem trên IMDB' }}</span>
+            </a>
+          </div>
+          <div class="info-row imdb-row" *ngIf="!movie.IMDBlink || !movie.IMDBlink.trim()">
+            <span class="label">IMDB:</span>
+            <span class="value" style="color: #999; font-style: italic;">Chưa cập nhật</span>
+          </div>
+          <!-- Tags -->
+          <div class="info-row tags-row" *ngIf="movie.tags && movie.tags.length > 0">
+            <div class="tags-display">
+              <span class="tag-chip" 
+                    *ngFor="let tag of movie.tags" 
+                    (click)="filterByTag(tag); $event.stopPropagation()"
+                    [class.active]="selectedTags[tag]"
+                    matTooltip="Click để lọc theo tag này"
+                    matTooltipPosition="above">
+                {{ tag }}
+              </span>
+            </div>
+          </div>
+          <div class="info-row" *ngIf="!movie.tags || movie.tags.length === 0">
+            <span class="label">Thẻ:</span>
+            <span class="value" style="color: #999; font-style: italic;">Không có thẻ</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Đường dẫn:</span>
+            <span class="value path-value" [title]="movie.path" (click)="copyPathToClipboard(movie.path)" 
+                  matTooltip="Click để copy đường dẫn" matTooltipPosition="above">{{ movie.path }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Trạng thái:</span>
+            <mat-checkbox [checked]="movie.isProcessed" (change)="markAsProcessed(movie)" (click)="$event.stopPropagation()" color="primary">
+              Đã Xử Lý
+            </mat-checkbox>
+          </div>
+          <div class="info-row" *ngIf="movie.files > 0">
+            <span class="label">File:</span>
+            <span class="value">{{ movie.files }} file | {{ movie.folders }} thư mục</span>
+          </div>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Loading More Indicator -->
+  <div class="loading-more-indicator" *ngIf="displayedCount < filteredMovies.length">
+    <p>Scroll xuống để tải thêm...</p>
+  </div>
+
+  <!-- Scroll To Top Button -->
+  <button class="scroll-to-top-button" 
+          *ngIf="showScrollToTopButton" 
+          (click)="scrollToTop()"
+          matTooltip="Lên đầu trang"
+          matTooltipPosition="left">
+    <mat-icon>arrow_upward</mat-icon>
+  </button>
+</div>

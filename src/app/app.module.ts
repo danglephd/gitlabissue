@@ -29,6 +29,11 @@ import { DogWhistleComponent } from './dog-whistle/dog-whistle.component';
 import { SelectAccountDialogComponent } from './wallet-app/select-account-dialog/select-account-dialog.component';
 import { CreateAccountDialogComponent } from './wallet-app/create-account-dialog/create-account-dialog.component';
 
+import { MovieManageComponent } from './movie-manage/movie-manage.component';
+import { MovieEditDialogComponent } from './movie-edit-dialog/movie-edit-dialog.component';
+import { ImportMovieDialogComponent } from './import-movie-dialog/import-movie-dialog.component';
+import { OmdbSearchDialogComponent } from './omdb-search-dialog/omdb-search-dialog.component';
+
 
 @NgModule({
   declarations: [
@@ -47,7 +52,11 @@ import { CreateAccountDialogComponent } from './wallet-app/create-account-dialog
     NumberShortPipe,
     SelectAccountDialogComponent,
     CreateAccountDialogComponent,
-    DogWhistleComponent
+    DogWhistleComponent,
+    MovieManageComponent,
+    MovieEditDialogComponent,
+    ImportMovieDialogComponent,
+    OmdbSearchDialogComponent
   ],
   imports: [
     BrowserModule,
