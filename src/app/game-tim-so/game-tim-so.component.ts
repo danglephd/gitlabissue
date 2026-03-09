@@ -228,9 +228,15 @@ export class GameTimSoComponent implements AfterViewInit {
   }
 
   private setupCanvas(canvas: HTMLCanvasElement) {
-    canvas.width = window.innerWidth - 20;
-    canvas.height = window.innerHeight - 200;
-    return { width: canvas.width, height: canvas.height };
+    // Lấy width của .container element
+    const containerElement = document.querySelector('.container');
+    const containerWidth = containerElement?.clientWidth || window.innerWidth * 0.6;
+    const height = window.innerHeight - 200;
+    
+    canvas.width = containerWidth;
+    canvas.height = height;
+    console.log(`Canvas setup with width: ${containerWidth}, height: ${height}`);
+    return { width: containerWidth, height };
   }
 
   private createCircle(index: number, centerx: number, centery: number, value: number, settings: any, canvasWidth: number, canvasHeight: number): Circle | null {
