@@ -1,0 +1,102 @@
+<div class="my-songs-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>Từng Nghe</h1>
+    <p class="subtitle">Những bài hát đã nghe từ YouTube</p>
+  </div>
+
+  <!-- Statistics -->
+  <div class="stats-container">
+    <div class="stat-card">
+      <div class="stat-value">{{ getTotalCount() }}</div>
+      <div class="stat-label">Tổng Bài Hát</div>
+    </div>
+  </div>
+
+  <!-- Search and Filter Section -->
+  <div class="filter-section">
+    <div class="filter-row-1">
+      <mat-form-field appearance="outline" class="no-padding">
+        <mat-label>Tìm kiếm bài hát...</mat-label>
+        <input matInput [(ngModel)]="searchQuery" (keyup)="searchSongs()" />
+        <button mat-icon-button matSuffix (click)="clearSearch()" *ngIf="searchQuery">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <div class="filter-buttons">
+        <button mat-stroked-button [class.active]="filterType === SongFilterType.ALL"
+          (click)="changeFilter(SongFilterType.ALL)">
+          Tất Cả ({{ getTotalCount() }})
+        </button>
+      </div>
+      <button mat-fab color="primary" (click)="openAddYouTubeSongDialog()" class="add-song-button"
+        matTooltip="Add a new song from YouTube" matTooltipPosition="above">
+        <mat-icon>music_note</mat-icon>
+      </button>
+    </div>
+
+    <!-- Tag Filter Row -->
+    <div class="filter-row-2" *ngIf="(selectedTags | keyvalue).length > 0">
+      <div class="selected-tags-container">
+        <span class="tag-filter-badge" *ngFor="let item of selectedTags | keyvalue"
+          [class.include]="item.value === 'include'" matTooltipPosition="above">
+          <span class="tag-name" (click)="toggleTagFilterStatus(item.key)">{{ item.key }}</span>
+          <button mat-icon-button (click)="removeTagFilter(item.key)" matTooltip="Xóa tag" matTooltipPosition="above">
+            <mat-icon>close</mat-icon>
+          </button>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Đang tải bài hát...</p>
+  </div>
+
+  <!-- Songs Grid -->
+  <div class="songs-grid" *ngIf="!isLoading">
+    <div *ngIf="filteredSongs.length === 0" class="empty-state">
+      <mat-icon>music_note</mat-icon>
+      <p>Không tìm thấy bài hát nào</p>
+      <p class="hint">Bắt đầu bằng cách thêm những bài hát yêu thích của bạn từ YouTube</p>
+    </div>
+
+    <mat-card *ngFor="let song of itemsToDisplay" class="song-card">
+      <button mat-icon-button class="delete-button" (click)="deleteSong(song.id)" color="warn" matTooltip="Xóa"
+        matTooltipPosition="below">
+        <mat-icon>close</mat-icon>
+      </button>
+
+      <!-- Thumbnail -->
+      <div class="song-thumbnail">
+        <img [src]="song.largestThumbnail" [alt]="song.title" (click)="openYoutubeLink(song.youtubeLink)"
+          matTooltip="Click để mở trên YouTube" class="thumbnail-image">
+        <div class="play-overlay" (click)="openYoutubeLink(song.youtubeLink)">
+          <mat-icon>play_circle_outline</mat-icon>
+        </div>
+      </div>
+
+      <!-- Card Header -->
+      <mat-card-header>
+        <mat-card-title>{{ song.title }}</mat-card-title>
+        <mat-card-subtitle>
+          <span class="channel">{{ song.channel }}</span>
+        </mat-card-subtitle>
+      </mat-card-header>
+    </mat-card>
+  </div>
+
+  <!-- Loading More Indicator -->
+  <div class="loading-more-indicator" *ngIf="displayedCount < filteredSongs.length && !isLoading">
+    <p>Scroll xuống để tải thêm...</p>
+  </div>
+
+  <!-- Scroll To Top Button -->
+  <button class="scroll-to-top-button" *ngIf="showScrollToTopButton" (click)="scrollToTop()" matTooltip="Lên đầu trang"
+    matTooltipPosition="left">
+    <mat-icon>arrow_upward</mat-icon>
+  </button>
+</div>
