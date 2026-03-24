@@ -1,21 +1,51 @@
 .add-youtube-song-dialog {
   width: 600px;
   max-width: 90vw;
-  min-height: 400px;
   display: flex;
   flex-direction: column;
   padding: 0;
   font-family: Roboto, sans-serif;
+  max-height: 90vh;
+  overflow: hidden;
 }
 
 /* Dialog Header */
 .dialog-header {
   display: flex;
-  gap: 12px;
-  align-items: flex-end;
-  padding: 24px 24px 16px 24px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
   background-color: #fafafa;
+  flex-shrink: 0;
+}
+
+.dialog-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: #212121;
+  flex: 1;
+}
+
+.close-button {
+  flex-shrink: 0;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.close-button:hover {
+  color: rgba(0, 0, 0, 0.87);
+}
+
+/* Input Section */
+.input-section {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  background-color: #fff;
+  flex-shrink: 0;
 }
 
 .url-input-field {
@@ -23,22 +53,61 @@
   min-width: 0;
 }
 
+.url-input-field ::ng-deep .mat-form-field-outline {
+  top: 12px !important;
+}
+
+.url-input-field ::ng-deep .mdc-text-field {
+  height: 48px;
+}
+
 .add-button {
   flex-shrink: 0;
-  height: 56px;
+  height: 48px;
   min-width: 100px;
   margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.add-button mat-icon {
+  margin-right: 4px;
+}
+
+.button-spinner {
+  margin-right: 4px !important;
+}
+
+/* Error Message */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background-color: #ffebee;
+  border-top: 1px solid #ef5350;
+  color: #c62828;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.error-message mat-icon {
+  flex-shrink: 0;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
 }
 
 /* Content Area */
 .content-area {
   flex: 1;
-  padding: 24px;
   overflow-y: auto;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  min-height: 300px;
   background-color: #fff;
 }
 
@@ -66,32 +135,12 @@
   margin: 0;
 }
 
-/* Error Message */
-.error-message {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  margin: 16px 24px 0 24px;
-  background-color: #ffebee;
-  border: 1px solid #ef5350;
-  border-radius: 4px;
-  color: #c62828;
-  font-size: 14px;
-}
-
-.error-message mat-icon {
-  flex-shrink: 0;
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
-}
-
 /* Skeleton Loading */
 .skeleton-container {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
 }
 
 .skeleton {
@@ -117,8 +166,9 @@
 
 .skeleton-thumbnail {
   width: 100%;
-  height: 300px;
+  height: 200px;
   border-radius: 8px;
+  aspect-ratio: 16 / 9;
 }
 
 .skeleton-text-group {
@@ -128,17 +178,12 @@
 }
 
 .skeleton-title {
-  height: 24px;
-  width: 80%;
-}
-
-.skeleton-text {
-  height: 16px;
-  width: 90%;
+  height: 20px;
+  width: 100%;
 }
 
 .skeleton-channel {
-  height: 20px;
+  height: 18px;
   width: 60%;
   margin-top: 8px;
 }
@@ -148,22 +193,24 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
 }
 
 .video-thumbnail {
   width: 100%;
+  height: auto;
   border-radius: 8px;
   overflow: hidden;
   background-color: #f0f0f0;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 300px;
+  aspect-ratio: 16 / 9;
 }
 
 .thumbnail-image {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
   object-fit: cover;
 }
@@ -176,53 +223,88 @@
 
 .video-title {
   margin: 0;
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 600;
   line-height: 1.4;
   color: #212121;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.video-channel,
-.video-publish-date,
-.video-stats {
+/* Metadata */
+.video-metadata {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 0;
+}
+
+.metadata-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 0;
-  font-size: 14px;
+  gap: 10px;
+  font-size: 13px;
   color: #666;
+  line-height: 1.4;
 }
 
-.video-channel mat-icon,
-.video-publish-date mat-icon,
-.video-stats mat-icon {
+.metadata-icon {
+  flex-shrink: 0;
   font-size: 18px;
   width: 18px;
   height: 18px;
-  flex-shrink: 0;
   color: #999;
 }
 
+.metadata-text {
+  flex: 1;
+  word-break: break-word;
+  display: flex;
+  align-items: center;
+}
+
+/* Description */
 .video-description {
-  margin-top: 12px;
+  margin-top: 4px;
   padding-top: 12px;
   border-top: 1px solid #e0e0e0;
 }
 
-.video-description h4 {
-  margin: 0 0 8px 0;
-  font-size: 14px;
-  font-weight: 500;
-  color: #999;
-  text-transform: uppercase;
+.description-content {
+  margin-bottom: 8px;
 }
 
-.video-description p {
+.description-text {
   margin: 0;
   font-size: 13px;
   color: #666;
-  line-height: 1.5;
+  line-height: 1.6;
   word-break: break-word;
+}
+
+.description-text.expanded {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.expand-hint {
+  color: #999;
+}
+
+.expand-button {
+  font-size: 12px;
+  color: #1976d2;
+  padding: 0;
+  height: auto;
+  min-height: auto;
+}
+
+.expand-button:hover {
+  background-color: rgba(25, 118, 210, 0.04);
 }
 
 /* Responsive */
@@ -230,23 +312,73 @@
   .add-youtube-song-dialog {
     width: 100%;
     max-width: 100%;
-    min-height: auto;
   }
 
-  .dialog-header {
-    flex-direction: column;
-    align-items: stretch;
+  .input-section {
+    flex-wrap: wrap;
   }
 
   .url-input-field {
     width: 100%;
+    order: 1;
   }
 
   .add-button {
     width: 100%;
+    order: 2;
+    margin-top: 8px;
+  }
+
+  .dialog-header {
+    padding: 12px 16px;
   }
 
   .content-area {
-    min-height: 200px;
+    padding: 16px;
   }
+
+  .video-thumbnail {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+@media (max-width: 480px) {
+  .add-youtube-song-dialog {
+    max-width: 100%;
+  }
+
+  .dialog-title {
+    font-size: 16px;
+  }
+
+  .video-title {
+    font-size: 15px;
+  }
+
+  .metadata-row {
+    font-size: 12px;
+  }
+
+  .description-text {
+    font-size: 12px;
+  }
+}
+
+/* Scrollbar styling */
+.description-text.expanded::-webkit-scrollbar {
+  width: 6px;
+}
+
+.description-text.expanded::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.description-text.expanded::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.description-text.expanded::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }

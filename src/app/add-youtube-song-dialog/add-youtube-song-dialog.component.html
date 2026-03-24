@@ -1,12 +1,24 @@
 <div class="add-youtube-song-dialog">
-  <!-- Dialog Header with Input and Add Button -->
+  <!-- Dialog Header -->
   <div class="dialog-header">
+    <h2 class="dialog-title">Add YouTube Song</h2>
+    <button 
+      mat-icon-button 
+      (click)="onCancel()"
+      class="close-button"
+      matTooltip="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Input Section -->
+  <div class="input-section">
     <mat-form-field appearance="outline" class="url-input-field">
-      <mat-label>Paste YouTube URL here...</mat-label>
+      <mat-label>Paste YouTube URL...</mat-label>
       <input 
         matInput 
         [(ngModel)]="youtubeUrl" 
-        (paste)="onUrlPaste($event)"
+        (keyup)="onUrlPaste($event)"
         placeholder="https://www.youtube.com/watch?v=..."
         [disabled]="isLoading">
     </mat-form-field>
@@ -16,21 +28,14 @@
       (click)="onAddButtonClick()"
       [disabled]="!isUrlValid || isLoading || isAdding"
       class="add-button">
-      <mat-icon>add</mat-icon>
-      Add
+      <span *ngIf="!isAdding">
+        <mat-icon>add</mat-icon>
+        Add
+      </span>
+      <span *ngIf="isAdding">
+        <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+      </span>
     </button>
-  </div>
-
-  <!-- Loading State with Skeleton -->
-  <div class="content-area" *ngIf="isLoading">
-    <div class="skeleton-container">
-      <div class="skeleton skeleton-thumbnail"></div>
-      <div class="skeleton-text-group">
-        <div class="skeleton skeleton-title"></div>
-        <div class="skeleton skeleton-text"></div>
-      </div>
-      <div class="skeleton skeleton-channel"></div>
-    </div>
   </div>
 
   <!-- Error Message -->
@@ -39,50 +44,80 @@
     <span>{{ errorMessage }}</span>
   </div>
 
-  <!-- Video Information Display -->
-  <div class="content-area video-info" *ngIf="videoInfo && !isLoading && isUrlValid">
-    <!-- Thumbnail -->
-    <div class="video-thumbnail">
-      <img 
-        [src]="getThumbnailUrl()" 
-        [alt]="videoInfo.title"
-        class="thumbnail-image">
+  <!-- Content Area -->
+  <div class="content-area">
+    <!-- Loading State with Skeleton -->
+    <div class="skeleton-container" *ngIf="isLoading">
+      <div class="skeleton skeleton-thumbnail"></div>
+      <div class="skeleton-text-group">
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-title" style="width: 70%;"></div>
+      </div>
+      <div class="skeleton skeleton-channel"></div>
     </div>
 
-    <!-- Video Details -->
-    <div class="video-details">
-      <!-- Title -->
-      <h2 class="video-title">{{ videoInfo.title }}</h2>
+    <!-- Video Information Display -->
+    <div class="video-info" *ngIf="videoInfo && !isLoading && isUrlValid">
+      <!-- Thumbnail -->
+      <div class="video-thumbnail">
+        <img 
+          [src]="getThumbnailUrl()" 
+          [alt]="videoInfo.title"
+          class="thumbnail-image">
+      </div>
 
-      <!-- Channel Name -->
-      <p class="video-channel">
-        <mat-icon>account_circle</mat-icon>
-        <span>{{ videoInfo.channel }}</span>
-      </p>
+      <!-- Video Details -->
+      <div class="video-details">
+        <!-- Title -->
+        <h3 class="video-title">{{ videoInfo.title }}</h3>
 
-      <!-- Publish Date -->
-      <p class="video-publish-date" *ngIf="videoInfo.publishedAt">
-        <mat-icon>calendar_today</mat-icon>
-        <span>{{ getFormattedDate() }}</span>
-      </p>
+        <!-- Metadata -->
+        <div class="video-metadata">
+          <!-- Channel Row -->
+          <div class="metadata-row">
+            <mat-icon class="metadata-icon">account_circle</mat-icon>
+            <span class="metadata-text">{{ videoInfo.channel }}</span>
+          </div>
 
-      <!-- View Count -->
-      <p class="video-stats" *ngIf="videoInfo.viewCount">
-        <mat-icon>visibility</mat-icon>
-        <span>{{ videoInfo.viewCount | number }}</span>
-      </p>
+          <!-- Publish Date Row -->
+          <div class="metadata-row" *ngIf="videoInfo.publishedAt">
+            <mat-icon class="metadata-icon">calendar_today</mat-icon>
+            <span class="metadata-text">{{ getFormattedDate() }}</span>
+          </div>
 
-      <!-- Description -->
-      <div class="video-description" *ngIf="videoInfo.description">
-        <h4>Description</h4>
-        <p>{{ videoInfo.description | slice:0:200 }}...</p>
+          <!-- View Count Row -->
+          <div class="metadata-row" *ngIf="videoInfo.viewCount">
+            <mat-icon class="metadata-icon">visibility</mat-icon>
+            <span class="metadata-text">{{ getReadableViewCount() }} views</span>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="video-description" *ngIf="videoInfo.description">
+          <div class="description-content">
+            <p *ngIf="!isDescriptionExpanded" class="description-text">
+              {{ getDescriptionPreview() }}
+              <span *ngIf="shouldShowExpandButton()" class="expand-hint">...</span>
+            </p>
+            <p *ngIf="isDescriptionExpanded" class="description-text expanded">
+              {{ getFullDescription() }}
+            </p>
+          </div>
+          <button 
+            *ngIf="shouldShowExpandButton()"
+            mat-button
+            (click)="toggleDescriptionExpansion()"
+            class="expand-button">
+            {{ isDescriptionExpanded ? 'Show less' : 'Show more' }}
+          </button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Empty State -->
-  <div class="empty-state" *ngIf="!isLoading && !videoInfo && !errorMessage">
-    <mat-icon>music_note</mat-icon>
-    <p>Paste a YouTube URL to add a song</p>
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!isLoading && !videoInfo && !errorMessage">
+      <mat-icon>music_note</mat-icon>
+      <p>Paste a YouTube URL to add a song</p>
+    </div>
   </div>
 </div>

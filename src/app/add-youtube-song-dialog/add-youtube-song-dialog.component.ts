@@ -18,6 +18,7 @@ export class AddYouTubeSongDialogComponent implements OnInit, OnDestroy {
   errorMessage: string = '';
   isUrlValid: boolean = false;
   isAdding: boolean = false;
+  isDescriptionExpanded: boolean = false;
 
   private destroy$ = new Subject<void>();
   private urlSubject = new Subject<string>();
@@ -119,6 +120,7 @@ export class AddYouTubeSongDialogComponent implements OnInit, OnDestroy {
     this.videoInfo = null;
     this.errorMessage = '';
     this.isUrlValid = false;
+    this.isDescriptionExpanded = false;
   }
 
   /**
@@ -156,6 +158,53 @@ export class AddYouTubeSongDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Format view count to readable format
+   */
+  getReadableViewCount(): string {
+    if (!this.videoInfo?.viewCount) return '0';
+    const viewCount = this.videoInfo.viewCount;
+    if (viewCount >= 1000000) {
+      return (viewCount / 1000000).toFixed(1) + 'M';
+    }
+    if (viewCount >= 1000) {
+      return (viewCount / 1000).toFixed(1) + 'K';
+    }
+    return viewCount.toString();
+  }
+
+  /**
+   * Get description preview (first 200 chars)
+   */
+  getDescriptionPreview(): string {
+    if (!this.videoInfo?.description) return '';
+    return this.videoInfo.description.substring(0, 200);
+  }
+
+  /**
+   * Get full description
+   */
+  getFullDescription(): string {
+    return this.videoInfo?.description || '';
+  }
+
+  /**
+   * Toggle description expansion
+   */
+  toggleDescriptionExpansion(): void {
+    this.isDescriptionExpanded = !this.isDescriptionExpanded;
+  }
+
+  /**
+   * Check if description needs expand button
+   */
+  shouldShowExpandButton(): boolean {
+    if (!this.videoInfo?.description) {
+      return false;
+    }
+    return this.videoInfo.description.length > 200;
+  }
+
+  /**
    * Add the video to database (to be implemented in parent component)
    */
   onAddButtonClick(): void {
@@ -180,3 +229,4 @@ export class AddYouTubeSongDialogComponent implements OnInit, OnDestroy {
     this.dialogRef.close();
   }
 }
+
