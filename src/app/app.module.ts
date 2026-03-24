@@ -30,6 +30,8 @@ import { MovieManageComponent } from './movie-manage/movie-manage.component';
 import { MovieEditDialogComponent } from './movie-edit-dialog/movie-edit-dialog.component';
 import { ImportMovieDialogComponent } from './import-movie-dialog/import-movie-dialog.component';
 import { OmdbSearchDialogComponent } from './omdb-search-dialog/omdb-search-dialog.component';
+import { MySongsComponent } from './my-songs/my-songs.component';
+import { AddYouTubeSongDialogComponent } from './add-youtube-song-dialog/add-youtube-song-dialog.component';
 
 
 @NgModule({
@@ -51,6 +53,8 @@ import { OmdbSearchDialogComponent } from './omdb-search-dialog/omdb-search-dial
     DogWhistleComponent,
     MovieManageComponent,
     MovieEditDialogComponent,
+    MySongsComponent,
+    AddYouTubeSongDialogComponent,
     ImportMovieDialogComponent,
     OmdbSearchDialogComponent
   ],

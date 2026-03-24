@@ -6,6 +6,7 @@ import { WalletCalendarComponent } from './wallet-calendar/wallet-calendar.compo
 import { GameTimSoComponent } from './game-tim-so/game-tim-so.component';
 import { DogWhistleComponent } from './dog-whistle/dog-whistle.component';
 import { MovieManageComponent } from './movie-manage/movie-manage.component';
+import { MySongsComponent } from './my-songs/my-songs.component';
 
 const routes: Routes = [
     { path: '', redirectTo: 'dog-whistle', pathMatch: 'full' },
@@ -14,7 +15,8 @@ const routes: Routes = [
     { path: 'wallet-calendar', component: WalletCalendarComponent },
     { path: 'game-tim-so', component: GameTimSoComponent }, // Assuming GameTimSoComponent is defined and imported      ,
     { path: 'dog-whistle', component: DogWhistleComponent },
-    { path: 'movie-manage', component: MovieManageComponent }
+    { path: 'movie-manage', component: MovieManageComponent },
+    { path: 'my-songs', component: MySongsComponent }
 ];
 
 @NgModule({

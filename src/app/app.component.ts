@@ -15,6 +15,7 @@ import { Component } from '@angular/core';
        <li><a routerLink="/game-tim-so" routerLinkActive="active">Game</a></li>
        <li><a routerLink="/dog-whistle" routerLinkActive="active">Dog Whistle</a></li>
        <li><a routerLink="/movie-manage" routerLinkActive="active">Movie Manage</a></li>
+        <li><a routerLink="/my-songs" routerLinkActive="active">My Songs</a></li>
      </ul>
    </nav>
  </div>
