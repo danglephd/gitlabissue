@@ -92,12 +92,13 @@ export class AddYouTubeSongDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Validate if URL is a valid YouTube URL
+   * Validate if URL is a valid YouTube URL (desktop, mobile, youtu.be)
    */
   private isValidYouTubeUrl(url: string): boolean {
     if (!url) return false;
     
-    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)\//;
+    // Matches: youtube.com, www.youtube.com, m.youtube.com, youtu.be, youtube-nocookie.com
+    const youtubeRegex = /^(https?:\/\/)?(www\.|m\.)?(?:youtube|youtu|youtube-nocookie)\.(?:com|be)\//;
     const videoIdRegex = /^[a-zA-Z0-9_-]{11}$/;
 
     // Check if it's a full URL
