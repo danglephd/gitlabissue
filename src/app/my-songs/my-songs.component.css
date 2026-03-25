@@ -518,8 +518,9 @@ mat-card-header {
 
   .add-song-button {
     position: fixed;
-    bottom: 24px !important;
+    top: 50% !important;
     right: 24px !important;
+    z-index: 100;
   }
 }
 

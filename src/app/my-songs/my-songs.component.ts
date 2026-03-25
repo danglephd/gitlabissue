@@ -268,7 +268,8 @@ export class MySongsComponent implements OnInit {
     const dialogRef = this.dialog.open(AddYouTubeSongDialogComponent, {
       width: '600px',
       maxWidth: '90vw',
-      disableClose: false
+      disableClose: false,
+      panelClass: 'add-song-dialog-no-padding'
     });
 
     dialogRef.afterClosed().subscribe((result: any) => {

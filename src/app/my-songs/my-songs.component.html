@@ -64,7 +64,7 @@
       <p class="hint">Bắt đầu bằng cách thêm những bài hát yêu thích của bạn từ YouTube</p>
     </div>
 
-    <mat-card *ngFor="let song of itemsToDisplay; trackBy: trackBySongId" class="song-card">
+    <mat-card *ngFor="let song of itemsToDisplay; trackBy: trackBySongId" class="song-card" style="padding: 0px;">
       <button mat-icon-button class="delete-button" (click)="deleteSong(song.id)" color="warn" matTooltip="Xóa"
         matTooltipPosition="below">
         <mat-icon>close</mat-icon>
@@ -88,7 +88,8 @@
 
       <!-- Card Header -->
       <mat-card-header>
-        <mat-card-title [title]="song.title">{{ song.title }}</mat-card-title>
+        <mat-card-title [title]="song.title" style="font-size: 15px;
+">{{ song.title }}</mat-card-title>
         <mat-card-subtitle>
           <span class="channel" [title]="song.channel">{{ song.channel }}</span>
         </mat-card-subtitle>
