@@ -1,4 +1,5 @@
 import { Component, OnInit, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Song, SongFilterType } from '../shared/models/song.model';
 import { SongRealtimedbService } from '../services/song.realtimedb.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -37,7 +38,8 @@ export class MySongsComponent implements OnInit {
   constructor(
     private songService: SongRealtimedbService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private sanitizer: DomSanitizer
   ) { }
 
   ngOnInit(): void {
@@ -376,5 +378,40 @@ export class MySongsComponent implements OnInit {
       return thumbnails.default.url;
     }
     return '';
+  }
+
+  /**
+   * Extract video ID from YouTube URL
+   * Handles formats: 
+   * - https://www.youtube.com/watch?v=VIDEO_ID
+   * - https://youtu.be/VIDEO_ID
+   * - VIDEO_ID (direct ID)
+   */
+  extractVideoIdFromUrl(url: string): string {
+    if (!url) return '';
+    
+    // If it's already just a video ID (11 characters of alphanumeric, hyphen, underscore)
+    if (/^[a-zA-Z0-9_-]{11}$/.test(url)) {
+      return url;
+    }
+
+    // Try to extract from youtube.com/watch?v=VIDEO_ID
+    const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    if (youtubeMatch && youtubeMatch[1]) {
+      return youtubeMatch[1];
+    }
+
+    // Fallback: return empty string if no match
+    return '';
+  }
+
+  /**
+   * Get sanitized YouTube embed URL for iframe
+   */
+  getYouTubeEmbedUrl(youtubeLink: string): SafeResourceUrl | null {
+    const videoId = this.extractVideoIdFromUrl(youtubeLink);
+    if (!videoId) return null;
+    const url = `https://www.youtube.com/embed/${videoId}`;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 }

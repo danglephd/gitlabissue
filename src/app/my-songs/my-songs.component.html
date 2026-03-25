@@ -70,13 +70,22 @@
         <mat-icon>close</mat-icon>
       </button>
 
-      <!-- Thumbnail -->
-      <div class="song-thumbnail">
-        <img [src]="song.largestThumbnail" [alt]="song.title" (click)="openYoutubeLink(song.youtubeLink)"
-          matTooltip="Click để mở trên YouTube" class="thumbnail-image">
-        <div class="play-overlay" (click)="openYoutubeLink(song.youtubeLink)">
-          <mat-icon>play_circle_outline</mat-icon>
-        </div>
+      <!-- Video Player -->
+      <div class="video-player-wrapper">
+        <iframe 
+          *ngIf="getYouTubeEmbedUrl(song.youtubeLink)"
+          class="youtube-player"
+          [src]="getYouTubeEmbedUrl(song.youtubeLink)"
+          title="{{ song.title }}"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+        <!-- Fallback thumbnail if video ID extraction fails -->
+        <img 
+          *ngIf="!getYouTubeEmbedUrl(song.youtubeLink)"
+          [src]="song.largestThumbnail"
+          [alt]="song.title"
+          class="thumbnail-fallback">
       </div>
 
       <!-- Card Header -->
