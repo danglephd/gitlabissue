@@ -346,7 +346,8 @@ export class MySongsComponent implements OnInit {
   }
 
   /**
-   * Open video player dialog with shared iframe player
+   * Open video player dialog with YouTube Iframe API
+   * Dialog will auto-close and reopen for next song when current finishes
    * @param song - Song data to play
    */
   openVideoPlayerDialog(song: Song): void {
@@ -355,11 +356,19 @@ export class MySongsComponent implements OnInit {
       return;
     }
 
-    this.dialog.open(VideoPlayerDialogComponent, {
+    // Find current song index in displayed songs
+    const currentIndex = this.itemsToDisplay.findIndex(s => s.id === song.id);
+    if (currentIndex === -1) {
+      console.warn('Song not found in displayed list');
+    }
+
+    // Open dialog with song, full list, and current index
+    const dialogRef = this.dialog.open(VideoPlayerDialogComponent, {
       data: {
-        videoId: song.videoId,
-        title: song.title,
-        channel: song.channel
+        song: song,
+        songList: this.itemsToDisplay,
+        currentIndex: currentIndex >= 0 ? currentIndex : 0,
+        autoPlayNext: true
       },
       width: '90vw',
       maxWidth: '1200px',
@@ -368,6 +377,17 @@ export class MySongsComponent implements OnInit {
       panelClass: 'video-player-dialog-panel',
       disableClose: true,
       backdropClass: 'video-player-backdrop'
+    });
+
+    // Handle dialog close and auto-open next song
+    dialogRef.afterClosed().subscribe((nextSong: Song | null) => {
+      if (nextSong && nextSong.videoId) {
+        console.log('Dialog closed, opening next song:', nextSong.title);
+        // Small delay for smooth transition (300-500ms)
+        setTimeout(() => {
+          this.openVideoPlayerDialog(nextSong);
+        }, 400);
+      }
     });
   }
 }

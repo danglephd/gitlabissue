@@ -2,26 +2,21 @@
   <!-- Header -->
   <div class="dialog-header">
     <div class="header-content">
-      <h2 mat-dialog-title class="video-title" [title]="data.title">{{ data.title }}</h2>
-      <p class="video-channel" [title]="data.channel">{{ data.channel }}</p>
+      <h2 mat-dialog-title class="video-title" [title]="data.song.title">{{ data.song.title }}</h2>
+      <p class="video-channel" [title]="data.song.channel">{{ data.song.channel }}</p>
     </div>
-    <button mat-icon-button (click)="closeDialog()" class="close-button" aria-label="Close video player">
+    <button mat-icon-button (click)="closeDialog()" class="close-button" aria-label="Close video player" title="Close">
       <mat-icon>close</mat-icon>
     </button>
   </div>
 
   <!-- Video Player Container -->
   <div class="video-container">
-    <iframe
-      *ngIf="videoUrl"
-      class="video-player"
-      [src]="videoUrl"
-      title="{{ data.title }}"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowfullscreen>
-    </iframe>
+    <!-- YouTube Player will be inserted here by API -->
+    <div #youtubePlayerContainer class="youtube-player-embed" id="youtube-player-container"></div>
+    
     <!-- Loading state -->
-    <div *ngIf="!videoUrl" class="loading-spinner">
+    <div *ngIf="isLoadingVideo" class="loading-overlay">
       <mat-spinner diameter="50"></mat-spinner>
     </div>
   </div>
