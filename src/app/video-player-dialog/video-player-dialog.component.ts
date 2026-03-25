@@ -105,7 +105,7 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
    */
   private onPlayerReady(): void {
     this.isLoadingVideo = false;
-    console.log('Player ready, playing video:', this.data.song.videoId);
+    // console.log('Player ready, playing video:', this.data.song.videoId);
   }
 
   /**
@@ -114,7 +114,7 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
   private onPlayerStateChange(event: any): void {
     this.ngZone.run(() => {
       if (event.data === window.YT.PlayerState.ENDED) {
-        console.log('Video ended, finding next song');
+        // console.log('Video ended, finding next song');
         this.playNextSong();
       }
     });
@@ -137,14 +137,14 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
     const nextSong = this.findNextValidSong();
     
     if (nextSong) {
-      console.log('Closing dialog to reopen with next song:', nextSong.title);
+    //   console.log('Closing dialog to reopen with next song:', nextSong.title);
       // Close dialog with next song data
       // Add small delay for smoother transition
       setTimeout(() => {
         this.dialogRef.close(nextSong);
       }, 300);
     } else {
-      console.log('No more songs to play');
+    //   console.log('No more songs to play');
       // Option: stop playback
       this.dialogRef.close(null);
     }

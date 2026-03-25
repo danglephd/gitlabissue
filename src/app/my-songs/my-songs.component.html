@@ -64,14 +64,19 @@
       <p class="hint">Bắt đầu bằng cách thêm những bài hát yêu thích của bạn từ YouTube</p>
     </div>
 
-    <mat-card *ngFor="let song of itemsToDisplay" class="song-card">
+    <mat-card *ngFor="let song of itemsToDisplay; trackBy: trackBySongId" class="song-card">
       <button mat-icon-button class="delete-button" (click)="deleteSong(song.id)" color="warn" matTooltip="Xóa"
         matTooltipPosition="below">
         <mat-icon>close</mat-icon>
       </button>
 
       <!-- Thumbnail - Clickable to open video player dialog -->
-      <div class="video-player-wrapper" (click)="openVideoPlayerDialog(song)">
+      <div class="video-player-wrapper" 
+           (click)="openVideoPlayerDialog(song)"
+           role="button"
+           tabindex="0"
+           [attr.aria-label]="'Play ' + song.title + ' by ' + song.channel"
+           [attr.data-song-id]="song.id">
         <img [src]="song.largestThumbnail" [alt]="song.title"
           class="thumbnail-image"
           loading="lazy">

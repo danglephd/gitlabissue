@@ -1,8 +1,6 @@
 import { Component, OnInit, HostListener, ViewChild, ElementRef } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Song, SongFilterType } from '../shared/models/song.model';
 import { SongRealtimedbService } from '../services/song.realtimedb.service';
-import { YouTubeService } from '../services/youtube.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { AddYouTubeSongDialogComponent } from '../add-youtube-song-dialog/add-youtube-song-dialog.component';
@@ -39,10 +37,8 @@ export class MySongsComponent implements OnInit {
 
   constructor(
     private songService: SongRealtimedbService,
-    private youtubeService: YouTubeService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog,
-    private sanitizer: DomSanitizer
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -72,7 +68,6 @@ export class MySongsComponent implements OnInit {
         this.isLoading = false;
       },
       (error) => {
-        console.error('Error loading songs:', error);
         this.showMessage('Lỗi khi tải danh sách bài hát', 'error');
         this.isLoading = false;
       }
@@ -159,8 +154,7 @@ export class MySongsComponent implements OnInit {
     if (confirm('Bạn có chắc chắn muốn xóa bài hát này?')) {
       this.songService.deleteSong(id).then(() => {
         this.showMessage('Bài hát đã được xóa', 'success');
-      }).catch(err => {
-        console.error('Error deleting song:', err);
+      }).catch(() => {
         this.showMessage('Lỗi khi xóa bài hát', 'error');
       });
     }
@@ -203,8 +197,8 @@ export class MySongsComponent implements OnInit {
     if (savedTags) {
       try {
         this.selectedTags = JSON.parse(savedTags);
-      } catch (e) {
-        console.error('Error parsing saved tags:', e);
+      } catch {
+        /* Silently ignore parse errors */
       }
     }
   }
@@ -310,9 +304,8 @@ export class MySongsComponent implements OnInit {
 
     this.songService.addSong(newSong).then(() => {
       this.showMessage('Bài hát đã được thêm thành công', 'success');
-      this.loadSongs(); // Reload songs to reflect new addition
-    }).catch((error) => {
-      console.error('Error adding song:', error);
+      this.loadSongs();
+    }).catch(() => {
       this.showMessage('Lỗi khi thêm bài hát', 'error');
     });
   }
@@ -334,15 +327,10 @@ export class MySongsComponent implements OnInit {
   }
 
   /**
-   * Get sanitized YouTube embed URL for iframe
-   * Uses videoId directly from Song object - no extraction needed since Song already has videoId
+   * Track by function for ngFor performance optimization
    */
-  getYouTubeEmbedUrl(videoId: string): SafeResourceUrl | null {
-    //ghi log để debug videoId
-    console.log('Embedding video with ID:', videoId);
-    if (!videoId) return null;
-    const url = `https://www.youtube.com/embed/${videoId}`;
-    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  trackBySongId(index: number, song: Song): string {
+    return song.id;
   }
 
   /**
@@ -358,9 +346,6 @@ export class MySongsComponent implements OnInit {
 
     // Find current song index in displayed songs
     const currentIndex = this.itemsToDisplay.findIndex(s => s.id === song.id);
-    if (currentIndex === -1) {
-      console.warn('Song not found in displayed list');
-    }
 
     // Open dialog with song, full list, and current index
     const dialogRef = this.dialog.open(VideoPlayerDialogComponent, {
@@ -382,8 +367,6 @@ export class MySongsComponent implements OnInit {
     // Handle dialog close and auto-open next song
     dialogRef.afterClosed().subscribe((nextSong: Song | null) => {
       if (nextSong && nextSong.videoId) {
-        console.log('Dialog closed, opening next song:', nextSong.title);
-        // Small delay for smooth transition (300-500ms)
         setTimeout(() => {
           this.openVideoPlayerDialog(nextSong);
         }, 400);
