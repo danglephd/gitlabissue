@@ -32,6 +32,7 @@ import { ImportMovieDialogComponent } from './import-movie-dialog/import-movie-d
 import { OmdbSearchDialogComponent } from './omdb-search-dialog/omdb-search-dialog.component';
 import { MySongsComponent } from './my-songs/my-songs.component';
 import { AddYouTubeSongDialogComponent } from './add-youtube-song-dialog/add-youtube-song-dialog.component';
+import { VideoPlayerDialogComponent } from './video-player-dialog/video-player-dialog.component';
 
 
 @NgModule({
@@ -55,6 +56,7 @@ import { AddYouTubeSongDialogComponent } from './add-youtube-song-dialog/add-you
     MovieEditDialogComponent,
     MySongsComponent,
     AddYouTubeSongDialogComponent,
+    VideoPlayerDialogComponent,
     ImportMovieDialogComponent,
     OmdbSearchDialogComponent
   ],

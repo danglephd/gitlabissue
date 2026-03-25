@@ -2,9 +2,11 @@ import { Component, OnInit, HostListener, ViewChild, ElementRef } from '@angular
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Song, SongFilterType } from '../shared/models/song.model';
 import { SongRealtimedbService } from '../services/song.realtimedb.service';
+import { YouTubeService } from '../services/youtube.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { AddYouTubeSongDialogComponent } from '../add-youtube-song-dialog/add-youtube-song-dialog.component';
+import { VideoPlayerDialogComponent } from '../video-player-dialog/video-player-dialog.component';
 import { YouTubeVideoInfo } from '../models/youtube.model';
 
 @Component({
@@ -37,6 +39,7 @@ export class MySongsComponent implements OnInit {
 
   constructor(
     private songService: SongRealtimedbService,
+    private youtubeService: YouTubeService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
     private sanitizer: DomSanitizer
@@ -164,28 +167,6 @@ export class MySongsComponent implements OnInit {
   }
 
   /**
-   * Open YouTube link in new window
-   */
-  openYoutubeLink(youtubeLink: string): void {
-    if (youtubeLink) {
-      window.open(youtubeLink, '_blank');
-    }
-  }
-
-  /**
-   * Filter by tag
-   */
-  filterByTag(tag: string): void {
-    if (this.selectedTags[tag]) {
-      delete this.selectedTags[tag];
-    } else {
-      this.selectedTags[tag] = 'include';
-    }
-    this.saveTagsToLocalStorage();
-    this.applyFilter();
-  }
-
-  /**
    * Remove tag filter
    */
   removeTagFilter(tag: string): void {
@@ -274,29 +255,7 @@ export class MySongsComponent implements OnInit {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  /**
-   * Format view count to readable format
-   */
-  getReadableViewCount(viewCount?: number): string {
-    if (!viewCount) return '0';
-    if (viewCount >= 1000000) {
-      return (viewCount / 1000000).toFixed(1) + 'M';
-    }
-    if (viewCount >= 1000) {
-      return (viewCount / 1000).toFixed(1) + 'K';
-    }
-    return viewCount.toString();
-  }
 
-  /**
-   * Format duration seconds to readable format
-   */
-  getReadableDuration(seconds?: number): string {
-    if (!seconds) return '0:00';
-    const minutes = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${minutes}:${secs.toString().padStart(2, '0')}`;
-  }
 
   /**
    * Show snack bar message
@@ -342,7 +301,7 @@ export class MySongsComponent implements OnInit {
       title: videoInfo.title,
       youtubeLink: youtubeUrl,
       channel: videoInfo.channel,
-      largestThumbnail: this.getThumbnailUrl(videoInfo.thumbnails),
+      largestThumbnail: this.getHighestResolutionThumbnail(videoInfo.thumbnails),
       durationSeconds: videoInfo.durationSeconds,
       viewCount: videoInfo.viewCount,
       createdAt: new Date(),
@@ -359,59 +318,56 @@ export class MySongsComponent implements OnInit {
   }
 
   /**
-   * Get the highest resolution thumbnail URL from YouTube thumbnails
+   * Get the highest resolution thumbnail URL from YouTube thumbnails object
+   * Prefers maxres > standard > high > medium > default
    */
-  private getThumbnailUrl(thumbnails: any): string {
-    if (thumbnails.maxres) {
-      return thumbnails.maxres.url;
+  private getHighestResolutionThumbnail(thumbnails: any): string {
+    if (!thumbnails) {
+      return '';
     }
-    if (thumbnails.standard) {
-      return thumbnails.standard.url;
-    }
-    if (thumbnails.high) {
-      return thumbnails.high.url;
-    }
-    if (thumbnails.medium) {
-      return thumbnails.medium.url;
-    }
-    if (thumbnails.default) {
-      return thumbnails.default.url;
-    }
-    return '';
-  }
-
-  /**
-   * Extract video ID from YouTube URL
-   * Handles formats: 
-   * - https://www.youtube.com/watch?v=VIDEO_ID
-   * - https://youtu.be/VIDEO_ID
-   * - VIDEO_ID (direct ID)
-   */
-  extractVideoIdFromUrl(url: string): string {
-    if (!url) return '';
-    
-    // If it's already just a video ID (11 characters of alphanumeric, hyphen, underscore)
-    if (/^[a-zA-Z0-9_-]{11}$/.test(url)) {
-      return url;
-    }
-
-    // Try to extract from youtube.com/watch?v=VIDEO_ID
-    const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-    if (youtubeMatch && youtubeMatch[1]) {
-      return youtubeMatch[1];
-    }
-
-    // Fallback: return empty string if no match
-    return '';
+    return thumbnails.maxres?.url
+      || thumbnails.standard?.url
+      || thumbnails.high?.url
+      || thumbnails.medium?.url
+      || thumbnails.default?.url
+      || '';
   }
 
   /**
    * Get sanitized YouTube embed URL for iframe
+   * Uses videoId directly from Song object - no extraction needed since Song already has videoId
    */
-  getYouTubeEmbedUrl(youtubeLink: string): SafeResourceUrl | null {
-    const videoId = this.extractVideoIdFromUrl(youtubeLink);
+  getYouTubeEmbedUrl(videoId: string): SafeResourceUrl | null {
+    //ghi log để debug videoId
+    console.log('Embedding video with ID:', videoId);
     if (!videoId) return null;
     const url = `https://www.youtube.com/embed/${videoId}`;
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  }
+
+  /**
+   * Open video player dialog with shared iframe player
+   * @param song - Song data to play
+   */
+  openVideoPlayerDialog(song: Song): void {
+    if (!song.videoId) {
+      this.showMessage('Video ID not available', 'error');
+      return;
+    }
+
+    this.dialog.open(VideoPlayerDialogComponent, {
+      data: {
+        videoId: song.videoId,
+        title: song.title,
+        channel: song.channel
+      },
+      width: '90vw',
+      maxWidth: '1200px',
+      height: '90vh',
+      maxHeight: '800px',
+      panelClass: 'video-player-dialog-panel',
+      disableClose: true,
+      backdropClass: 'video-player-backdrop'
+    });
   }
 }

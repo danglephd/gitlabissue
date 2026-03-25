@@ -70,29 +70,22 @@
         <mat-icon>close</mat-icon>
       </button>
 
-      <!-- Video Player -->
-      <div class="video-player-wrapper">
-        <iframe 
-          *ngIf="getYouTubeEmbedUrl(song.youtubeLink)"
-          class="youtube-player"
-          [src]="getYouTubeEmbedUrl(song.youtubeLink)"
-          title="{{ song.title }}"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen>
-        </iframe>
-        <!-- Fallback thumbnail if video ID extraction fails -->
-        <img 
-          *ngIf="!getYouTubeEmbedUrl(song.youtubeLink)"
-          [src]="song.largestThumbnail"
-          [alt]="song.title"
-          class="thumbnail-fallback">
+      <!-- Thumbnail - Clickable to open video player dialog -->
+      <div class="video-player-wrapper" (click)="openVideoPlayerDialog(song)">
+        <img [src]="song.largestThumbnail" [alt]="song.title"
+          class="thumbnail-image"
+          loading="lazy">
+        <!-- Play overlay button -->
+        <div class="play-overlay">
+          <mat-icon class="play-icon">play_circle_outline</mat-icon>
+        </div>
       </div>
 
       <!-- Card Header -->
       <mat-card-header>
-        <mat-card-title>{{ song.title }}</mat-card-title>
+        <mat-card-title [title]="song.title">{{ song.title }}</mat-card-title>
         <mat-card-subtitle>
-          <span class="channel">{{ song.channel }}</span>
+          <span class="channel" [title]="song.channel">{{ song.channel }}</span>
         </mat-card-subtitle>
       </mat-card-header>
     </mat-card>
