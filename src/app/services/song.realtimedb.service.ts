@@ -18,6 +18,7 @@ export class SongRealtimedbService {
    * Get all active songs (not deleted)
    */
   getActiveSongs(): Observable<Song[]> {
+    // trả về danh sách bài hát đã được lọc để chỉ bao gồm những bài hát chưa bị xóa (deleted: false) và sắp xếp theo thứ tự tạo mới nhất trước (createdAt: desc)
     return this.songsRef.snapshotChanges().pipe(
       map(changes =>
         changes
@@ -25,7 +26,8 @@ export class SongRealtimedbService {
             id: c.key,
             ...c.payload.val()
           } as Song))
-          .filter(s => !s.deleted)
+          .filter(song => !song.deleted) // lọc ra những bài hát đã bị xóa
+          .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)) // sắp xếp theo createdAt giảm dần (mới nhất trước)
       )
     );
   }
@@ -47,7 +49,7 @@ export class SongRealtimedbService {
     const newSong: Song = {
       ...song,
       id: key,
-      createdAt: new Date()
+      createdAt: Date.now() // Store as timestamp (milliseconds since epoch)
     };
     return new Promise((resolve, reject) => {
       this.db.database.ref(`${this.songsPath}/${key}`).set(newSong)

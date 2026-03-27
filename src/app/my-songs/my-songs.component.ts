@@ -283,6 +283,10 @@ export class MySongsComponent implements OnInit {
    * Add song to database
    */
   private addSongToDatabase(videoInfo: YouTubeVideoInfo, youtubeUrl: string): void {
+    //ghi log để debug
+    console.log('Adding song with video info:', videoInfo);
+    console.log('YouTube URL:', youtubeUrl);
+
     // Check if song already exists (prevent duplicates)
     const existingSong = this.songs.find(s => s.videoId === videoInfo.videoId);
     if (existingSong) {
@@ -299,7 +303,7 @@ export class MySongsComponent implements OnInit {
       largestThumbnail: this.getHighestResolutionThumbnail(videoInfo.thumbnails),
       durationSeconds: videoInfo.durationSeconds,
       viewCount: videoInfo.viewCount,
-      createdAt: new Date(),
+      createdAt: Date.now(),
       tags: []
     };
 

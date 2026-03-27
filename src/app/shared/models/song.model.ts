@@ -5,7 +5,7 @@
 export interface Song {
   // System Fields
   id: string;                    // Unique identifier (generated)
-  createdAt: Date;              // When added to database
+  createdAt: number;            // When added to database (timestamp in milliseconds)
   deleted?: boolean;            // Soft delete flag (true = deleted, false/undefined = active)
 
   // Basic YouTube Info
