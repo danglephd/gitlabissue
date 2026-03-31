@@ -254,12 +254,12 @@ export class AddYouTubeSongDialogComponent implements OnInit, OnDestroy {
    */
   private validateVideoIds(videoIds: string[]): boolean {
     if (videoIds.length === 0) {
-      this.errorMessageMultiple = 'Vui lòng nhập ít nhất một ID video';
+      this.errorMessageMultiple = 'Please enter at least one video ID';
       return false;
     }
 
     if (videoIds.length > this.MAX_VIDEO_IDS) {
-      this.errorMessageMultiple = `Tối đa ${this.MAX_VIDEO_IDS} video trên một lần`;
+      this.errorMessageMultiple = `Maximum ${this.MAX_VIDEO_IDS} videos at a time`;
       return false;
     }
 
@@ -288,12 +288,12 @@ export class AddYouTubeSongDialogComponent implements OnInit, OnDestroy {
         this.isLoadingMultiple = false;
 
         if (this.multipleVideos.length === 0) {
-          this.errorMessageMultiple = 'Không tìm thấy video nào';
+          this.errorMessageMultiple = 'No videos found';
         }
       })
       .catch((error: any) => {
         console.error('Error fetching multiple videos:', error);
-        this.errorMessageMultiple = 'Lỗi khi tải video. Vui lòng kiểm tra IDs và thử lại.';
+        this.errorMessageMultiple = 'Error loading videos. Please check the IDs and try again.';
         this.multipleVideos = [];
         this.isLoadingMultiple = false;
       });

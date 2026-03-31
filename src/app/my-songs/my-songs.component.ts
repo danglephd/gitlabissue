@@ -97,7 +97,7 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isLoading = false;
       },
       (error) => {
-        this.showMessage('Lỗi khi tải danh sách bài hát', 'error');
+        this.showMessage('Error loading song list', 'error');
         this.isLoading = false;
       }
     );
@@ -213,11 +213,11 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
    * Delete a song
    */
   deleteSong(id: string): void {
-    if (confirm('Bạn có chắc chắn muốn xóa bài hát này?')) {
+    if (confirm('Are you sure you want to delete this song?')) {
       this.songService.deleteSong(id).then(() => {
-        this.showMessage('Bài hát đã được xóa', 'success');
+        this.showMessage('Song deleted', 'success');
       }).catch(() => {
-        this.showMessage('Lỗi khi xóa bài hát', 'error');
+        this.showMessage('Error deleting song', 'error');
       });
     }
   }
@@ -393,13 +393,13 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
         // Show detailed message
         if (successCount > 0 && duplicateCount > 0) {
           this.showMessage(
-            `Đã thêm ${successCount} bài hát. ${duplicateCount} bài hát bị trùng với danh sách hiện tại.`,
+            `Added ${successCount} songs. ${duplicateCount} songs already exist in the list.`,
             'info'
           );
         } else if (successCount > 0) {
-          this.showMessage(`Đã thêm ${successCount} bài hát thành công`, 'success');
+          this.showMessage(`Successfully added ${successCount} songs`, 'success');
         } else if (duplicateCount > 0) {
-          this.showMessage(`Tất cả ${duplicateCount} bài hát đều bị trùng với danh sách hiện tại`, 'info');
+          this.showMessage(`All ${duplicateCount} songs already exist in the list`, 'info');
         }
         return;
       }
@@ -418,7 +418,7 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
     const existingSong = this.songs.find(s => s.videoId === videoInfo.videoId);
     if (existingSong) {
       if (!isBatch) {
-        this.showMessage('Bài hát này đã tồn tại trong danh sách', 'info');
+        this.showMessage('This song already exists in the list', 'info');
       }
       return false;
     }
@@ -438,11 +438,11 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.songService.addSong(newSong).then(() => {
       if (!isBatch) {
-        this.showMessage('Bài hát đã được thêm thành công', 'success');
+        this.showMessage('Song added successfully', 'success');
         this.loadSongs();
       }
     }).catch(() => {
-      this.showMessage('Lỗi khi thêm bài hát', 'error');
+      this.showMessage('Error adding song', 'error');
     });
 
     return true;
