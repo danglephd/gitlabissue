@@ -18,6 +18,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatChipsModule} from '@angular/material/chips';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 const material = [
   MatSlideToggleModule,
@@ -36,7 +38,9 @@ const material = [
   MatCheckboxModule,
   MatFormFieldModule, // Cho mat-form-field
   MatAutocompleteModule, // Cho mat-autocomplete
-  MatChipsModule // Cho mat-chips
+  MatChipsModule, // Cho mat-chips
+  MatTabsModule, // Cho mat-tab-group
+  MatTooltipModule // Cho matTooltip
 ];
 
 @NgModule({
