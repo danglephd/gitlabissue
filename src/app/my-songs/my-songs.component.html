@@ -97,8 +97,9 @@
     </mat-card>
   </div>
 
-  <!-- Loading More Indicator -->
-  <div class="loading-more-indicator" *ngIf="displayedCount < filteredSongs.length && !isLoading">
+  <!-- Loading More Indicator - Trigger for IntersectionObserver -->
+  <div class="loading-more-indicator" #loadMoreTrigger 
+       *ngIf="displayedCount < filteredSongs.length && !isLoading">
     <p>Scroll xuống để tải thêm...</p>
   </div>
 

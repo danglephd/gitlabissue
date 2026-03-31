@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Song, SongFilterType } from '../shared/models/song.model';
 import { SongRealtimedbService } from '../services/song.realtimedb.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -12,7 +12,7 @@ import { YouTubeVideoInfo } from '../models/youtube.model';
   templateUrl: './my-songs.component.html',
   styleUrls: ['./my-songs.component.css']
 })
-export class MySongsComponent implements OnInit {
+export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
   songs: Song[] = [];
   filteredSongs: Song[] = [];
   itemsToDisplay: Song[] = [];
@@ -30,10 +30,26 @@ export class MySongsComponent implements OnInit {
   
   // Mobile detection
   isMobileView = false;
-  
+
+  // Performance optimizations
+  private isScrolling = false;
+  private intersectionObserver: IntersectionObserver | null = null;
+  private filterCache: Map<string, Song[]> = new Map();
+  private lastSearchQuery = '';
+  private lastSelectedTags: { [key: string]: 'include' | 'exclude' } = {};
+
   public SongFilterType = SongFilterType;
 
+  private loadMoreTrigger!: ElementRef;
+
   @ViewChild('songsListContainer') songsListContainer!: ElementRef;
+  @ViewChild('loadMoreTrigger')
+  set loadMoreTriggerSetter(el: ElementRef) {
+    if (el) {
+      this.loadMoreTrigger = el;
+      this.initializeIntersectionObserver();
+    }
+  }
 
   constructor(
     private songService: SongRealtimedbService,
@@ -45,6 +61,18 @@ export class MySongsComponent implements OnInit {
     this.loadSongs();
     this.loadTagsFromLocalStorage();
     this.detectMobileView();
+  }
+
+  ngAfterViewInit(): void {
+    // Initialize IntersectionObserver for lazy loading moved to setter
+  }
+
+  ngOnDestroy(): void {
+    // Clean up IntersectionObserver
+    if (this.intersectionObserver) {
+      this.intersectionObserver.disconnect();
+    }
+    this.filterCache.clear();
   }
 
   /**
@@ -60,6 +88,7 @@ export class MySongsComponent implements OnInit {
    */
   loadSongs(): void {
     this.isLoading = true;
+    
     this.songService.getActiveSongs().subscribe(
       (songs: Song[]) => {
         this.songs = songs || [];
@@ -75,13 +104,40 @@ export class MySongsComponent implements OnInit {
   }
 
   /**
-   * Apply filters based on current settings
+   * Apply filters based on current settings with caching
    */
   applyFilter(): void {
+    // Check if filter params changed - if not, use cached result
+    const cacheKey = this.getCacheKey();
+    
+    if (this.filterCache.has(cacheKey) && 
+        this.lastSearchQuery === this.searchQuery &&
+        JSON.stringify(this.lastSelectedTags) === JSON.stringify(this.selectedTags)) {
+      this.filteredSongs = this.filterCache.get(cacheKey) || [];
+      this.displayedCount = this.pageSize;
+      this.itemsToDisplay = this.filteredSongs.slice(0, this.displayedCount);
+      return;
+    }
+
+    // Perform filtering
     this.filteredSongs = this.filterBySearch(this.songs);
     this.filteredSongs = this.filterByTags(this.filteredSongs);
+    
+    // Cache the result
+    this.filterCache.set(cacheKey, [...this.filteredSongs]);
+    this.lastSearchQuery = this.searchQuery;
+    this.lastSelectedTags = { ...this.selectedTags };
+    
+    // Reset pagination
     this.displayedCount = this.pageSize;
     this.itemsToDisplay = this.filteredSongs.slice(0, this.displayedCount);
+  }
+
+  /**
+   * Generate cache key from current filter params
+   */
+  private getCacheKey(): string {
+    return `${this.searchQuery}|${JSON.stringify(this.selectedTags)}`;
   }
 
   /**
@@ -91,6 +147,7 @@ export class MySongsComponent implements OnInit {
     if (!this.searchQuery || this.searchQuery.trim() === '') {
       return songs;
     }
+
     const query = this.searchQuery.toLowerCase();
     return songs.filter(s =>
       (s.title?.toLowerCase().includes(query) || false) ||
@@ -103,7 +160,9 @@ export class MySongsComponent implements OnInit {
    */
   filterByTags(songs: Song[]): Song[] {
     const activeTags = Object.entries(this.selectedTags);
-    if (activeTags.length === 0) return songs;
+    if (activeTags.length === 0) {
+      return songs;
+    }
 
     return songs.filter(song => {
       const songTags = song.tags || [];
@@ -118,25 +177,28 @@ export class MySongsComponent implements OnInit {
   }
 
   /**
-   * Search songs
+   * Search songs with cache invalidation
    */
   searchSongs(): void {
+    this.filterCache.clear(); // Invalidate cache on new search
     this.applyFilter();
   }
 
   /**
-   * Clear search query
+   * Clear search query and reapply filters
    */
   clearSearch(): void {
     this.searchQuery = '';
+    this.filterCache.clear(); // Invalidate cache
     this.applyFilter();
   }
 
   /**
-   * Change filter type
+   * Change filter type with cache invalidation
    */
   changeFilter(filterType: SongFilterType): void {
     this.filterType = filterType;
+    this.filterCache.clear(); // Invalidate cache
     this.applyFilter();
   }
 
@@ -161,16 +223,17 @@ export class MySongsComponent implements OnInit {
   }
 
   /**
-   * Remove tag filter
+   * Remove tag filter with cache invalidation
    */
   removeTagFilter(tag: string): void {
     delete this.selectedTags[tag];
     this.saveTagsToLocalStorage();
+    this.filterCache.clear(); // Invalidate cache
     this.applyFilter();
   }
 
   /**
-   * Toggle tag filter status (include/exclude)
+   * Toggle tag filter status (include/exclude) with cache invalidation
    */
   toggleTagFilterStatus(tag: string): void {
     if (this.selectedTags[tag] === 'include') {
@@ -179,6 +242,7 @@ export class MySongsComponent implements OnInit {
       this.selectedTags[tag] = 'include';
     }
     this.saveTagsToLocalStorage();
+    this.filterCache.clear(); // Invalidate cache
     this.applyFilter();
   }
 
@@ -211,35 +275,61 @@ export class MySongsComponent implements OnInit {
   }
 
   /**
-   * Handle scroll event for lazy loading
+   * Initialize IntersectionObserver for efficient lazy loading
+   * Replaces scroll event listener - more performant
    */
-  @HostListener('window:scroll', ['$event'])
-  onScroll(): void {
-    // Show scroll to top button
-    this.showScrollToTopButton = window.scrollY > 300;
+  private initializeIntersectionObserver(): void {
+    if (!this.loadMoreTrigger) return;
 
-    // Lazy load more items
-    if (this.displayedCount < this.filteredSongs.length) {
-      const scrollTop = window.scrollY;
-      const windowHeight = window.innerHeight;
-      const docHeight = document.documentElement.scrollHeight;
+    const options: IntersectionObserverInit = {
+      root: null,
+      rootMargin: '200px', // Start loading 200px before reaching the trigger
+      threshold: 0.1
+    };
 
-      if (scrollTop + windowHeight > docHeight - 500) {
-        this.loadMoreItems();
-      }
-    }
+    this.intersectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !this.isScrolling) {
+          this.loadMoreItems();
+        }
+      });
+    }, options);
+
+    this.intersectionObserver.observe(this.loadMoreTrigger.nativeElement);
   }
 
   /**
-   * Load more items for lazy loading
+   * Handle scroll to top button visibility
+   */
+  @HostListener('window:scroll', ['$event'])
+  onWindowScroll(): void {
+    this.showScrollToTopButton = window.scrollY > 300;
+  }
+
+  /**
+   * Load more items for lazy loading with throttling
+   * Prevents multiple simultaneous load calls
    */
   loadMoreItems(): void {
-    const nextCount = Math.min(
-      this.displayedCount + this.pageSize,
-      this.filteredSongs.length
-    );
-    this.itemsToDisplay = this.filteredSongs.slice(0, nextCount);
-    this.displayedCount = nextCount;
+    // Prevent multiple simultaneous loads
+    if (this.isScrolling || this.displayedCount >= this.filteredSongs.length) {
+      return;
+    }
+
+    this.isScrolling = true;
+
+    // Simulate small delay for smooth animation
+    setTimeout(() => {
+      const nextCount = Math.min(
+        this.displayedCount + this.pageSize,
+        this.filteredSongs.length
+      );
+      
+      this.itemsToDisplay = this.filteredSongs.slice(0, nextCount);
+      this.displayedCount = nextCount;
+      
+      this.isScrolling = false;
+    }, 50);
   }
 
   /**
