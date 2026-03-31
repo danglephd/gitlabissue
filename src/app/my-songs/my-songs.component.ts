@@ -273,25 +273,64 @@ export class MySongsComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result: any) => {
-      if (result && result.videoInfo) {
+      if (!result) return;
+
+      // Handle single song from Tab A: { videoInfo, youtubeUrl }
+      if (result.videoInfo && !Array.isArray(result)) {
         this.addSongToDatabase(result.videoInfo, result.youtubeUrl);
+        return;
+      }
+
+      // Handle multiple songs from Tab B: [{ videoInfo, youtubeUrl }, ...]
+      if (Array.isArray(result)) {
+        let successCount = 0;
+        let duplicateCount = 0;
+
+        result.forEach(item => {
+          const isSuccess = this.addSongToDatabase(item.videoInfo, item.youtubeUrl, true);
+          if (isSuccess) {
+            successCount++;
+          } else {
+            duplicateCount++;
+          }
+        });
+
+        // Load songs once after all additions
+        if (successCount > 0) {
+          this.loadSongs();
+        }
+
+        // Show detailed message
+        if (successCount > 0 && duplicateCount > 0) {
+          this.showMessage(
+            `Đã thêm ${successCount} bài hát. ${duplicateCount} bài hát bị trùng với danh sách hiện tại.`,
+            'info'
+          );
+        } else if (successCount > 0) {
+          this.showMessage(`Đã thêm ${successCount} bài hát thành công`, 'success');
+        } else if (duplicateCount > 0) {
+          this.showMessage(`Tất cả ${duplicateCount} bài hát đều bị trùng với danh sách hiện tại`, 'info');
+        }
+        return;
       }
     });
   }
 
   /**
    * Add song to database
+   * @param videoInfo - YouTube video information
+   * @param youtubeUrl - YouTube URL
+   * @param isBatch - If true, suppresses individual success messages (parent handles messaging)
+   * @returns boolean - true if song added successfully, false if duplicate
    */
-  private addSongToDatabase(videoInfo: YouTubeVideoInfo, youtubeUrl: string): void {
-    //ghi log để debug
-    console.log('Adding song with video info:', videoInfo);
-    console.log('YouTube URL:', youtubeUrl);
-
+  private addSongToDatabase(videoInfo: YouTubeVideoInfo, youtubeUrl: string, isBatch: boolean = false): boolean {
     // Check if song already exists (prevent duplicates)
     const existingSong = this.songs.find(s => s.videoId === videoInfo.videoId);
     if (existingSong) {
-      this.showMessage('Bài hát này đã tồn tại trong danh sách', 'info');
-      return;
+      if (!isBatch) {
+        this.showMessage('Bài hát này đã tồn tại trong danh sách', 'info');
+      }
+      return false;
     }
 
     const newSong: Song = {
@@ -308,11 +347,15 @@ export class MySongsComponent implements OnInit {
     };
 
     this.songService.addSong(newSong).then(() => {
-      this.showMessage('Bài hát đã được thêm thành công', 'success');
-      this.loadSongs();
+      if (!isBatch) {
+        this.showMessage('Bài hát đã được thêm thành công', 'success');
+        this.loadSongs();
+      }
     }).catch(() => {
       this.showMessage('Lỗi khi thêm bài hát', 'error');
     });
+
+    return true;
   }
 
   /**
