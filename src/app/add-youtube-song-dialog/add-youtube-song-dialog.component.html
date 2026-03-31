@@ -11,113 +11,263 @@
     </button>
   </div>
 
-  <!-- Input Section -->
-  <div class="input-section">
-    <mat-form-field appearance="outline" class="url-input-field">
-      <mat-label>Paste YouTube URL...</mat-label>
-      <input 
-        matInput 
-        [(ngModel)]="youtubeUrl" 
-        (keyup)="onUrlPaste($event)"
-        placeholder="https://www.youtube.com/watch?v=..."
-        [disabled]="isLoading">
-    </mat-form-field>
-    <button 
-      mat-raised-button 
-      color="primary" 
-      (click)="onAddButtonClick()"
-      [disabled]="!isUrlValid || isLoading || isAdding"
-      class="add-button">
-      <span *ngIf="!isAdding">
-        <mat-icon>add</mat-icon>
-        Add
-      </span>
-      <span *ngIf="isAdding">
-        <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
-      </span>
-    </button>
-  </div>
+  <!-- Tabs -->
+  <mat-tab-group class="tabs-container" animationDuration="200">
+    <!-- TAB A: Add Single YouTube Song -->
+    <mat-tab label="Add a YouTube Song" class="tab-content">
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">music_note</mat-icon>
+        <span class="tab-label">Add a YouTube Song</span>
+      </ng-template>
 
-  <!-- Error Message -->
-  <div class="error-message" *ngIf="errorMessage && !isLoading">
-    <mat-icon>error_outline</mat-icon>
-    <span>{{ errorMessage }}</span>
-  </div>
-
-  <!-- Content Area -->
-  <div class="content-area">
-    <!-- Loading State with Skeleton -->
-    <div class="skeleton-container" *ngIf="isLoading">
-      <div class="skeleton skeleton-thumbnail"></div>
-      <div class="skeleton-text-group">
-        <div class="skeleton skeleton-title"></div>
-        <div class="skeleton skeleton-title" style="width: 70%;"></div>
-      </div>
-      <div class="skeleton skeleton-channel"></div>
-    </div>
-
-    <!-- Video Information Display -->
-    <div class="video-info" *ngIf="videoInfo && !isLoading && isUrlValid">
-      <!-- Thumbnail -->
-      <div class="video-thumbnail">
-        <img 
-          [src]="getThumbnailUrl()" 
-          [alt]="videoInfo.title"
-          class="thumbnail-image">
+      <!-- Input Section -->
+      <div class="input-section">
+        <mat-form-field appearance="outline" class="url-input-field">
+          <mat-label>Paste YouTube URL...</mat-label>
+          <input 
+            matInput 
+            [(ngModel)]="youtubeUrl" 
+            (keyup)="onUrlPaste($event)"
+            placeholder="https://www.youtube.com/watch?v=..."
+            [disabled]="isLoading">
+        </mat-form-field>
+        <button 
+          mat-raised-button 
+          color="primary" 
+          (click)="onAddButtonClick()"
+          [disabled]="!isUrlValid || isLoading || isAdding"
+          class="add-button">
+          <span *ngIf="!isAdding">
+            <mat-icon>add</mat-icon>
+            Add
+          </span>
+          <span *ngIf="isAdding">
+            <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+          </span>
+        </button>
       </div>
 
-      <!-- Video Details -->
-      <div class="video-details">
-        <!-- Title -->
-        <h3 class="video-title">{{ videoInfo.title }}</h3>
+      <!-- Error Message -->
+      <div class="error-message" *ngIf="errorMessage && !isLoading">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
 
-        <!-- Metadata -->
-        <div class="video-metadata">
-          <!-- Channel Row -->
-          <div class="metadata-row">
-            <mat-icon class="metadata-icon">account_circle</mat-icon>
-            <span class="metadata-text">{{ videoInfo.channel }}</span>
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Loading State with Skeleton -->
+        <div class="skeleton-container" *ngIf="isLoading">
+          <div class="skeleton skeleton-thumbnail"></div>
+          <div class="skeleton-text-group">
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-title" style="width: 70%;"></div>
+          </div>
+          <div class="skeleton skeleton-channel"></div>
+        </div>
+
+        <!-- Video Information Display -->
+        <div class="video-info" *ngIf="videoInfo && !isLoading && isUrlValid">
+          <!-- Thumbnail -->
+          <div class="video-thumbnail">
+            <img 
+              [src]="getThumbnailUrl()" 
+              [alt]="videoInfo.title"
+              class="thumbnail-image">
           </div>
 
-          <!-- Publish Date Row -->
-          <div class="metadata-row" *ngIf="videoInfo.publishedAt">
-            <mat-icon class="metadata-icon">calendar_today</mat-icon>
-            <span class="metadata-text">{{ getFormattedDate() }}</span>
-          </div>
+          <!-- Video Details -->
+          <div class="video-details">
+            <!-- Title -->
+            <h3 class="video-title">{{ videoInfo.title }}</h3>
 
-          <!-- View Count Row -->
-          <div class="metadata-row" *ngIf="videoInfo.viewCount">
-            <mat-icon class="metadata-icon">visibility</mat-icon>
-            <span class="metadata-text">{{ getReadableViewCount() }} views</span>
+            <!-- Metadata -->
+            <div class="video-metadata">
+              <!-- Channel Row -->
+              <div class="metadata-row">
+                <mat-icon class="metadata-icon">account_circle</mat-icon>
+                <span class="metadata-text">{{ videoInfo.channel }}</span>
+              </div>
+
+              <!-- Publish Date Row -->
+              <div class="metadata-row" *ngIf="videoInfo.publishedAt">
+                <mat-icon class="metadata-icon">calendar_today</mat-icon>
+                <span class="metadata-text">{{ getFormattedDate() }}</span>
+              </div>
+
+              <!-- View Count Row -->
+              <div class="metadata-row" *ngIf="videoInfo.viewCount">
+                <mat-icon class="metadata-icon">visibility</mat-icon>
+                <span class="metadata-text">{{ getReadableViewCount() }} views</span>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="video-description" *ngIf="videoInfo.description">
+              <div class="description-content">
+                <p *ngIf="!isDescriptionExpanded" class="description-text">
+                  {{ getDescriptionPreview() }}
+                  <span *ngIf="shouldShowExpandButton()" class="expand-hint">...</span>
+                </p>
+                <p *ngIf="isDescriptionExpanded" class="description-text expanded">
+                  {{ getFullDescription() }}
+                </p>
+              </div>
+              <button 
+                *ngIf="shouldShowExpandButton()"
+                mat-button
+                (click)="toggleDescriptionExpansion()"
+                class="expand-button">
+                {{ isDescriptionExpanded ? 'Show less' : 'Show more' }}
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Description -->
-        <div class="video-description" *ngIf="videoInfo.description">
-          <div class="description-content">
-            <p *ngIf="!isDescriptionExpanded" class="description-text">
-              {{ getDescriptionPreview() }}
-              <span *ngIf="shouldShowExpandButton()" class="expand-hint">...</span>
-            </p>
-            <p *ngIf="isDescriptionExpanded" class="description-text expanded">
-              {{ getFullDescription() }}
-            </p>
-          </div>
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="!isLoading && !videoInfo && !errorMessage">
+          <mat-icon>music_note</mat-icon>
+          <p>Paste a YouTube URL to add a song</p>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- TAB B: Add Multiple YouTube Songs -->
+    <mat-tab label="Add list YouTube Song" class="tab-content">
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">playlist_add</mat-icon>
+        <span class="tab-label">Add list YouTube Song</span>
+      </ng-template>
+
+      <!-- Input Section for Multiple Videos -->
+      <div class="input-section-multiple">
+        <mat-form-field appearance="outline" class="video-ids-field">
+          <mat-label>YouTube Video IDs (one per line)</mat-label>
+          <textarea 
+            matInput 
+            [(ngModel)]="videoIdsTextarea"
+            placeholder="5I22fIBCw2o&#10;r52OjHbpeLY&#10;GpmOn4RyzZI"
+            rows="6"
+            [disabled]="isLoadingMultiple"
+            class="ids-textarea"></textarea>
+          <mat-hint>Max 50 video IDs, spaces will be trimmed</mat-hint>
+        </mat-form-field>
+
+        <button 
+          mat-raised-button 
+          color="primary" 
+          (click)="onFetchMultipleVideos()"
+          [disabled]="isLoadingMultiple || videoIdsTextarea.trim().length === 0"
+          class="fetch-button">
+          <span *ngIf="!isLoadingMultiple">
+            <mat-icon>search</mat-icon>
+            Fetch
+          </span>
+          <span *ngIf="isLoadingMultiple">
+            <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+          </span>
+        </button>
+        
+        <!-- Add Multiple Button -->
+        <div class="add-multiple-footer">
           <button 
-            *ngIf="shouldShowExpandButton()"
-            mat-button
-            (click)="toggleDescriptionExpansion()"
-            class="expand-button">
-            {{ isDescriptionExpanded ? 'Show less' : 'Show more' }}
+            mat-raised-button 
+            color="primary"
+            (click)="onAddMultipleButtonClick()"
+            [disabled]="selectedVideoIds.size === 0 || isAddingMultiple"
+            class="add-multiple-button">
+            <span *ngIf="!isAddingMultiple">
+              <mat-icon>add</mat-icon>
+              Add {{ selectedVideoIds.size }} {{ selectedVideoIds.size === 1 ? 'Song' : 'Songs' }}
+            </span>
+            <span *ngIf="isAddingMultiple">
+              <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+            </span>
           </button>
         </div>
       </div>
-    </div>
 
-    <!-- Empty State -->
-    <div class="empty-state" *ngIf="!isLoading && !videoInfo && !errorMessage">
-      <mat-icon>music_note</mat-icon>
-      <p>Paste a YouTube URL to add a song</p>
-    </div>
-  </div>
+      <!-- Error Message for Multiple -->
+      <div class="error-message" *ngIf="errorMessageMultiple && !isLoadingMultiple">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessageMultiple }}</span>
+      </div>
+
+      <!-- Loading State -->
+      <div class="skeleton-container" *ngIf="isLoadingMultiple">
+        <div class="skeleton skeleton-card"></div>
+        <div class="skeleton skeleton-card"></div>
+        <div class="skeleton skeleton-card"></div>
+      </div>
+
+      <!-- Videos Grid -->
+      <div class="videos-grid-container" *ngIf="!isLoadingMultiple && multipleVideos.length > 0">
+        <!-- Select All Checkbox -->
+        <div class="select-all-container">
+          <mat-checkbox 
+            [(ngModel)]="selectAllChecked"
+            (change)="toggleSelectAll()"
+            color="primary">
+            Select All
+          </mat-checkbox>
+        </div>
+
+        <!-- Videos Grid -->
+        <div class="videos-grid">
+          <div class="video-card" *ngFor="let video of multipleVideos">
+            <!-- Checkbox -->
+            <div class="video-card-checkbox">
+              <mat-checkbox 
+                [checked]="isVideoSelected(video.videoId)"
+                (change)="toggleSelectVideo(video.videoId)"
+                color="primary">
+              </mat-checkbox>
+            </div>
+
+            <!-- Video Content -->
+            <div class="video-card-body">
+              <!-- Thumbnail -->
+              <div class="video-thumbnail">
+                <img 
+                  [src]="getThumbnailUrlForVideo(video)" 
+                  [alt]="video.title"
+                  class="thumbnail-image">
+              </div>
+
+              <!-- Info -->
+              <div class="card-info">
+                <h4 class="card-title" [title]="video.title">{{ video.title }}</h4>
+                <p class="card-channel">{{ video.channel }}</p>
+                <div class="card-meta">
+                  <span class="meta-item" *ngIf="video.durationSeconds">
+                    <mat-icon>schedule</mat-icon>
+                    {{ video.durationSeconds | number }}s
+                  </span>
+                  <span class="meta-item" *ngIf="video.viewCount">
+                    <mat-icon>visibility</mat-icon>
+                    {{ getReadableViewCount() }} views
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Remove Button -->
+            <button 
+              mat-icon-button 
+              (click)="removeVideoFromList(video.videoId)"
+              matTooltip="Remove"
+              class="remove-button">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State for Multiple -->
+      <div class="empty-state" *ngIf="!isLoadingMultiple && multipleVideos.length === 0 && !errorMessageMultiple">
+        <mat-icon>playlist_add</mat-icon>
+        <p>Enter YouTube Video IDs and click Fetch to load videos</p>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
 </div>
+

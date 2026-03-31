@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { YouTubeService } from '../services/youtube.service';
 import { YouTubeVideoInfo } from '../models/youtube.model';
+import { Song } from '../shared/models/song.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -12,6 +13,7 @@ import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
   styleUrls: ['./add-youtube-song-dialog.component.css']
 })
 export class AddYouTubeSongDialogComponent implements OnInit, OnDestroy {
+  // Tab A - Single Song
   youtubeUrl: string = '';
   isLoading: boolean = false;
   videoInfo: YouTubeVideoInfo | null = null;
@@ -20,8 +22,18 @@ export class AddYouTubeSongDialogComponent implements OnInit, OnDestroy {
   isAdding: boolean = false;
   isDescriptionExpanded: boolean = false;
 
+  // Tab B - Multiple Songs
+  videoIdsTextarea: string = '';
+  multipleVideos: YouTubeVideoInfo[] = [];
+  selectedVideoIds: Set<string> = new Set();
+  isLoadingMultiple: boolean = false;
+  errorMessageMultiple: string = '';
+  isAddingMultiple: boolean = false;
+  selectAllChecked: boolean = false;
+
   private destroy$ = new Subject<void>();
   private urlSubject = new Subject<string>();
+  private readonly MAX_VIDEO_IDS = 50;
 
   constructor(
     private youTubeService: YouTubeService,
@@ -223,6 +235,194 @@ export class AddYouTubeSongDialogComponent implements OnInit, OnDestroy {
     });
   }
 
+  // ======================== TAB B - MULTIPLE SONGS ========================
+
+  /**
+   * Parse video IDs from textarea
+   * Removes empty lines, trims spaces, deduplicates
+   */
+  private parseVideoIds(): string[] {
+    return this.videoIdsTextarea
+      .split('\n')
+      .map(id => id.trim())
+      .filter(id => id.length > 0 && id.length === 11) // YouTube IDs are 11 characters
+      .filter((id, index, self) => self.indexOf(id) === index); // Deduplicate
+  }
+
+  /**
+   * Validate video IDs
+   */
+  private validateVideoIds(videoIds: string[]): boolean {
+    if (videoIds.length === 0) {
+      this.errorMessageMultiple = 'Vui lòng nhập ít nhất một ID video';
+      return false;
+    }
+
+    if (videoIds.length > this.MAX_VIDEO_IDS) {
+      this.errorMessageMultiple = `Tối đa ${this.MAX_VIDEO_IDS} video trên một lần`;
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Fetch multiple videos from YouTube API
+   */
+  onFetchMultipleVideos(): void {
+    this.errorMessageMultiple = '';
+    const videoIds = this.parseVideoIds();
+
+    if (!this.validateVideoIds(videoIds)) {
+      return;
+    }
+
+    this.isLoadingMultiple = true;
+    this.multipleVideos = [];
+    this.selectedVideoIds.clear();
+    this.selectAllChecked = false;
+
+    this.youTubeService.getMultipleVideos(videoIds)
+      .then((videos: YouTubeVideoInfo[]) => {
+        this.multipleVideos = videos;
+        this.isLoadingMultiple = false;
+
+        if (this.multipleVideos.length === 0) {
+          this.errorMessageMultiple = 'Không tìm thấy video nào';
+        }
+      })
+      .catch((error: any) => {
+        console.error('Error fetching multiple videos:', error);
+        this.errorMessageMultiple = 'Lỗi khi tải video. Vui lòng kiểm tra IDs và thử lại.';
+        this.multipleVideos = [];
+        this.isLoadingMultiple = false;
+      });
+  }
+
+  /**
+   * Toggle selection for a single video
+   */
+  toggleSelectVideo(videoId: string): void {
+    if (this.selectedVideoIds.has(videoId)) {
+      this.selectedVideoIds.delete(videoId);
+    } else {
+      this.selectedVideoIds.add(videoId);
+    }
+
+    // Update selectAll checkbox state
+    this.updateSelectAllState();
+  }
+
+  /**
+   * Check if a video is selected
+   */
+  isVideoSelected(videoId: string): boolean {
+    return this.selectedVideoIds.has(videoId);
+  }
+
+  /**
+   * Toggle select all videos
+   */
+  toggleSelectAll(): void {
+    if (this.selectAllChecked) {
+      this.multipleVideos.forEach(video => {
+        this.selectedVideoIds.add(video.videoId);
+      });
+    } else {
+      this.selectedVideoIds.clear();
+    }
+  }
+
+  /**
+   * Update selectAll checkbox state based on selected items
+   */
+  private updateSelectAllState(): void {
+    this.selectAllChecked = this.multipleVideos.length > 0 &&
+      this.selectedVideoIds.size === this.multipleVideos.length;
+  }
+
+  /**
+   * Remove a video from the list
+   */
+  removeVideoFromList(videoId: string): void {
+    this.multipleVideos = this.multipleVideos.filter(v => v.videoId !== videoId);
+    this.selectedVideoIds.delete(videoId);
+    this.updateSelectAllState();
+  }
+
+  /**
+   * Get selected videos
+   */
+  getSelectedMultipleVideos(): YouTubeVideoInfo[] {
+    return this.multipleVideos.filter(v => this.selectedVideoIds.has(v.videoId));
+  }
+
+  /**
+   * Convert YouTubeVideoInfo to Song model
+   */
+  private convertVideoToSong(videoInfo: YouTubeVideoInfo): Song {
+    const youtubeLink = `https://www.youtube.com/watch?v=${videoInfo.videoId}`;
+
+    return {
+      id: this.generateUUID(),
+      createdAt: Date.now(),
+      videoId: videoInfo.videoId,
+      title: videoInfo.title,
+      youtubeLink: youtubeLink,
+      channel: videoInfo.channel,
+      largestThumbnail: this.getThumbnailUrlForVideo(videoInfo),
+      durationSeconds: videoInfo.durationSeconds,
+      viewCount: videoInfo.viewCount
+    };
+  }
+
+  /**
+   * Get highest resolution thumbnail for a video
+   */
+  getThumbnailUrlForVideo(videoInfo: YouTubeVideoInfo): string {
+    if (videoInfo.thumbnails.maxres) return videoInfo.thumbnails.maxres.url;
+    if (videoInfo.thumbnails.standard) return videoInfo.thumbnails.standard.url;
+    if (videoInfo.thumbnails.high) return videoInfo.thumbnails.high.url;
+    if (videoInfo.thumbnails.medium) return videoInfo.thumbnails.medium.url;
+    if (videoInfo.thumbnails.default) return videoInfo.thumbnails.default.url;
+    return '';
+  }
+
+  /**
+   * Generate UUID for new songs
+   */
+  private generateUUID(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
+  /**
+   * Add selected multiple videos
+   * Returns array of { videoInfo, youtubeUrl } objects, matching Tab A format
+   */
+  onAddMultipleButtonClick(): void {
+    const selectedVideos = this.getSelectedMultipleVideos();
+
+    if (selectedVideos.length === 0) {
+      this.snackBar.open('Vui lòng chọn ít nhất một video', 'Đóng', { duration: 3000 });
+      return;
+    }
+
+    this.isAddingMultiple = true;
+
+    // Convert videos to same format as onAddButtonClick
+    const result = selectedVideos.map(videoInfo => ({
+      videoInfo: videoInfo,
+      youtubeUrl: `https://www.youtube.com/watch?v=${videoInfo.videoId}`
+    }));
+
+    // Emit result to parent component
+    this.dialogRef.close(result);
+  }
+
   /**
    * Close dialog without adding
    */
@@ -230,4 +430,5 @@ export class AddYouTubeSongDialogComponent implements OnInit, OnDestroy {
     this.dialogRef.close();
   }
 }
+
 
