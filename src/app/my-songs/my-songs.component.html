@@ -27,7 +27,7 @@
       <div class="filter-buttons">
         <button mat-stroked-button [class.active]="filterType === SongFilterType.ALL"
           (click)="changeFilter(SongFilterType.ALL)">
-          Tất Cả ({{ getTotalCount() }})
+          Tất Cả ({{ filteredSongs.length }})
         </button>
       </div>
       <button mat-fab color="primary" (click)="openAddYouTubeSongDialog()" class="add-song-button"
