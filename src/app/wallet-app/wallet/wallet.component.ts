@@ -1,8 +1,8 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { moneyTransactionCsvService } from '../services/wallet.realtimedb.service';
-import { MoneyTransactionClass } from '../shared/models/money-transaction';
+import { moneyTransactionCsvService } from '../../services/wallet.realtimedb.service';
+import { MoneyTransactionClass } from '../../shared/models/money-transaction';
 import { WalletAddDialogComponent } from '../wallet-add-dialog/wallet-add-dialog.component';
 import { BillDetailComponent } from '../bill-detail/bill-detail.component';
 import { SelectMonthDialogComponent } from '../select-month-dialog/select-month-dialog.component';
@@ -21,6 +21,11 @@ export class WalletComponent implements OnInit {
   totalIncome = 0;
   selectedMonthYear = '';
   showCalendar = false;
+
+  // Biến cho tính năng vuốt
+  private touchStartX: number = 0;
+  private touchEndX: number = 0;
+  private minSwipeDistance = 50; // Khoảng cách tối thiểu để tính là vuốt
 
   constructor(
     private moneyService: moneyTransactionCsvService,
@@ -187,6 +192,54 @@ export class WalletComponent implements OnInit {
 
   onBackFromCalendar() {
     this.showCalendar = false;
+  }
+
+  // Xử lý sự kiện vuốt
+  onTouchStart(event: TouchEvent) {
+    this.touchStartX = event.touches[0].clientX;
+  }
+
+  onTouchEnd(event: TouchEvent) {
+    this.touchEndX = event.changedTouches[0].clientX;
+    this.handleSwipe();
+  }
+
+  private handleSwipe() {
+    const swipeDistance = this.touchEndX - this.touchStartX;
+    
+    if (Math.abs(swipeDistance) > this.minSwipeDistance) {
+      if (swipeDistance > 0) {
+        // Vuốt phải - chuyển đến tháng trước
+        this.navigateMonth(-1);
+      } else {
+        // Vuốt trái - chuyển đến tháng sau
+        this.navigateMonth(1);
+      }
+    }
+  }
+
+  // Điều hướng tháng (delta: -1 cho tháng trước, 1 cho tháng sau)
+  navigateMonth(delta: number) {
+    const [year, month] = this.selectedMonthYear.split('-').map(Number);
+    let newMonth = month + delta;
+    let newYear = year;
+
+    if (newMonth > 12) {
+      newMonth = 1;
+      newYear++;
+    } else if (newMonth < 1) {
+      newMonth = 12;
+      newYear--;
+    }
+
+    this.selectedMonthYear = `${newYear}-${newMonth.toString().padStart(2, '0')}`;
+    this.loadTransactions();
+
+    // Hiển thị thông báo
+    const action = delta > 0 ? 'Next' : 'Previous';
+    this._snackBar.open(`${action} month: ${this.getMonthLabel(this.selectedMonthYear)}`, 'OK', {
+      duration: 2000
+    });
   }
 }
 

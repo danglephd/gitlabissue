@@ -1,8 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { FaviconService } from './services/favicon.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
- selector: 'app-root',
- template: `
+  selector: 'app-root',
+  template: `
  <div class="app-nav">
    <nav class="navbar">
      <div class="nav-brand">
@@ -11,7 +14,6 @@ import { Component } from '@angular/core';
      <ul class="nav-menu">
        <li><a routerLink="/issue" routerLinkActive="active">Issues</a></li>
        <li><a routerLink="/wallet" routerLinkActive="active">Wallet</a></li>
-       <li><a routerLink="/wallet-calendar" routerLinkActive="active">Calendar</a></li>
        <li><a routerLink="/game-tim-so" routerLinkActive="active">Game</a></li>
        <li><a routerLink="/dog-whistle" routerLinkActive="active">Dog Whistle</a></li>
        <li><a routerLink="/movie-manage" routerLinkActive="active">Movie Manage</a></li>
@@ -23,7 +25,7 @@ import { Component } from '@angular/core';
    <router-outlet></router-outlet>
  </div>
  `,
- styles: [`
+  styles: [`
    .app-nav {
      background-color: #1976d2;
      padding: 0;
@@ -103,4 +105,23 @@ import { Component } from '@angular/core';
    }
  `]
 })
-export class AppComponent { }
+export class AppComponent implements OnInit {
+  constructor(
+    private router: Router,
+    private faviconService: FaviconService
+  ) {}
+
+  ngOnInit(): void {
+    // Đặt favicon ban đầu
+    this.faviconService.setFaviconByRoute(this.router.url);
+
+    // Lắng nghe sự kiện điều hướng và cập nhật favicon
+    this.router.events
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+      )
+      .subscribe((event: NavigationEnd) => {
+        this.faviconService.setFaviconByRoute(event.url);
+      });
+  }
+}

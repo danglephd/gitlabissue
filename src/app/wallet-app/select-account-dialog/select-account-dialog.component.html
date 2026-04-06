@@ -1,0 +1,35 @@
+<div class="select-account-dialog">
+  <div class="select-account-header">
+    <button mat-icon-button class="back-btn" (click)="close()">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span class="select-account-title">Select Account</span>
+    <button mat-icon-button class="add-btn" (click)="openCreateAccountDialog()">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+
+  <div class="select-account-list">
+    <div
+      class="account-item"
+      *ngFor="let account of accounts"
+      [class.selected]="account.name === selectedAccount?.name"
+      (click)="selectAccount(account)"
+    >
+      <div class="account-icon">
+        <img [src]="getIcon(account.name)" [alt]="account.name" width="40" height="40" />
+      </div>
+      <div class="account-info">
+        <span class="account-name">{{ account.name }}</span>
+      </div>
+      <div class="account-balance">
+        <span class="balance-label">Balance</span>
+        <span class="balance-value">đ{{ account.balance | number:'1.0-0' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="select-account-footer">
+    <span class="footer-text" (click)="selectNone()" style="cursor: pointer;">Do not bind personal accounts</span>
+  </div>
+</div>

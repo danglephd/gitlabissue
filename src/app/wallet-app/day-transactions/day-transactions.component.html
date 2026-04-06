@@ -5,7 +5,7 @@
         <span class="wallet-income" *ngIf="totalIncome !== undefined">↓ {{ totalIncome | number:'1.0-0' }}</span>
     </div>
     <div *ngFor="let tx of transactions" class="wallet-transaction"
-        [ngClass]="{'income': tx.isIncome(), 'expense': tx.isExpense()}" (click)="openBillDetail(tx)">
+        [ngClass]="{'income': tx.isIncome(), 'expense': tx.isExpense(), 'transfer': tx.isTransfer()}" (click)="openBillDetail(tx)">
         <span class="icon">
           <img [src]="tx.icon || 'assets/icons/gitlab.svg'" width="32" />
         </span>
@@ -14,8 +14,8 @@
           <span class="note" *ngIf="tx.notes">{{ tx.notes }}</span>
         </span>
         <span class="detail-right">
-          <span class="amount" [ngClass]="{'income': tx.isIncome(), 'expense': tx.isExpense()}">
-            {{ tx.isIncome() ? '+' : '-' }}đ{{ tx.amount | number:'1.0-0' }}
+          <span class="amount" [ngClass]="{'income': tx.isIncome(), 'expense': tx.isExpense(), 'transfer': tx.isTransfer()}">
+            {{ tx.isTransfer() ? '' : (tx.isIncome() ? '+' : '-') }}đ{{ tx.amount | number:'1.0-0' }}
           </span>
           <span class="time">{{ tx.date | date:'shortTime' }}</span>
         </span>

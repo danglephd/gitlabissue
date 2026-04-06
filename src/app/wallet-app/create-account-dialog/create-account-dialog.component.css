@@ -1,0 +1,212 @@
+.create-account-dialog {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  max-width: 420px;
+  margin: 0 auto;
+  box-shadow: 0 2px 16px #0002;
+}
+
+.create-account-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  background-color: #fff;
+  color: #333;
+  padding: 0 18px;
+  flex-shrink: 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.create-account-header .back-btn,
+.create-account-header .done-btn {
+  color: #333;
+  min-width: 40px;
+  width: 40px;
+  height: 40px;
+}
+
+.create-account-title {
+  font-size: 18px;
+  font-weight: 600;
+  flex: 1;
+  text-align: center;
+  color: #333;
+}
+
+.create-account-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+  background-color: #fff;
+}
+
+.form-row-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid #f0f0f0;
+  gap: 12px;
+  min-width: 0;
+}
+
+.form-row-item.toggle-row {
+  justify-content: space-between;
+}
+
+.form-label {
+  font-size: 16px;
+  color: #333;
+  font-weight: 400;
+  flex: 0 0 auto;
+  min-width: 140px;
+  white-space: nowrap;
+}
+
+.form-selector {
+  flex: 1;
+  text-align: right;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 16px;
+  color: #999;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.form-selector:focus {
+  outline: none;
+}
+
+.selector-text {
+  color: inherit;
+}
+
+.selector-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  color: #999;
+}
+
+.form-selector.currency-readonly {
+  cursor: default;
+  color: #666;
+}
+
+.form-input-field {
+  flex: 1;
+  text-align: right;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 16px;
+  color: #666;
+  font-family: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.form-input-field::placeholder {
+  color: #ccc;
+}
+
+.form-input-field:focus {
+  outline: none;
+}
+
+.form-toggle {
+  margin: 0;
+  transform: scale(0.8);
+  transform-origin: right center;
+}
+
+::ng-deep .mat-menu-panel {
+  max-width: 300px !important;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+@media (max-width: 480px) {
+  .create-account-dialog {
+    max-width: 100vw;
+    box-shadow: none;
+  }
+
+  .create-account-header,
+  .create-account-content {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .create-account-header {
+    padding: 0 8px;
+  }
+
+  .create-account-header .back-btn,
+  .create-account-header .done-btn {
+    min-width: 36px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .create-account-title {
+    font-size: 16px;
+  }
+
+  .form-row-item {
+    padding: 12px 8px;
+  }
+
+  .form-label {
+    font-size: 14px;
+    min-width: 120px;
+  }
+
+  .form-selector,
+  .form-input-field {
+    font-size: 14px;
+  }
+
+  .form-selector {
+    justify-content: flex-end;
+  }
+
+  .form-toggle {
+    transform: scale(0.75);
+    transform-origin: right center;
+  }
+
+  .selector-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
