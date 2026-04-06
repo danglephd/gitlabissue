@@ -10,10 +10,10 @@ export class FaviconService {
   private faviconMap: { [key: string]: string } = {
     'issue': 'assets/favicons/issue-favicon.svg',
     'wallet': 'assets/favicons/wallet-favicon.svg',
-    'wallet-calendar': 'assets/favicons/calendar-favicon.svg',
     'game-tim-so': 'assets/favicons/game-favicon.svg',
     'dog-whistle': 'assets/favicons/whistle-favicon.svg',
     'movie-manage': 'assets/favicons/movie-favicon.svg',
+    'my-songs': 'assets/favicons/my-songs-favicon.svg',
     'default': 'assets/favicon.svg'
   };
 
