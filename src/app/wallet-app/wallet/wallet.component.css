@@ -4,6 +4,20 @@
   overflow: hidden;
 }
 
+.app-container {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.main-content {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
 table {
   width: 100%;
 }

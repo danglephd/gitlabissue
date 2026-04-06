@@ -1,5 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { moneyTransactionCsvService } from '../../services/wallet.realtimedb.service';
+import { MoneyTransactionClass } from '../../shared/models/money-transaction';
 
 interface CalendarDay {
   date: Date | null;
@@ -20,11 +21,14 @@ export class WalletCalendarComponent implements OnInit {
   year = 0;
   weeks: CalendarDay[][] = [];
   selectedDay: CalendarDay | null = null;
+  selectedDateRange: { start: Date | null, end: Date | null, expense?: number, income?: number } = { start: null, end: null };
   dayData: { [key: string]: { expense?: number, income?: number } } = {};
   totalExpense = 0;
   totalIncome = 0;
   totalBalance = 0;
-  transactionsOfSelectedDay: any[] = []; // Add this line
+  transactionsOfSelectedDay: MoneyTransactionClass[] = [];
+  isDragging = false;
+  dragStartDay: CalendarDay | null = null;
 
   @Output() back = new EventEmitter<void>();
 
@@ -38,22 +42,35 @@ export class WalletCalendarComponent implements OnInit {
     this.selectToday();
     // Hiển thị transactions của ngày hiện tại (nếu có)
     if (this.selectedDay && this.selectedDay.date) {
-      this.transactionsOfSelectedDay = this.moneyService.getTransactionsByDate(this.selectedDay.date);
+      try {
+        this.transactionsOfSelectedDay = this.moneyService.getTransactionsByDate(this.selectedDay.date);
+      } catch (error) {
+        console.error('Error loading transactions on init:', error);
+        this.transactionsOfSelectedDay = [];
+      }
     }
   }
 
   updateDayDataAndCalendar() {
-    // Lấy dữ liệu ngày theo tháng/năm
-    this.dayData = this.moneyService.getDayDataByMonthYear(this.month + 1, this.year);
-    this.generateCalendar();
-    // Tính tổng expense, income, balance
-    this.totalExpense = 0;
-    this.totalIncome = 0;
-    Object.values(this.dayData).forEach(d => {
-      if (d.expense) this.totalExpense += d.expense;
-      if (d.income) this.totalIncome += d.income;
-    });
-    this.totalBalance = this.totalIncome - this.totalExpense;
+    try {
+      // Lấy dữ liệu ngày theo tháng/năm
+      this.dayData = this.moneyService.getDayDataByMonthYear(this.month + 1, this.year);
+      this.generateCalendar();
+      // Tính tổng expense, income, balance
+      this.totalExpense = 0;
+      this.totalIncome = 0;
+      Object.values(this.dayData).forEach(d => {
+        if (d.expense) this.totalExpense += d.expense;
+        if (d.income) this.totalIncome += d.income;
+      });
+      this.totalBalance = this.totalIncome - this.totalExpense;
+    } catch (error) {
+      console.error('Error updating calendar data:', error);
+      this.dayData = {};
+      this.totalExpense = 0;
+      this.totalIncome = 0;
+      this.totalBalance = 0;
+    }
   }
 
   get monthLabel() {
@@ -69,6 +86,9 @@ export class WalletCalendarComponent implements OnInit {
     }
     this.updateDayDataAndCalendar();
     this.selectedDay = null;
+    this.isDragging = false;
+    this.selectedDateRange = { start: null, end: null };
+    this.transactionsOfSelectedDay = [];
   }
 
   nextMonth() {
@@ -80,6 +100,9 @@ export class WalletCalendarComponent implements OnInit {
     }
     this.updateDayDataAndCalendar();
     this.selectedDay = null;
+    this.isDragging = false;
+    this.selectedDateRange = { start: null, end: null };
+    this.transactionsOfSelectedDay = [];
   }
 
   generateCalendar() {
@@ -130,9 +153,20 @@ export class WalletCalendarComponent implements OnInit {
 
   selectDay(day: CalendarDay) {
     if (!day.isCurrentMonth || !day.day) return;
-    this.selectedDay = day;
-    // Lấy giao dịch của ngày được chọn
-    this.transactionsOfSelectedDay = this.moneyService.getTransactionsByDate(this.selectedDay.date!);
+    
+    // Nếu không phải drag, reset range và select single day
+    if (!this.isDragging && (!this.selectedDateRange.start || 
+        this.selectedDateRange.start.getTime() === this.selectedDateRange.end?.getTime())) {
+      this.selectedDay = day;
+      this.selectedDateRange = { start: null, end: null };
+      
+      try {
+        this.transactionsOfSelectedDay = this.moneyService.getTransactionsByDate(this.selectedDay.date!);
+      } catch (error) {
+        console.error('Error loading transactions for selected day:', error);
+        this.transactionsOfSelectedDay = [];
+      }
+    }
   }
 
   selectToday() {
@@ -148,5 +182,76 @@ export class WalletCalendarComponent implements OnInit {
       }
     }
     this.selectedDay = null;
+  }
+
+  // Drag & Drop Methods
+  onDayMouseDown(day: CalendarDay) {
+    if (!day.isCurrentMonth || !day.day) return;
+    this.isDragging = true;
+    this.dragStartDay = day;
+    this.selectedDateRange = { start: day.date, end: day.date };
+    this.selectedDay = day;
+    this.loadTransactionsForRange();
+  }
+
+  onDayMouseEnter(day: CalendarDay) {
+    if (!this.isDragging || !this.dragStartDay || !day.isCurrentMonth || !day.day) return;
+    
+    // Xác định start và end của range
+    const start = this.dragStartDay.date!.getTime();
+    const current = day.date!.getTime();
+    
+    if (start <= current) {
+      this.selectedDateRange = { start: this.dragStartDay.date, end: day.date };
+    } else {
+      this.selectedDateRange = { start: day.date, end: this.dragStartDay.date };
+    }
+  }
+
+  onDayMouseUp(day: CalendarDay) {
+    if (!this.isDragging) return;
+    this.isDragging = false;
+    this.loadTransactionsForRange();
+  }
+
+  isDateInRange(date: Date | null): boolean {
+    if (!date || !this.selectedDateRange.start || !this.selectedDateRange.end) return false;
+    const time = date.getTime();
+    const startTime = new Date(this.selectedDateRange.start).setHours(0, 0, 0, 0);
+    const endTime = new Date(this.selectedDateRange.end).setHours(23, 59, 59, 999);
+    return time >= startTime && time <= endTime;
+  }
+
+  loadTransactionsForRange() {
+    if (!this.selectedDateRange.start || !this.selectedDateRange.end) {
+      this.transactionsOfSelectedDay = [];
+      return;
+    }
+    try {
+      this.transactionsOfSelectedDay = this.moneyService.getTransactionsByDates(
+        this.selectedDateRange.start,
+        this.selectedDateRange.end
+      );
+      
+      // Tính toán expense và income từ transactions
+      let totalExpense = 0;
+      let totalIncome = 0;
+      this.transactionsOfSelectedDay.forEach(tx => {
+        if (tx.billType?.toLowerCase() === 'expenses') {
+          totalExpense += Math.abs(tx.amount);
+        } else if (tx.billType?.toLowerCase() === 'income') {
+          totalIncome += tx.amount;
+        }
+      });
+      
+      // Cập nhật selectedDateRange với expense và income
+      this.selectedDateRange.expense = totalExpense;
+      this.selectedDateRange.income = totalIncome;
+    } catch (error) {
+      console.error('Error loading transactions for date range:', error);
+      this.transactionsOfSelectedDay = [];
+      this.selectedDateRange.expense = 0;
+      this.selectedDateRange.income = 0;
+    }
   }
 }
