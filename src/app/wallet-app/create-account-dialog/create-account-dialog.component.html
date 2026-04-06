@@ -1,0 +1,54 @@
+<div class="create-account-dialog">
+  <div class="create-account-header">
+    <button mat-icon-button class="back-btn" (click)="close()">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span class="create-account-title">Create Account</span>
+    <button mat-icon-button class="done-btn" (click)="createAccount()">
+      <mat-icon>check</mat-icon>
+    </button>
+  </div>
+
+  <div class="create-account-content">
+    <div class="form-row-item">
+      <span class="form-label">Account type</span>
+      <mat-select [(ngModel)]="accountType" class="form-input">
+        <mat-option value="">Please select</mat-option>
+        <mat-option *ngFor="let type of accountTypes" [value]="type">{{ type }}</mat-option>
+      </mat-select>
+    </div>
+
+    <div class="form-row-item">
+      <span class="form-label">Current balance</span>
+      <input 
+        type="number" 
+        class="form-input-field" 
+        placeholder="Enter here" 
+        [(ngModel)]="currentBalance"
+      />
+    </div>
+
+    <div class="form-row-item">
+      <span class="form-label">Currency</span>
+      <button class="form-selector currency-readonly">
+        <span class="selector-text">{{ currency }}</span>
+        <mat-icon class="selector-icon">chevron_right</mat-icon>
+      </button>
+    </div>
+
+    <div class="form-row-item">
+      <span class="form-label">Notes</span>
+      <input 
+        type="text" 
+        class="form-input-field" 
+        placeholder="Enter here" 
+        [(ngModel)]="notes"
+      />
+    </div>
+
+    <div class="form-row-item toggle-row">
+      <span class="form-label">Included in total assets</span>
+      <mat-slide-toggle [(ngModel)]="includedInAssets" class="form-toggle"></mat-slide-toggle>
+    </div>
+  </div>
+</div>

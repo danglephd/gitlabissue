@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { FaviconService } from './services/favicon.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -102,4 +105,23 @@ import { Component } from '@angular/core';
    }
  `]
 })
-export class AppComponent { }
+export class AppComponent implements OnInit {
+  constructor(
+    private router: Router,
+    private faviconService: FaviconService
+  ) {}
+
+  ngOnInit(): void {
+    // Đặt favicon ban đầu
+    this.faviconService.setFaviconByRoute(this.router.url);
+
+    // Lắng nghe sự kiện điều hướng và cập nhật favicon
+    this.router.events
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+      )
+      .subscribe((event: NavigationEnd) => {
+        this.faviconService.setFaviconByRoute(event.url);
+      });
+  }
+}

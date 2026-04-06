@@ -8,7 +8,85 @@ import { MoneyTransactionClass } from '../shared/models/money-transaction';
   providedIn: 'root'
 })
 export class moneyTransactionCsvService {
-  constructor(private http: HttpClient) { }
+  // Danh sách các accounts hiện có
+  accounts: any[] = [];
+
+  constructor(private http: HttpClient) {
+    this.initializeAccounts();
+  }
+
+  // Khởi tạo danh sách accounts từ localStorage hoặc tạo mới
+  private initializeAccounts(): void {
+    const savedAccounts = localStorage.getItem('accounts');
+    if (savedAccounts) {
+      this.accounts = JSON.parse(savedAccounts);
+    } else {
+      // Tạo danh sách accounts mặc định
+      this.accounts = [
+        { name: 'Cash', balance: 0, icon: 'assets/icons/cash.svg' },
+        { name: 'momo', balance: 0, icon: 'assets/icons/momo.svg' },
+        { name: 'vcb', balance: 0, icon: 'assets/icons/bank.svg' },
+        { name: 'Vợ', balance: 0, icon: 'assets/icons/wallet.svg' },
+        { name: 'Tiết kiệm', balance: 0, icon: 'assets/icons/wallet.svg' },
+        { name: 'hưởng thụ', balance: 0, icon: 'assets/icons/wallet.svg' },
+        { name: 'giáo dục', balance: 0, icon: 'assets/icons/wallet.svg' },
+        { name: 'đầu tư', balance: 0, icon: 'assets/icons/wallet.svg' },
+        { name: 'biếu cho', balance: 0, icon: 'assets/icons/wallet.svg' },
+        { name: 'Giáo dục account', balance: 0, icon: 'assets/icons/wallet.svg' },
+        { name: 'Con', balance: 0, icon: 'assets/icons/wallet.svg' },
+        { name: 'Gold', balance: 0, icon: 'assets/icons/gold.svg' }
+      ];
+      this.saveAccountsToLocalStorage();
+    }
+  }
+
+  // Lưu accounts vào localStorage
+  private saveAccountsToLocalStorage(): void {
+    localStorage.setItem('accounts', JSON.stringify(this.accounts));
+  }
+
+  // Lấy danh sách accounts
+  getAccounts(): any[] {
+    return this.accounts;
+  }
+
+  // Cập nhật balance của account
+  private updateAccountBalance(accountName: string, amount: number): void {
+    const account = this.accounts.find(a => a.name === accountName);
+    if (account) {
+      account.balance += amount;
+      this.saveAccountsToLocalStorage();
+    }
+  }
+
+  // Cập nhật balance cho tất cả transactions
+  private calculateAccountBalances(transactions: MoneyTransactionClass[]): void {
+    // Reset tất cả balances về 0
+    this.accounts.forEach(acc => acc.balance = 0);
+
+    // Tính toán balance dựa trên transactions
+    transactions.forEach(tx => {
+      if (tx.billType?.toLowerCase() === 'income') {
+        // Thu nhập: cộng vào account
+        this.updateAccountBalance(tx.account, tx.amount);
+      } else if (tx.billType?.toLowerCase() === 'expenses') {
+        // Chi tiêu: trừ từ account
+        this.updateAccountBalance(tx.account, -tx.amount);
+      } else if (tx.billType?.toLowerCase() === 'transfer') {
+        // Chuyển nhượng: trừ từ account từ, cộng vào account đến
+        // Category format: "from => to" hoặc "from\nto"
+        const parts = tx.category.includes('=>')
+          ? tx.category.split('=>').map(p => p.trim())
+          : tx.category.split('\n').map(p => p.trim());
+        
+        if (parts.length === 2) {
+          const [fromAccount, toAccount] = parts;
+          this.updateAccountBalance(fromAccount, -tx.amount);
+          this.updateAccountBalance(toAccount, tx.amount);
+        }
+      }
+    });
+  }
 
   // Đọc dữ liệu từ file CSV và lưu vào localStorage
   getTransactions(): Observable<MoneyTransactionClass[]> {
@@ -16,6 +94,8 @@ export class moneyTransactionCsvService {
     if (localData) {
       // Nếu đã có trong localStorage thì trả về dữ liệu đó
       const transactions: MoneyTransactionClass[] = JSON.parse(localData).map((obj: any) => new MoneyTransactionClass(obj));
+      // Cập nhật account balances
+      this.calculateAccountBalances(transactions);
       return new Observable(observer => {
         observer.next(transactions);
         observer.complete();
@@ -25,6 +105,8 @@ export class moneyTransactionCsvService {
       return this.getTransactionsFromCSV().pipe(
         map(transactions => {
           localStorage.setItem('transactions', JSON.stringify(transactions));
+          // Cập nhật account balances
+          this.calculateAccountBalances(transactions);
           return transactions;
         })
       );
@@ -72,12 +154,66 @@ export class moneyTransactionCsvService {
     document.body.removeChild(link);
   }
 
+  private parseCSVLine(line: string): string[] {
+    const result: string[] = [];
+    let cell = '';
+    let withinQuotes = false;
+    let i = 0;
+    
+    while (i < line.length) {
+      const char = line[i];
+      
+      if (char === '"') {
+        if (withinQuotes && line[i + 1] === '"') {
+          // Đây là dấu nháy kép được escape (""), giữ lại một dấu
+          cell += '"';
+          i++; // Bỏ qua dấu nháy tiếp theo
+        } else {
+          // Chuyển đổi trạng thái trong/ngoài vùng được quote
+          withinQuotes = !withinQuotes;
+        }
+      } else if (char === ',' && !withinQuotes) {
+        // Kết thúc một cell khi gặp dấu phẩy (ngoài vùng được quote)
+        result.push(cell);
+        cell = '';
+      } else {
+        cell += char;
+      }
+      i++;
+    }
+    
+    result.push(cell); // Thêm cell cuối cùng
+    return result.map(cell => {
+      // Loại bỏ dấu nháy kép ở đầu và cuối nếu có
+      if (cell.startsWith('"') && cell.endsWith('"')) {
+        cell = cell.slice(1, -1);
+      }
+      return cell.trim();
+    });
+  }
+
   getTransactionsFromCSV(): Observable<MoneyTransactionClass[]> {
-    return this.http.get('assets/data/Money_Manager_5years_with_income.csv', { responseType: 'text' })
+    return this.http.get('assets/data/Money Manager_20260225.csv', { responseType: 'text' })
       .pipe(
-        map(text => {
+        map(text => { 
+          // Thay thế category format từ "<From>\n<To>" thành "From => To"
+          text = text.replace(/(?:"[^"]*")|(?:[^,]+)/g, (match) => {
+            if (match.startsWith('"') && match.endsWith('"')) {
+              // Chỉ xử lý nội dung trong dấu nháy kép
+              const content = match.slice(1, -1);
+              if (content.includes('\n')) {
+                const [from, to] = content.split('\n').map(part => part.trim());
+                return `${from} => ${to}`;
+              }
+            }
+            return match;
+          });
+
+          // Tách từng dòng và lọc dòng trống
           const rows = text.split(/\r?\n/).filter(row => row.trim());
-          const headers = rows[0].split(',').map(h => h.trim());
+          
+          // Parse header
+          const headers = this.parseCSVLine(rows[0]);
           const headerMap: Record<string, string> = {
             'Date': 'date',
             'Category': 'category',
@@ -94,14 +230,26 @@ export class moneyTransactionCsvService {
           };
           const result = rows.slice(1)
             .map(row => {
-              const values = row.split(',').map(v => v.trim().replace('\r', ''));
+              const values = this.parseCSVLine(row);
+
               const obj: any = {};
               headers.forEach((header, index) => {
                 const key = headerMap[header] || header;
                 if (key === 'amount') {
                   obj['amount'] = parseFloat(values[index]) || 0;
+                } else if (key === 'category') {
+                  // Xử lý đặc biệt cho category
+                  const categoryValue = values[index];
+                  if (categoryValue.includes('\n')) {
+                    // Nếu có ký tự xuống dòng, đây là giao dịch Transfer
+                    const [from, to] = categoryValue.split('\n').map(part => part.trim());
+                    obj[key] = `${from}\n${to}`; // Giữ nguyên format gốc cho MoneyTransactionClass xử lý
+                  } else {
+                    // Trường hợp category đơn giản
+                    obj[key] = categoryValue.trim();
+                  }
                 } else {
-                  obj[key] = values[index] || '';
+                  obj[key] = values[index] ? values[index].trim() : '';
                 }
               });
 
@@ -149,6 +297,8 @@ export class moneyTransactionCsvService {
     let transactions: MoneyTransactionClass[] = data ? JSON.parse(data) : [];
     transactions.push(newTx);
     localStorage.setItem('transactions', JSON.stringify(transactions));
+    // Cập nhật account balance
+    this.calculateAccountBalances(transactions);
   }
 
   // Sửa transaction theo id
@@ -159,6 +309,8 @@ export class moneyTransactionCsvService {
       tx.id === id ? updatedTx : tx
     );
     localStorage.setItem('transactions', JSON.stringify(transactions));
+    // Cập nhật account balance
+    this.calculateAccountBalances(transactions);
   }
 
   // Xóa transaction theo id
@@ -167,6 +319,8 @@ export class moneyTransactionCsvService {
     let transactions: MoneyTransactionClass[] = data ? JSON.parse(data) : [];
     transactions = transactions.filter(tx => tx.id !== id);
     localStorage.setItem('transactions', JSON.stringify(transactions));
+    // Cập nhật account balance
+    this.calculateAccountBalances(transactions);
   }
 
   getMonthYearOptions(): { value: string, label: string }[] {

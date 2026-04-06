@@ -46,6 +46,24 @@ table {
   overflow-y: auto;
   overflow-x: hidden;
   padding-bottom: 60px;
+  transition: transform 0.3s ease-out;
+}
+
+/* Animation classes for month navigation */
+.slide-left-enter {
+  transform: translateX(100%);
+}
+
+.slide-left-enter-active {
+  transform: translateX(0);
+}
+
+.slide-right-enter {
+  transform: translateX(-100%);
+}
+
+.slide-right-enter-active {
+  transform: translateX(0);
 }
 
 .wallet-day-group {
