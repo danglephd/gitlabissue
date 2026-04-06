@@ -375,4 +375,19 @@ export class moneyTransactionCsvService {
         && txDate.getDate() === date.getDate();
     });
   }
+
+  getTransactionsByDates(startDate: Date, endDate: Date): MoneyTransactionClass[] {
+    const data = localStorage.getItem('transactions');
+    if (!data) return [];
+    const transactions: MoneyTransactionClass[] = JSON.parse(data).map((obj: any) => new MoneyTransactionClass(obj));
+    
+    // Normalize dates để loại bỏ giờ/phút/giây
+    const start = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+    const end = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59);
+    
+    return transactions.filter(tx => {
+      const txDate = new Date(tx.date);
+      return txDate >= start && txDate <= end;
+    }).sort((a, b) => a.date.getTime() - b.date.getTime());
+  }
 }
