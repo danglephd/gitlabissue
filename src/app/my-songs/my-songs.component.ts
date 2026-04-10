@@ -22,8 +22,8 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedTags: { [key: string]: 'include' | 'exclude' } = {};
   
   // Lazy loading properties
-  pageSize = 12;
-  displayedCount = 12;
+  pageSize = 20;
+  displayedCount = 20;
   
   // Scroll to top properties
   showScrollToTopButton = false;
@@ -92,6 +92,7 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.songService.getActiveSongs().subscribe(
       (songs: Song[]) => {
         this.songs = songs || [];
+        this.filterCache.clear(); // Clear cache when loading new data
         this.syncTagsToLocalStorage();
         this.applyFilter();
         this.isLoading = false;
@@ -216,6 +217,7 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (confirm('Are you sure you want to delete this song?')) {
       this.songService.deleteSong(id).then(() => {
         this.showMessage('Song deleted', 'success');
+        // this.loadSongs(); // Reload songs to update the UI
       }).catch(() => {
         this.showMessage('Error deleting song', 'error');
       });
