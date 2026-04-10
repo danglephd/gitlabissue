@@ -118,6 +118,10 @@
   padding: 8px 0 0 0;
   width: 100%;
   box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .calendar-day {
@@ -145,6 +149,11 @@
 .calendar-day.selected {
   border: 2px solid #ffd600;
   background: #fffde7;
+}
+
+.calendar-day.in-range {
+  background: #fff9c4;
+  border: 1px solid #ffd600;
 }
 
 .calendar-day.today {

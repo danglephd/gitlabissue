@@ -22,7 +22,12 @@
         <ng-container *ngFor="let day of week">
           <span class="calendar-day" [class.empty]="!day.isCurrentMonth"
             [class.selected]="day.isCurrentMonth && day.day && selectedDay?.date?.getTime() === day.date?.getTime()"
-            [class.today]="day.isToday" (click)="selectDay(day)">
+            [class.in-range]="isDateInRange(day.date)"
+            [class.today]="day.isToday" 
+            (mousedown)="onDayMouseDown(day)"
+            (mouseenter)="onDayMouseEnter(day)"
+            (mouseup)="onDayMouseUp(day)"
+            (click)="selectDay(day)">
             <ng-container *ngIf="day.isCurrentMonth">
               <span class="day-number">{{ day.day }}</span>
               <span class="day-values">
@@ -38,30 +43,41 @@
   <div class="calendar-summary">
     <div class="calendar-summary-row">
       <div class="calendar-summary-col">
-        Expenses: <span class="expense">đ{{ totalExpense | number:'1.0-0' }}</span>
+        Expenses: <span class="expense">{{ totalExpense | number:'1.0-0' }} đ</span>
       </div>
       <div class="calendar-summary-col">
-        Income: <span class="income">đ{{ totalIncome | number:'1.0-0' }}</span>
+        Income: <span class="income">{{ totalIncome | number:'1.0-0' }} đ</span>
       </div>
     </div>
     <div class="calendar-summary-balance">
       Balance: <span class="balance" [ngClass]="{'negative': totalBalance < 0, 'positive': totalBalance > 0}">
-        đ{{ totalBalance | number:'1.0-0' }} </span>
+        {{ totalBalance | number:'1.0-0' }} đ</span>
     </div>
   </div>
-  <div class="calendar-detail" *ngIf="selectedDay">
+  <div class="calendar-detail" *ngIf="selectedDay || selectedDateRange.start">
     <div class="calendar-detail-header">
       <div class="calendar-detail-header-left">
-        <ng-container *ngIf="selectedDay?.isToday; else notToday">
-          Today
+        <ng-container *ngIf="selectedDateRange.start && selectedDateRange.end && selectedDateRange.start.getTime() !== selectedDateRange.end.getTime(); else singleDay">
+          {{ selectedDateRange.start | date:'MMM d' }} - {{ selectedDateRange.end | date:'MMM d y' }}
         </ng-container>
-        <ng-template #notToday>
-          {{ selectedDay.date ? (selectedDay.date | date:'EEE MMM d y') : '' }}
+        <ng-template #singleDay>
+          <ng-container *ngIf="selectedDay?.isToday; else notToday">
+            Today
+          </ng-container>
+          <ng-template #notToday>
+            {{ selectedDay?.date ? (selectedDay?.date | date:'EEE MMM d y') : '' }}
+          </ng-template>
         </ng-template>
       </div>
       <div class="calendar-detail-header-right">
-        <span *ngIf="selectedDay.expense" class="expense">↑ đ{{ selectedDay.expense | number:'1.0-0' }}</span>
-        <span *ngIf="selectedDay.income" class="income">↓ đ{{ selectedDay.income | number:'1.0-0' }}</span>
+        <ng-container *ngIf="selectedDateRange.start && selectedDateRange.end && selectedDateRange.start.getTime() !== selectedDateRange.end.getTime(); else singleDayValues">
+          <span *ngIf="selectedDateRange.expense && selectedDateRange.expense > 0" class="expense">-{{ selectedDateRange.expense | number:'1.0-0' }} đ</span>
+          <span *ngIf="selectedDateRange.income && selectedDateRange.income > 0" class="income">+{{ selectedDateRange.income | number:'1.0-0' }} đ</span>
+        </ng-container>
+        <ng-template #singleDayValues>
+          <span *ngIf="selectedDay?.expense" class="expense">- {{ selectedDay?.expense | number:'1.0-0' }}đ</span>
+          <span *ngIf="selectedDay?.income" class="income">+ {{ selectedDay?.income | number:'1.0-0' }}đ</span>
+        </ng-template>
       </div>
     </div>
     <div class="calendar-detail-list">

@@ -20,19 +20,19 @@
           </div>
           <div class="wallet-summary-content">
             <div class="wallet-summary-item expense">
-              <span class="label"><mat-icon style="font-size:16px;vertical-align:middle;color:#e53935;">arrow_upward</mat-icon> Expense
+              <span class="label"><mat-icon style="font-size:16px;vertical-align:middle;color:#e53935;">add_circle_outline</mat-icon> Expense
               </span>
-              <span class="value">đ{{ totalExpense | number:'1.0-0' }}</span>
+              <span class="value">{{ totalExpense | number:'1.0-0' }} đ</span>
             </div>
             <div class="wallet-summary-item income">
-              <span class="label"><mat-icon style="font-size:16px;vertical-align:middle;color:#43a047;">arrow_downward</mat-icon>
+              <span class="label"><mat-icon style="font-size:16px;vertical-align:middle;color:#43a047;">remove_circle</mat-icon>
                 Income
               </span>
-              <span class="value">đ{{ totalIncome | number:'1.0-0' }}</span>
+              <span class="value">{{ totalIncome | number:'1.0-0' }} đ</span>
             </div>
             <div class="wallet-summary-item balance">
               <span class="label">Balance</span>
-              <span class="value">đ{{ (totalIncome - totalExpense) | number:'1.0-0' }}</span>
+              <span class="value">{{ (totalIncome - totalExpense) | number:'1.0-0' }} đ</span>
             </div>
           </div>
         </div>
