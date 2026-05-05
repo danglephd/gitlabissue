@@ -474,8 +474,86 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
+   * Request notification permission from user
+   * Handle all permission states: granted, denied, default
+   */
+  private requestNotificationPermission(): void {
+    // Check if Notification API is supported
+    if (!('Notification' in window)) {
+      return; // Silent fail - browser doesn't support notifications
+    }
+
+    // Only request if permission not yet determined
+    if (Notification.permission === 'default') {
+      Notification.requestPermission().catch(() => {
+        /* Silently handle permission request rejection */
+      });
+    }
+  }
+
+  /**
+   * Show browser notification when a video finishes
+   * Handles permission states and provides fallback messaging
+   * @param song - Song data to display in notification
+   */
+  private showEndNotification(song: Song): void {
+    // Check if Notification API is supported
+    if (!('Notification' in window)) {
+      return; // Fallback: browser doesn't support notifications
+    }
+
+    // Check if notifications are permitted
+    if (Notification.permission !== 'granted') {
+      return; // Fallback: user hasn't granted permission
+    }
+
+    // Prevent duplicate notifications - create unique tag for this song
+    const notificationTag = `song-ended-${song.id}`;
+
+    // Create notification object
+    const notificationOptions: NotificationOptions = {
+      body: song.channel || 'YouTube',
+      icon: song.largestThumbnail || '/assets/icons/default-icon.png',
+      badge: '/assets/icons/notification-badge.png',
+      tag: notificationTag, // Prevents duplicate notifications
+      requireInteraction: true, // Keep notification visible until clicked
+      data: {
+        songId: song.id,
+        videoId: song.videoId
+      }
+    };
+
+    try {
+      const notification = new Notification(
+        `🎵 ${song.title || 'Video finished'}`,
+        notificationOptions
+      );
+
+      // Handle notification click - focus the tab
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+      };
+
+      // Auto-close notification after 10 seconds if user doesn't interact
+      const autoCloseTimer = setTimeout(() => {
+        notification.close();
+      }, 30000);
+
+      // Clear timer if user closes notification manually
+      notification.onclose = () => {
+        clearTimeout(autoCloseTimer);
+      };
+    } catch (error) {
+      // Silent fail if notification creation fails
+      console.debug('Notification creation failed:', error);
+    }
+  }
+
+  /**
    * Open video player dialog with YouTube Iframe API
    * Dialog will auto-close and reopen for next song when current finishes
+   * Shows browser notification as fallback for inactive tabs
    * @param song - Song data to play
    */
   openVideoPlayerDialog(song: Song): void {
@@ -483,6 +561,9 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.showMessage('Video ID not available', 'error');
       return;
     }
+
+    // Request notification permission on first dialog open
+    this.requestNotificationPermission();
 
     // Find current song index in displayed songs
     const currentIndex = this.itemsToDisplay.findIndex(s => s.id === song.id);
@@ -507,6 +588,12 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
     // Handle dialog close and auto-open next song
     dialogRef.afterClosed().subscribe((nextSong: Song | null) => {
       if (nextSong && nextSong.videoId) {
+        // Show notification if tab is inactive (as fallback for autoplay restriction)
+        if (document.hidden) {
+          this.showEndNotification(nextSong);
+        }
+
+        // Attempt to auto-open next song with delay
         setTimeout(() => {
           this.openVideoPlayerDialog(nextSong);
         }, 400);
