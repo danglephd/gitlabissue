@@ -566,13 +566,13 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.requestNotificationPermission();
 
     // Find current song index in displayed songs
-    const currentIndex = this.itemsToDisplay.findIndex(s => s.id === song.id);
+    let currentIndex = this.filteredSongs.findIndex(s => s.id === song.id);
 
     // Open dialog with song, full list, and current index
     const dialogRef = this.dialog.open(VideoPlayerDialogComponent, {
       data: {
         song: song,
-        songList: this.itemsToDisplay,
+        songList: this.filteredSongs,
         currentIndex: currentIndex >= 0 ? currentIndex : 0,
         autoPlayNext: true
       },
