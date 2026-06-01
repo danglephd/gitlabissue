@@ -368,11 +368,17 @@ export class AddYouTubeSongDialogComponent implements OnInit, OnDestroy {
       createdAt: Date.now(),
       videoId: videoInfo.videoId,
       title: videoInfo.title,
+      description: videoInfo.description,
       youtubeLink: youtubeLink,
       channel: videoInfo.channel,
       largestThumbnail: this.getThumbnailUrlForVideo(videoInfo),
       durationSeconds: videoInfo.durationSeconds,
-      viewCount: videoInfo.viewCount
+      viewCount: videoInfo.viewCount,
+      localized: {
+        title: videoInfo.localized?.title || videoInfo.title,
+        description: videoInfo.localized?.description || videoInfo.description
+      },
+      tags: []
     };
   }
 

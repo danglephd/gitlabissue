@@ -5,7 +5,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { AddYouTubeSongDialogComponent } from '../add-youtube-song-dialog/add-youtube-song-dialog.component';
 import { VideoPlayerDialogComponent } from '../video-player-dialog/video-player-dialog.component';
-import { YouTubeVideoInfo } from '../models/youtube.model';
+import { TagSource, YouTubeVideoInfo } from '../models/youtube.model';
+import { YoutubeTagService } from '../services/youtube-tag.service';
 
 @Component({
   selector: 'app-my-songs',
@@ -19,15 +20,14 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
   filterType: SongFilterType = SongFilterType.ALL;
   isLoading = false;
   searchQuery = '';
-  selectedTags: { [key: string]: 'include' | 'exclude' } = {};
-  
+
   // Lazy loading properties
   pageSize = 20;
   displayedCount = 20;
-  
+
   // Scroll to top properties
   showScrollToTopButton = false;
-  
+
   // Mobile detection
   isMobileView = false;
 
@@ -36,7 +36,6 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
   private intersectionObserver: IntersectionObserver | null = null;
   private filterCache: Map<string, Song[]> = new Map();
   private lastSearchQuery = '';
-  private lastSelectedTags: { [key: string]: 'include' | 'exclude' } = {};
 
   public SongFilterType = SongFilterType;
 
@@ -54,12 +53,12 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private songService: SongRealtimedbService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private youtubeTagService: YoutubeTagService
   ) { }
 
   ngOnInit(): void {
     this.loadSongs();
-    this.loadTagsFromLocalStorage();
     this.detectMobileView();
   }
 
@@ -88,12 +87,16 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   loadSongs(): void {
     this.isLoading = true;
-    
+
     this.songService.getActiveSongs().subscribe(
       (songs: Song[]) => {
+        // songs.forEach(song => {
+        //   if (!song.tags || song.tags.length === 0) {
+        //     this.ensureTagsForSong(song);
+        //   }
+        // });
         this.songs = songs || [];
         this.filterCache.clear(); // Clear cache when loading new data
-        this.syncTagsToLocalStorage();
         this.applyFilter();
         this.isLoading = false;
       },
@@ -110,10 +113,9 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
   applyFilter(): void {
     // Check if filter params changed - if not, use cached result
     const cacheKey = this.getCacheKey();
-    
-    if (this.filterCache.has(cacheKey) && 
-        this.lastSearchQuery === this.searchQuery &&
-        JSON.stringify(this.lastSelectedTags) === JSON.stringify(this.selectedTags)) {
+
+    if (this.filterCache.has(cacheKey) &&
+      this.lastSearchQuery === this.searchQuery) {
       this.filteredSongs = this.filterCache.get(cacheKey) || [];
       this.displayedCount = this.pageSize;
       this.itemsToDisplay = this.filteredSongs.slice(0, this.displayedCount);
@@ -122,13 +124,11 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Perform filtering
     this.filteredSongs = this.filterBySearch(this.songs);
-    this.filteredSongs = this.filterByTags(this.filteredSongs);
-    
+
     // Cache the result
     this.filterCache.set(cacheKey, [...this.filteredSongs]);
     this.lastSearchQuery = this.searchQuery;
-    this.lastSelectedTags = { ...this.selectedTags };
-    
+
     // Reset pagination
     this.displayedCount = this.pageSize;
     this.itemsToDisplay = this.filteredSongs.slice(0, this.displayedCount);
@@ -138,7 +138,7 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
    * Generate cache key from current filter params
    */
   private getCacheKey(): string {
-    return `${this.searchQuery}|${JSON.stringify(this.selectedTags)}`;
+    return this.searchQuery;
   }
 
   /**
@@ -149,32 +149,25 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
       return songs;
     }
 
-    const query = this.searchQuery.toLowerCase();
-    return songs.filter(s =>
-      (s.title?.toLowerCase().includes(query) || false) ||
-      (s.channel?.toLowerCase().includes(query) || false)
-    );
-  }
+    const query =
+      this.youtubeTagService.normalizeTag(this.searchQuery);
 
-  /**
-   * Filter songs by tags
-   */
-  filterByTags(songs: Song[]): Song[] {
-    const activeTags = Object.entries(this.selectedTags);
-    if (activeTags.length === 0) {
+    if (!query) {
       return songs;
     }
 
     return songs.filter(song => {
-      const songTags = song.tags || [];
-      return activeTags.every(([tag, type]) => {
-        if (type === 'include') {
-          return songTags.includes(tag);
-        } else {
-          return !songTags.includes(tag);
-        }
-      });
+
+      return (
+        song.searchableText?.includes(query)
+      );
     });
+
+    // const query = this.searchQuery.toLowerCase();
+    // return songs.filter(s =>
+    //   (s.title?.toLowerCase().includes(query) || false) ||
+    //   (s.channel?.toLowerCase().includes(query) || false)
+    // );
   }
 
   /**
@@ -222,58 +215,6 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.showMessage('Error deleting song', 'error');
       });
     }
-  }
-
-  /**
-   * Remove tag filter with cache invalidation
-   */
-  removeTagFilter(tag: string): void {
-    delete this.selectedTags[tag];
-    this.saveTagsToLocalStorage();
-    this.filterCache.clear(); // Invalidate cache
-    this.applyFilter();
-  }
-
-  /**
-   * Toggle tag filter status (include/exclude) with cache invalidation
-   */
-  toggleTagFilterStatus(tag: string): void {
-    if (this.selectedTags[tag] === 'include') {
-      this.selectedTags[tag] = 'exclude';
-    } else {
-      this.selectedTags[tag] = 'include';
-    }
-    this.saveTagsToLocalStorage();
-    this.filterCache.clear(); // Invalidate cache
-    this.applyFilter();
-  }
-
-  /**
-   * Save selected tags to local storage
-   */
-  saveTagsToLocalStorage(): void {
-    localStorage.setItem('mySongsSelectedTags', JSON.stringify(this.selectedTags));
-  }
-
-  /**
-   * Load selected tags from local storage
-   */
-  loadTagsFromLocalStorage(): void {
-    const savedTags = localStorage.getItem('mySongsSelectedTags');
-    if (savedTags) {
-      try {
-        this.selectedTags = JSON.parse(savedTags);
-      } catch {
-        /* Silently ignore parse errors */
-      }
-    }
-  }
-
-  /**
-   * Sync tags to local storage (after loading songs)
-   */
-  syncTagsToLocalStorage(): void {
-    this.saveTagsToLocalStorage();
   }
 
   /**
@@ -326,10 +267,10 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.displayedCount + this.pageSize,
         this.filteredSongs.length
       );
-      
+
       this.itemsToDisplay = this.filteredSongs.slice(0, nextCount);
       this.displayedCount = nextCount;
-      
+
       this.isScrolling = false;
     }, 50);
   }
@@ -364,12 +305,12 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
       panelClass: 'add-song-dialog-no-padding'
     });
 
-    dialogRef.afterClosed().subscribe((result: any) => {
+    dialogRef.afterClosed().subscribe(async (result: any) => {
       if (!result) return;
 
       // Handle single song from Tab A: { videoInfo, youtubeUrl }
       if (result.videoInfo && !Array.isArray(result)) {
-        this.addSongToDatabase(result.videoInfo, result.youtubeUrl);
+        await this.addSongToDatabase(result.videoInfo, result.youtubeUrl);
         return;
       }
 
@@ -378,14 +319,14 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
         let successCount = 0;
         let duplicateCount = 0;
 
-        result.forEach(item => {
-          const isSuccess = this.addSongToDatabase(item.videoInfo, item.youtubeUrl, true);
+        for (const item of result) {
+          const isSuccess = await this.addSongToDatabase(item.videoInfo, item.youtubeUrl, true);
           if (isSuccess) {
             successCount++;
           } else {
             duplicateCount++;
           }
-        });
+        }
 
         // Load songs once after all additions
         if (successCount > 0) {
@@ -415,7 +356,7 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param isBatch - If true, suppresses individual success messages (parent handles messaging)
    * @returns boolean - true if song added successfully, false if duplicate
    */
-  private addSongToDatabase(videoInfo: YouTubeVideoInfo, youtubeUrl: string, isBatch: boolean = false): boolean {
+  private async addSongToDatabase(videoInfo: YouTubeVideoInfo, youtubeUrl: string, isBatch: boolean = false): Promise<boolean> {
     // Check if song already exists (prevent duplicates)
     const existingSong = this.songs.find(s => s.videoId === videoInfo.videoId);
     if (existingSong) {
@@ -425,17 +366,29 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
       return false;
     }
 
+    // Generate tags for the video
+    const tagResult = await this.generateTagsForVideo(videoInfo);
+
     const newSong: Song = {
       id: '', // Will be generated by the service
       videoId: videoInfo.videoId,
       title: videoInfo.title,
       youtubeLink: youtubeUrl,
+      description: videoInfo.description,
       channel: videoInfo.channel,
       largestThumbnail: this.getHighestResolutionThumbnail(videoInfo.thumbnails),
       durationSeconds: videoInfo.durationSeconds,
       viewCount: videoInfo.viewCount,
       createdAt: Date.now(),
-      tags: []
+      localized: {
+        title: videoInfo.localized?.title || videoInfo.title,
+        description: videoInfo.localized?.description || videoInfo.description
+      },
+      // Store tags in multiple formats for different use cases
+      tags: Object.keys(tagResult.approvedTags), // For backward compatibility and filtering
+      approvedTags: tagResult.approvedTags,
+      generatedTags: tagResult.generatedTags,
+      searchableText: tagResult.searchableText
     };
 
     this.songService.addSong(newSong).then(() => {
@@ -448,6 +401,15 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     return true;
+  }
+
+  /**
+   * Generate tags for a YouTube video based on its information
+   * @param videoSourceTag - Object containing video information needed for tag generation 
+   * @returns Promise with tag result containing approvedTags, generatedTags, and searchableText
+   */
+  private async generateTagsForVideo(videoSourceTag: TagSource) {
+    return await this.youtubeTagService.generateVideoTags(videoSourceTag);
   }
 
   /**
@@ -551,16 +513,44 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
+   * 
+   * Generate tags if not already generated for a song 
+   */
+  async ensureTagsForSong(song: Song): Promise<void> {
+    if (!song.tags || song.tags.length === 0) {
+      let tagResult = await this.generateTagsForVideo({
+        title: song.title,
+        channel: song.channel,
+        description: song.description,
+        durationSeconds: song.durationSeconds
+      });
+
+      // Update song with generated tags for future use
+      this.songService.updateSong(song.id, {
+        tags: Object.keys(tagResult.approvedTags),
+        approvedTags: tagResult.approvedTags,
+        generatedTags: tagResult.generatedTags,
+        searchableText: tagResult.searchableText
+      }).catch(() => {
+        // Silent fail - tagging is an enhancement, not critical
+      });
+    }
+  }
+
+  /**
    * Open video player dialog with YouTube Iframe API
    * Dialog will auto-close and reopen for next song when current finishes
    * Shows browser notification as fallback for inactive tabs
    * @param song - Song data to play
    */
-  openVideoPlayerDialog(song: Song): void {
+  async openVideoPlayerDialog(song: Song): Promise<void> {
     if (!song.videoId) {
       this.showMessage('Video ID not available', 'error');
       return;
     }
+
+    // // Ensure tags are generated for the song before opening the player
+    // await this.ensureTagsForSong(song);
 
     // Request notification permission on first dialog open
     this.requestNotificationPermission();

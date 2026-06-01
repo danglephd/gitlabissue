@@ -13,6 +13,11 @@ export interface Song {
   title: string;                // Song/Video title (required)
   youtubeLink: string;          // Full YouTube URL (required)
   channel: string;              // Channel name (required)
+  description: string;          // Video description (optional)
+  localized?: {                 
+    title: string;
+    description: string;
+  };
 
   // Media Elements
   largestThumbnail?: string;    // URL of largest thumbnail (video cover)
@@ -23,6 +28,9 @@ export interface Song {
 
   // Categorization
   tags?: string[];              // Custom tags for categorization (e.g., 'favorite', 'relaxing')
+  approvedTags?: Record<string, boolean>;  // Auto-approved tags from master database
+  generatedTags?: Record<string, boolean>; // All generated tags (before approval filtering)
+  searchableText?: string;      // Space-separated normalized tags for search
 }
 
 export enum SongFilterType {

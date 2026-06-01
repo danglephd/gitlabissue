@@ -100,8 +100,10 @@ export class YouTubeService {
         throw new Error(`YouTube API Error: ${response.status} ${response.statusText}`);
       }
 
+      
       const data: YouTubeApiResponse = await response.json();
-
+      //ghi log response json for debugging
+      console.log('YouTube API response:', data);
       if (!data.items || data.items.length === 0) {
         throw new Error('Video not found on YouTube');
       }
@@ -132,7 +134,11 @@ export class YouTubeService {
         viewCount: parseInt(statistics?.viewCount || '0', 10),
         likeCount: statistics?.likeCount ? parseInt(statistics.likeCount, 10) : undefined,
         commentCount: statistics?.commentCount ? parseInt(statistics.commentCount, 10) : undefined,
-        liveBroadcastContent: snippet.liveBroadcastContent
+        liveBroadcastContent: snippet.liveBroadcastContent,
+        localized: snippet.localized ? {
+          title: snippet.localized.title,
+          description: snippet.localized.description
+        } : undefined
       };
 
       return videoInfo;

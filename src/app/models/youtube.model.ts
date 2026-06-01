@@ -20,6 +20,7 @@ export interface YouTubeSnippet {
   publishedAt: string;
   channelId: string;
   title: string;
+  tag: string;
   description: string;
   thumbnails: YouTubeThumbnails;
   channelTitle: string;
@@ -87,4 +88,18 @@ export interface YouTubeVideoInfo {
   likeCount?: number;
   commentCount?: number;
   liveBroadcastContent: string;
+  localized?: {
+    title: string;
+    description: string;
+  };
+}
+
+/**
+ * Master Tag Model - Represents a tag in the master tag database
+ */
+export interface TagSource {
+  title?: string;
+  channel?: string;
+  description?: string;
+  durationSeconds?: number; // Parsed seconds
 }

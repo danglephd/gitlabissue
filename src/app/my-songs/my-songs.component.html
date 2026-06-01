@@ -35,19 +35,6 @@
         <mat-icon>music_note</mat-icon>
       </button>
     </div>
-
-    <!-- Tag Filter Row -->
-    <div class="filter-row-2" *ngIf="(selectedTags | keyvalue).length > 0">
-      <div class="selected-tags-container">
-        <span class="tag-filter-badge" *ngFor="let item of selectedTags | keyvalue"
-          [class.include]="item.value === 'include'" matTooltipPosition="above">
-          <span class="tag-name" (click)="toggleTagFilterStatus(item.key)">{{ item.key }}</span>
-          <button mat-icon-button (click)="removeTagFilter(item.key)" matTooltip="Remove tag" matTooltipPosition="above">
-            <mat-icon>close</mat-icon>
-          </button>
-        </span>
-      </div>
-    </div>
   </div>
 
   <!-- Loading State -->
