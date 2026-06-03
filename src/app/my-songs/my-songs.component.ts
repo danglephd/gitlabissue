@@ -156,11 +156,11 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
       return songs;
     }
 
-    return songs.filter(song => {
+    const words = query.split(" ");
 
-      return (
-        song.searchableText?.includes(query)
-      );
+    return songs.filter(song => {
+        const searchableText = song.searchableText || '';
+        return words.some(word => searchableText.includes(word))
     });
 
     // const query = this.searchQuery.toLowerCase();
