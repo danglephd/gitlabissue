@@ -20,6 +20,7 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
   filterType: SongFilterType = SongFilterType.ALL;
   isLoading = false;
   searchQuery = '';
+  selectedWords: { [key: string]: 'include' | 'exclude' } = {};
 
   // Lazy loading properties
   pageSize = 20;
@@ -138,42 +139,91 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
    * Generate cache key from current filter params
    */
   private getCacheKey(): string {
-    return this.searchQuery;
+    const wordState = Object.entries(this.selectedWords)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([word, status]) => `${word}:${status}`)
+      .join('|');
+
+    return `${this.searchQuery}|${wordState}`;
+  }
+
+  /**
+   * Parse search query into words for filter chips
+   */
+  private getSearchWords(): string[] {
+    const query = this.youtubeTagService.normalizeTag(this.searchQuery);
+
+    if (!query) {
+      return [];
+    }
+
+    return query
+      .split(/\s+/)
+      .map(word => word.trim())
+      .filter(Boolean);
+  }
+
+  /**
+   * Keep selected word filters synced with the current search query
+   */
+  private syncSelectedWordsFromQuery(): void {
+    const words = this.getSearchWords();
+    const nextSelectedWords: { [key: string]: 'include' | 'exclude' } = {};
+
+    words.forEach(word => {
+      nextSelectedWords[word] = this.selectedWords[word] || 'include';
+    });
+
+    this.selectedWords = nextSelectedWords;
+  }
+
+  /**
+   * Toggle word filter status between include and exclude
+   */
+  toggleWordFilterStatus(word: string): void {
+    if (this.selectedWords[word]) {
+      this.selectedWords[word] = this.selectedWords[word] === 'include' ? 'exclude' : 'include';
+    } else {
+      this.selectedWords[word] = 'include';
+    }
+
+    this.filterCache.clear();
+    this.applyFilter();
   }
 
   /**
    * Filter songs by search query
    */
   filterBySearch(songs: Song[]): Song[] {
-    if (!this.searchQuery || this.searchQuery.trim() === '') {
+    const words = this.getSearchWords();
+
+    if (words.length === 0) {
       return songs;
     }
 
-    const query =
-      this.youtubeTagService.normalizeTag(this.searchQuery);
-
-    if (!query) {
-      return songs;
-    }
-
-    const words = query.split(" ");
+    const includeWords = Object.keys(this.selectedWords).filter(word => this.selectedWords[word] === 'include');
+    const excludeWords = Object.keys(this.selectedWords).filter(word => this.selectedWords[word] === 'exclude');
 
     return songs.filter(song => {
-        const searchableText = song.searchableText || '';
-        return words.some(word => searchableText.includes(word))
-    });
+      const searchableText = (song.searchableText || '').toLowerCase();
 
-    // const query = this.searchQuery.toLowerCase();
-    // return songs.filter(s =>
-    //   (s.title?.toLowerCase().includes(query) || false) ||
-    //   (s.channel?.toLowerCase().includes(query) || false)
-    // );
+      if (excludeWords.some(word => searchableText.includes(word.toLowerCase()))) {
+        return false;
+      }
+
+      if (includeWords.length === 0) {
+        return true;
+      }
+
+      return includeWords.some(word => searchableText.includes(word.toLowerCase()));
+    });
   }
 
   /**
    * Search songs with cache invalidation
    */
   searchSongs(): void {
+    this.syncSelectedWordsFromQuery();
     this.filterCache.clear(); // Invalidate cache on new search
     this.applyFilter();
   }
@@ -183,6 +233,7 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   clearSearch(): void {
     this.searchQuery = '';
+    this.selectedWords = {};
     this.filterCache.clear(); // Invalidate cache
     this.applyFilter();
   }

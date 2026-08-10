@@ -35,6 +35,19 @@
         <mat-icon>music_note</mat-icon>
       </button>
     </div>
+
+    <div class="filter-row-2" *ngIf="(selectedWords | keyvalue).length > 0">
+      <div class="selected-words-container">
+        <span class="word-filter-badge"
+              *ngFor="let item of selectedWords | keyvalue"
+              [class.include]="item.value === 'include'"
+              [class.exclude]="item.value === 'exclude'"
+              (click)="toggleWordFilterStatus(item.key)"
+              matTooltipPosition="above">
+          <span class="word-name">{{ item.key }}</span>
+        </span>
+      </div>
+    </div>
   </div>
 
   <!-- Loading State -->
