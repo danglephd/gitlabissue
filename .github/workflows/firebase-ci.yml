@@ -109,3 +109,18 @@ jobs:
         projectId: projp21-17b04
         channelId: live
         target: projp21-17b04-2e509
+
+    # 9. Slack notification    
+    - name: Notify Slack
+      if: always()
+      run: |
+        if [ "${{ job.status }}" = "success" ]; then
+          MESSAGE="🚀 Firebase deploy successful"
+        else
+          MESSAGE="❌ Firebase deploy failed"
+        fi
+
+        curl -X POST \
+          -H "Content-type: application/json" \
+          --data "{\"text\":\"$MESSAGE\"}" \
+          "${{ secrets.SLACK_WEBHOOK_URL }}"
