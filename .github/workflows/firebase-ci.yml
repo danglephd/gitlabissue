@@ -113,6 +113,8 @@ jobs:
     # 9. Slack notification    
     - name: Notify Slack
       if: always()
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       run: |
         if [ "${{ job.status }}" = "success" ]; then
           MESSAGE="🚀 Firebase deploy successful"
@@ -123,4 +125,4 @@ jobs:
         curl -X POST \
           -H "Content-type: application/json" \
           --data "{\"text\":\"$MESSAGE\"}" \
-          "${{ secrets.SLACK_WEBHOOK_URL }}"
+          "$SLACK_WEBHOOK_URL"
