@@ -38,7 +38,7 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
     this.loadYouTubeAPI();
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -73,23 +73,26 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
       return;
     }
 
+    const videoIds = this.data.songList
+      .filter(song => !!song.videoId)
+      .map(song => song.videoId);
+
     this.ngZone.runOutsideAngular(() => {
       try {
         this.player = new window.YT.Player(this.playerContainer.nativeElement, {
           height: '100%',
           width: '100%',
-          videoId: this.data.song.videoId,
           events: {
             onReady: () => this.onPlayerReady(),
             onStateChange: (event: any) => this.onPlayerStateChange(event),
-            onError: (event: any) => this.onPlayerError(event)
           },
           playerVars: {
             autoplay: 1,
             controls: 1,
             modestbranding: 1,
             rel: 0,
-            fs: 1
+            fs: 1,
+            loop:1,
           }
         });
         this.isInitialized = true;
@@ -105,7 +108,17 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
    */
   private onPlayerReady(): void {
     this.isLoadingVideo = false;
-    // console.log('Player ready, playing video:', this.data.song.videoId);
+    const videoIds = this.data.songList
+      .filter(song => !!song.videoId)
+      .map(song => song.videoId);
+
+    const startIndex = this.data.currentIndex;
+
+    this.player.loadPlaylist({
+      playlist: videoIds,
+      index: startIndex,
+      startSeconds: 0
+    });
   }
 
   /**
@@ -113,41 +126,10 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
    */
   private onPlayerStateChange(event: any): void {
     this.ngZone.run(() => {
-      if (event.data === window.YT.PlayerState.ENDED) {
-        // console.log('Video ended, finding next song');
-        this.playNextSong();
+      if (event.data === window.YT.PlayerState.PLAYING) {
+        this.player.getPlaylistIndex();
       }
     });
-  }
-
-  /**
-   * Handle player error
-   */
-  private onPlayerError(event: any): void {
-    console.error('YouTube player error:', event.data);
-    if (event.data === 150) {
-      this.playNextSong();
-    }
-  }
-
-  /**
-   * Find next valid song and close dialog to reopen with new song
-   */
-  private playNextSong(): void {
-    const nextSong = this.findNextValidSong();
-    
-    if (nextSong) {
-    //   console.log('Closing dialog to reopen with next song:', nextSong.title);
-      // Close dialog with next song data
-      // Add small delay for smoother transition
-      setTimeout(() => {
-        this.dialogRef.close(nextSong);
-      }, 300);
-    } else {
-    //   console.log('No more songs to play');
-      // Option: stop playback
-      this.dialogRef.close(null);
-    }
   }
 
   /**
