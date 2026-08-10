@@ -342,11 +342,18 @@ mat-card-header {
   font-size: 0.9rem;
 }
 
-/* Scroll To Top Button */
-.scroll-to-top-button {
+/* Floating Action Buttons */
+.floating-action-group {
   position: fixed;
   bottom: 24px;
   right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 100;
+}
+
+.floating-action-button {
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -356,18 +363,28 @@ mat-card-header {
   cursor: pointer;
   outline: none;
   border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   transition: all 0.3s ease;
-  z-index: 100;
 }
 
-.scroll-to-top-button:hover {
+.floating-action-button:hover {
   background-color: #5568d3;
   box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
   transform: translateY(-3px);
 }
 
-.scroll-to-top-button:active {
+.floating-action-button:active {
   transform: translateY(-1px);
+}
+
+.floating-action-button mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
 }
 
 /* Responsive - Tablet */
@@ -408,11 +425,15 @@ mat-card-header {
     gap: 16px;
   }
 
-  .scroll-to-top-button {
-    width: 48px;
-    height: 48px;
+  .floating-action-group {
     bottom: 16px;
     right: 16px;
+    gap: 10px;
+  }
+
+  .floating-action-button {
+    width: 48px;
+    height: 48px;
   }
 }
 
@@ -496,18 +517,15 @@ mat-card-header {
     font-size: 0.8rem;
   }
 
-  .scroll-to-top-button {
-    width: 44px;
-    height: 44px;
+  .floating-action-group {
     bottom: 12px;
     right: 12px;
+    gap: 8px;
   }
 
-  .add-song-button {
-    position: fixed;
-    top: 50% !important;
-    right: 24px !important;
-    z-index: 100;
+  .floating-action-button {
+    width: 44px;
+    height: 44px;
   }
 }
 
