@@ -30,6 +30,8 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
   isInitialized = false;
   shuffleEnabled = false;
   loopEnabled = false;
+  currentSong: Song | null = null;
+  songList: Song[] = [];
 
   constructor(
     public dialogRef: MatDialogRef<VideoPlayerDialogComponent>,
@@ -136,6 +138,7 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
   private onPlayerReady(): void {
     this.isLoadingVideo = false;
     const startIndex = this.data.currentIndex;
+
     const videoIds = this.data.songList
       .filter(song => !!song.videoId)
       .map(song => song.videoId);
@@ -144,10 +147,9 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
     const start = Math.max(0, startIndex - halfSize);
     const end = Math.min(videoIds.length, maxPlaylistSize + start);
     const limitedVideoIds = videoIds.slice(start, end);
+    this.songList = this.data.songList.slice(start, end);
 
     const index = Math.max(0, startIndex - start);
-    //show log for debugging
-    console.log('Player ready, playing video:', this.data.song.videoId, 'with playlist:', limitedVideoIds, 'starting at index:', index);
 
     this.player.loadPlaylist({
       playlist: limitedVideoIds,
@@ -190,9 +192,15 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
   private onPlayerStateChange(event: any): void {
     this.ngZone.run(() => {
       if (event.data === window.YT.PlayerState.PLAYING) {
-        this.data.currentIndex = this.player.getPlaylistIndex();
-        //show log for debugging
-        console.log('Video playing, current index:', this.data.currentIndex);
+        if (!this.shuffleEnabled) {
+          // Update current song based on the current index in the playlist
+          const shufflePlaylist = this.player.getPlaylist();
+          this.data.currentIndex = this.player.getPlaylistIndex();
+          const currentSongId = shufflePlaylist[this.data.currentIndex];
+          this.currentSong = this.songList.find(song => song.videoId === currentSongId) || null;
+        } else {
+          this.currentSong = null;
+        }
       }
     });
   }
