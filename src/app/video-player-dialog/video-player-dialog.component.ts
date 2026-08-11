@@ -129,15 +129,24 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
    */
   private onPlayerReady(): void {
     this.isLoadingVideo = false;
+    const startIndex = this.data.currentIndex;
     const videoIds = this.data.songList
       .filter(song => !!song.videoId)
       .map(song => song.videoId);
-
-    const startIndex = this.data.currentIndex;
+    // giới hạn playlist chỉ còn 50 videos trước và 50 videos sau tính từ currentIndex
+    const maxPlaylistSize = 10;
+    const halfSize = Math.floor(maxPlaylistSize / 2);
+    const start = Math.max(0, startIndex - halfSize);
+    const end = Math.min(videoIds.length, startIndex + halfSize + 1);
+    const limitedVideoIds = videoIds.slice(start, end);
+    
+    const index = Math.max(0, startIndex - start);
+    //show log for debugging
+    console.log('Player ready, playing video:', this.data.song.videoId, 'with playlist:', limitedVideoIds, 'starting at index:', index);
 
     this.player.loadPlaylist({
-      playlist: videoIds,
-      index: startIndex,
+      playlist: limitedVideoIds,
+      index: index , // Adjust index to match the limited playlist
       startSeconds: 0
     });
   }
@@ -148,35 +157,11 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
   private onPlayerStateChange(event: any): void {
     this.ngZone.run(() => {
       if (event.data === window.YT.PlayerState.PLAYING) {
-        this.player.getPlaylistIndex();
+        this.data.currentIndex = this.player.getPlaylistIndex();
+        //show log for debugging
+        console.log('Video playing, current index:', this.data.currentIndex);
       }
     });
-  }
-
-  /**
-   * Find next valid song in the list
-   */
-  private findNextValidSong(): Song | null {
-    const currentIndex = this.data.currentIndex;
-    const songList = this.data.songList;
-
-    // Look for next valid song after current index
-    for (let i = currentIndex + 1; i < songList.length; i++) {
-      if (songList[i]?.videoId) {
-        return songList[i];
-      }
-    }
-
-    // If autoPlayNext is enabled, loop back to start
-    if (this.autoPlayNext) {
-      for (let i = 0; i <= currentIndex; i++) {
-        if (songList[i]?.videoId) {
-          return songList[i];
-        }
-      }
-    }
-
-    return null;
   }
 
   /**
