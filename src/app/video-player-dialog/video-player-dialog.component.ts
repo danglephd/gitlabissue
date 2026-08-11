@@ -133,11 +133,10 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
     const videoIds = this.data.songList
       .filter(song => !!song.videoId)
       .map(song => song.videoId);
-    // giới hạn playlist chỉ còn 50 videos trước và 50 videos sau tính từ currentIndex
-    const maxPlaylistSize = 10;
+    const maxPlaylistSize = 30;
     const halfSize = Math.floor(maxPlaylistSize / 2);
     const start = Math.max(0, startIndex - halfSize);
-    const end = Math.min(videoIds.length, startIndex + halfSize + 1);
+    const end = Math.min(videoIds.length, maxPlaylistSize + start);
     const limitedVideoIds = videoIds.slice(start, end);
     
     const index = Math.max(0, startIndex - start);
