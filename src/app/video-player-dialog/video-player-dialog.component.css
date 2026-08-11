@@ -65,7 +65,6 @@
 .control-button,
 .close-button {
   color: white;
-  flex-shrink: 0;
   transition: background 0.2s ease, color 0.2s ease;
 }
 
@@ -75,8 +74,8 @@
 }
 
 .control-button.active {
-  color: #4caf50;
-  background: rgba(76, 175, 80, 0.15);
+  color: #ff4081;
+  background: rgba(255, 64, 129, 0.18);
 }
 
 .video-container {
@@ -129,7 +128,7 @@
     font-size: 0.85rem;
   }
 
-  .header-actions {
+  .close-button {
     position: absolute;
     top: 12px;
     right: 12px;

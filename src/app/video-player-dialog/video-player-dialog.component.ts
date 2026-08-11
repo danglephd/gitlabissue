@@ -28,6 +28,8 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
   isLoadingVideo = true;
   autoPlayNext: boolean = true;
   isInitialized = false;
+  shuffleEnabled = false;
+  loopEnabled = false;
 
   constructor(
     public dialogRef: MatDialogRef<VideoPlayerDialogComponent>,
@@ -35,7 +37,11 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
     private ngZone: NgZone
   ) {
     this.autoPlayNext = data.autoPlayNext !== false;
-    // this.loadYouTubeAPI();
+    //load local storage settings
+    const shuffleSetting = localStorage.getItem('shuffleEnabled');
+    const loopSetting = localStorage.getItem('loopEnabled');
+    this.shuffleEnabled = shuffleSetting ? JSON.parse(shuffleSetting) : false;
+    this.loopEnabled = loopSetting ? JSON.parse(loopSetting) : false;
   }
 
   ngOnInit(): void { }
@@ -138,16 +144,44 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
     const start = Math.max(0, startIndex - halfSize);
     const end = Math.min(videoIds.length, maxPlaylistSize + start);
     const limitedVideoIds = videoIds.slice(start, end);
-    
+
     const index = Math.max(0, startIndex - start);
     //show log for debugging
     console.log('Player ready, playing video:', this.data.song.videoId, 'with playlist:', limitedVideoIds, 'starting at index:', index);
 
     this.player.loadPlaylist({
       playlist: limitedVideoIds,
-      index: index , // Adjust index to match the limited playlist
+      index: index, // Adjust index to match the limited playlist
       startSeconds: 0
     });
+    this.applyPlaybackSettings();
+  }
+
+  private applyPlaybackSettings(): void {
+    if (!this.player) {
+      return;
+    }
+
+    try {
+      this.player.setShuffle(this.shuffleEnabled);
+      this.player.setLoop(this.loopEnabled);
+    } catch (error) {
+      console.warn('Unable to apply playback settings to YouTube player:', error);
+    }
+  }
+
+  toggleShuffle(): void {
+    this.shuffleEnabled = !this.shuffleEnabled;
+    //save local storage
+    localStorage.setItem('shuffleEnabled', JSON.stringify(this.shuffleEnabled));
+    this.applyPlaybackSettings();
+  }
+
+  toggleLoop(): void {
+    this.loopEnabled = !this.loopEnabled;
+    //save local storage
+    localStorage.setItem('loopEnabled', JSON.stringify(this.loopEnabled));
+    this.applyPlaybackSettings();
   }
 
   /**
