@@ -5,9 +5,29 @@
       <h2 mat-dialog-title class="video-title" [title]="data.song.title">{{ data.song.title }}</h2>
       <p class="video-channel" [title]="data.song.channel">{{ data.song.channel }}</p>
     </div>
-    <button mat-icon-button (click)="closeDialog()" class="close-button" aria-label="Close video player" title="Close">
-      <mat-icon>close</mat-icon>
-    </button>
+    <div class="header-actions">
+      <button
+        mat-icon-button
+        type="button"
+        class="control-button"
+        aria-label="Toggle shuffle"
+        title="Shuffle"
+      >
+        <mat-icon>shuffle</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        type="button"
+        class="control-button"
+        aria-label="Toggle loop"
+        title="Loop"
+      >
+        <mat-icon>repeat</mat-icon>
+      </button>
+      <button mat-icon-button (click)="closeDialog()" class="close-button" aria-label="Close video player" title="Close">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
   </div>
 
   <!-- Video Player Container -->

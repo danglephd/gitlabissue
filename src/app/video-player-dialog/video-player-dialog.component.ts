@@ -35,50 +35,72 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
     private ngZone: NgZone
   ) {
     this.autoPlayNext = data.autoPlayNext !== false;
-    this.loadYouTubeAPI();
+    // this.loadYouTubeAPI();
   }
 
   ngOnInit(): void { }
 
   ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.initializePlayer();
-    }, 100);
+    this.initializePlayer();
   }
 
   /**
    * Load YouTube Iframe API script
    */
-  private loadYouTubeAPI(): void {
-    if (window.YT) {
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = 'https://www.youtube.com/iframe_api';
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
+  private loadYouTubeAPI(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (window.YT?.Player) {
+        resolve();
+        return;
+      }
+      // Another component/dialog may already be loading the API. 
+      if (document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+        const previousCallback = window.onYouTubeIframeAPIReady;
+        window.onYouTubeIframeAPIReady = () => {
+          previousCallback?.();
+          resolve();
+        };
+        return;
+      }
+      // First component that loads the API. 
+      window.onYouTubeIframeAPIReady = () => { resolve(); };
+      const script = document.createElement('script');
+      script.src = 'https://www.youtube.com/iframe_api';
+      script.async = true;
+      // script.defer = true;
+      script.onerror = () => { reject(new Error('Failed to load YouTube IFrame API')); };
+      document.body.appendChild(script);
+    });
   }
 
   /**
    * Initialize YouTube player with API
    */
-  private initializePlayer(): void {
-    if (!window.YT || !this.playerContainer) {
-      setTimeout(() => this.initializePlayer(), 100);
-      return;
-    }
-
+  private async initializePlayer(): Promise<void> {
     if (this.isInitialized) {
       return;
     }
 
-    const videoIds = this.data.songList
-      .filter(song => !!song.videoId)
-      .map(song => song.videoId);
+    if (!this.playerContainer) {
+      //ghi log error or handle the case where playerContainer is not available
+      console.error('Player container is not available.');
+      return;
+    }
 
-    this.ngZone.runOutsideAngular(() => {
-      try {
+    try {
+      // IMPORTANT: 
+      // Wait until YT.Player is actually available.
+      await this.loadYouTubeAPI();
+
+      if (!window.YT?.Player) {
+        throw new Error('YouTube IFrame API loaded, but YT.Player is not available.');
+      }
+
+      if (this.isInitialized) {
+        return;
+      }
+
+      this.ngZone.runOutsideAngular(() => {
         this.player = new window.YT.Player(this.playerContainer.nativeElement, {
           height: '100%',
           width: '100%',
@@ -92,15 +114,14 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
             modestbranding: 1,
             rel: 0,
             fs: 1,
-            loop:1,
           }
         });
         this.isInitialized = true;
-      } catch (error) {
-        console.error('Error initializing YouTube player:', error);
-        setTimeout(() => this.initializePlayer(), 500);
-      }
-    });
+      });
+    } catch (error) {
+      console.error('Error initializing YouTube player:', error);
+      setTimeout(() => this.initializePlayer(), 500);
+    }
   }
 
   /**

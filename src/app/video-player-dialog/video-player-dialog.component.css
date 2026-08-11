@@ -55,14 +55,28 @@
   white-space: nowrap;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.control-button,
 .close-button {
   color: white;
   flex-shrink: 0;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
+.control-button:hover,
 .close-button:hover {
   background: rgba(255, 255, 255, 0.1);
+}
+
+.control-button.active {
+  color: #4caf50;
+  background: rgba(76, 175, 80, 0.15);
 }
 
 .video-container {
@@ -115,7 +129,7 @@
     font-size: 0.85rem;
   }
 
-  .close-button {
+  .header-actions {
     position: absolute;
     top: 12px;
     right: 12px;
