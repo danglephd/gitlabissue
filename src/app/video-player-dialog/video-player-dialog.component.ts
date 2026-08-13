@@ -44,6 +44,7 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
     const loopSetting = localStorage.getItem('loopEnabled');
     this.shuffleEnabled = shuffleSetting ? JSON.parse(shuffleSetting) : false;
     this.loopEnabled = loopSetting ? JSON.parse(loopSetting) : false;
+    this.currentSong = data.song;
   }
 
   ngOnInit(): void { }
@@ -151,6 +152,10 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
 
     const index = Math.max(0, startIndex - start);
 
+    //ghi log for debugging
+    // console.log('Limited video IDs for playlist:', limitedVideoIds);
+    // console.log('Current index in limited playlist:', index);
+
     this.player.loadPlaylist({
       playlist: limitedVideoIds,
       index: index, // Adjust index to match the limited playlist
@@ -191,17 +196,12 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
    */
   private onPlayerStateChange(event: any): void {
     this.ngZone.run(() => {
-      if (event.data === window.YT.PlayerState.PLAYING) {
-        if (!this.shuffleEnabled) {
-          // Update current song based on the current index in the playlist
-          const shufflePlaylist = this.player.getPlaylist();
-          this.data.currentIndex = this.player.getPlaylistIndex();
-          const currentSongId = shufflePlaylist[this.data.currentIndex];
-          this.currentSong = this.songList.find(song => song.videoId === currentSongId) || null;
-        } else {
-          this.currentSong = null;
-        }
-      }
+      //ghi log for debugging
+      // console.log('Player state changed:', event.data);
+      const shufflePlaylist = this.player.getPlaylist();
+      this.data.currentIndex = this.player.getPlaylistIndex();
+      const currentSongId = shufflePlaylist[this.data.currentIndex];
+      this.currentSong = this.songList.find(song => song.videoId === currentSongId) || null;
     });
   }
 
