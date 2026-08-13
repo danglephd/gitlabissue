@@ -192,7 +192,7 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
   }
 
   /**
-   * Handle player state change - Detect when video ends
+   * Handle player state change 
    */
   private onPlayerStateChange(event: any): void {
     this.ngZone.run(() => {
