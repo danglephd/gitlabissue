@@ -32,6 +32,8 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
   loopEnabled = false;
   currentSong: Song | null = null;
   songList: Song[] = [];
+  private readonly maxPlaylistSize: number = 30;
+
 
   constructor(
     public dialogRef: MatDialogRef<VideoPlayerDialogComponent>,
@@ -42,8 +44,14 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
     //load local storage settings
     const shuffleSetting = localStorage.getItem('shuffleEnabled');
     const loopSetting = localStorage.getItem('loopEnabled');
+    const maxPlaylistSizeSetting = localStorage.getItem('maxPlaylistSize');
+    if (!maxPlaylistSizeSetting) {
+      localStorage.setItem('maxPlaylistSize', '30');
+    }
+
     this.shuffleEnabled = shuffleSetting ? JSON.parse(shuffleSetting) : false;
     this.loopEnabled = loopSetting ? JSON.parse(loopSetting) : false;
+    this.maxPlaylistSize = maxPlaylistSizeSetting ? parseInt(maxPlaylistSizeSetting, 10) : 30;
     this.currentSong = data.song;
   }
 
@@ -143,18 +151,16 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
     const videoIds = this.data.songList
       .filter(song => !!song.videoId)
       .map(song => song.videoId);
-    const maxPlaylistSize = 30;
-    const halfSize = Math.floor(maxPlaylistSize / 2);
+    const halfSize = Math.floor(this.maxPlaylistSize / 2);
     const start = Math.max(0, startIndex - halfSize);
-    const end = Math.min(videoIds.length, maxPlaylistSize + start);
+    const end = Math.min(videoIds.length, this.maxPlaylistSize + start);
     const limitedVideoIds = videoIds.slice(start, end);
     this.songList = this.data.songList.slice(start, end);
 
     const index = Math.max(0, startIndex - start);
 
     //ghi log for debugging
-    // console.log('Limited video IDs for playlist:', limitedVideoIds);
-    // console.log('Current index in limited playlist:', index);
+    // console.log('Limited video IDs for playlist:', limitedVideoIds.length);
 
     this.player.loadPlaylist({
       playlist: limitedVideoIds,
@@ -202,6 +208,19 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
       this.data.currentIndex = this.player.getPlaylistIndex();
       const currentSongId = shufflePlaylist[this.data.currentIndex];
       this.currentSong = this.songList.find(song => song.videoId === currentSongId) || null;
+      // if(this.shuffleEnabled) {
+      //   //ghi log for debugging
+      //   console.log('Current video ID after shuffle:', this.currentSong?.videoId);
+      //   console.log('Current song title after shuffle:', this.currentSong?.title);
+      //   console.log('Current index after shuffle:', this.data.currentIndex);
+      //   console.log('Current playlist after shuffle:', shufflePlaylist);
+      // }else{
+      //   //ghi log for debugging
+      //   console.log('Current video ID:', this.currentSong?.videoId);
+      //   console.log('Current song title:', this.currentSong?.title);
+      //   // console.log('Current index:', this.data.currentIndex);
+      //   // console.log('Current playlist:', shufflePlaylist);
+      // }
     });
   }
 
