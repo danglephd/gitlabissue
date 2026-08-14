@@ -1,0 +1,154 @@
+.settings-dialog-container {
+  min-width: 300px;
+  max-width: 500px;
+  animation: fadeInDialog 0.3s ease-in;
+}
+
+@keyframes fadeInDialog {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.settings-content {
+  padding: 20px 0;
+}
+
+.setting-item {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-item:hover {
+  background-color: #fafafa;
+  border-radius: 8px;
+  padding: 12px;
+  margin: -12px -12px 24px -12px;
+  padding-bottom: 28px;
+}
+
+.setting-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.setting-label {
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+  letter-spacing: 0.3px;
+}
+
+.setting-description {
+  font-size: 12px;
+  color: #999;
+  margin: 8px 0 0 0;
+  line-height: 1.5;
+}
+
+.size-input-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.size-input {
+  flex: 1;
+  max-width: 150px;
+}
+
+.size-input ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+  color: #e0e0e0;
+}
+
+.size-input ::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+  color: #667eea;
+}
+
+.size-hint {
+  font-size: 14px;
+  color: #757575;
+  font-weight: 500;
+}
+
+.dialog-actions {
+  padding: 16px 0 0 0;
+  margin-top: 24px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.dialog-actions button {
+  transition: all 0.2s ease;
+}
+
+.dialog-actions button:hover {
+  transform: translateY(-2px);
+}
+
+::ng-deep .mat-slide-toggle {
+  margin: 0;
+}
+
+::ng-deep .mat-slide-toggle.mat-checked .mat-slide-toggle-thumb {
+  background-color: #667eea;
+}
+
+::ng-deep .mat-slide-toggle.mat-checked .mat-slide-toggle-bar {
+  background-color: rgba(102, 126, 234, 0.5);
+}
+
+/* Responsive - Tablet */
+@media (max-width: 768px) {
+  .settings-dialog-container {
+    min-width: 280px;
+    max-width: 90vw;
+  }
+
+  .setting-label {
+    font-size: 15px;
+  }
+
+  .size-input-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .size-input {
+    width: 100%;
+  }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 480px) {
+  .settings-dialog-container {
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  .dialog-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .dialog-actions button {
+    flex: 1;
+    min-width: 80px;
+  }
+}

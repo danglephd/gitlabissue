@@ -5,6 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { AddYouTubeSongDialogComponent } from '../add-youtube-song-dialog/add-youtube-song-dialog.component';
 import { VideoPlayerDialogComponent } from '../video-player-dialog/video-player-dialog.component';
+import { SettingsDialogComponent } from '../settings-dialog/settings-dialog.component';
 import { TagSource, YouTubeVideoInfo } from '../models/youtube.model';
 import { YoutubeTagService } from '../services/youtube-tag.service';
 
@@ -638,6 +639,24 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
         setTimeout(() => {
           this.openVideoPlayerDialog(nextSong);
         }, 400);
+      }
+    });
+  }
+
+  /**
+   * Open Settings Dialog to manage user preferences
+   * Allows users to configure: shuffle, loop, and max playlist size
+   */
+  openSettingsDialog(): void {
+    const dialogRef = this.dialog.open(SettingsDialogComponent, {
+      width: '500px',
+      maxWidth: '90vw',
+      disableClose: false
+    });
+
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if (result) {
+        this.showMessage('Settings saved successfully', 'success');
       }
     });
   }

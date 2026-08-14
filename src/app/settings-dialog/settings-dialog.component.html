@@ -1,0 +1,42 @@
+<div class="settings-dialog-container">
+  <h2 mat-dialog-title>Settings</h2>
+
+  <mat-dialog-content class="settings-content">
+    <!-- Shuffle Setting -->
+    <div class="setting-item">
+      <div class="setting-label-row">
+        <label class="setting-label">Shuffle</label>
+        <mat-slide-toggle [(ngModel)]="shuffleEnabled" color="primary"></mat-slide-toggle>
+      </div>
+      <p class="setting-description">Enable shuffle mode to randomize song playback</p>
+    </div>
+
+    <!-- Loop Setting -->
+    <div class="setting-item">
+      <div class="setting-label-row">
+        <label class="setting-label">Loop</label>
+        <mat-slide-toggle [(ngModel)]="loopEnabled" color="primary"></mat-slide-toggle>
+      </div>
+      <p class="setting-description">Enable loop to repeat the playlist automatically</p>
+    </div>
+
+    <!-- Max Playlist Size Setting -->
+    <div class="setting-item">
+      <label class="setting-label">Maximum Playlist Size</label>
+      <div class="size-input-container">
+        <mat-form-field appearance="outline" class="size-input">
+          <mat-label>Max Songs</mat-label>
+          <input matInput type="number" [(ngModel)]="maxPlaylistSize" min="1" max="500" />
+        </mat-form-field>
+        <span class="size-hint">songs</span>
+      </div>
+      <p class="setting-description">Maximum number of songs that can be added to the playlist</p>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-button (click)="resetSettings()">Reset</button>
+    <button mat-button (click)="cancel()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="saveSettings()">Save</button>
+  </mat-dialog-actions>
+</div>

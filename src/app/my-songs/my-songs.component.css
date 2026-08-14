@@ -367,7 +367,19 @@ mat-card-header {
   align-items: center;
   justify-content: center;
   padding: 0;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .floating-action-button:hover {
@@ -378,6 +390,15 @@ mat-card-header {
 
 .floating-action-button:active {
   transform: translateY(-1px);
+}
+
+.floating-action-button.settings-button {
+  background-color: #ff6f00;
+}
+
+.floating-action-button.settings-button:hover {
+  background-color: #e65100;
+  box-shadow: 0 8px 20px rgba(255, 111, 0, 0.5);
 }
 
 .floating-action-button mat-icon {
