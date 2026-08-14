@@ -16,7 +16,7 @@
 }
 
 .settings-content {
-  padding: 20px 0;
+  padding: 20px;
 }
 
 .setting-item {
@@ -86,7 +86,7 @@
 }
 
 .dialog-actions {
-  padding: 16px 0 0 0;
+  padding: 16px;
   margin-top: 24px;
   border-top: 1px solid #e0e0e0;
   display: flex;

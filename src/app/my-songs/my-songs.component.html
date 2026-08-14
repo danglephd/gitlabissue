@@ -104,12 +104,12 @@
   </div>
 
   <!-- Floating Action Buttons -->
-  <div class="floating-action-group" *ngIf="showScrollToTopButton">
-    <button class="add-song-button floating-action-button" mat-fab color="primary" (click)="openAddYouTubeSongDialog()"
+  <div class="floating-action-group">
+    <button *ngIf="showScrollToTopButton" class="add-song-button floating-action-button" mat-fab color="primary" (click)="openAddYouTubeSongDialog()"
       matTooltip="Add a new song from YouTube" matTooltipPosition="left">
       <mat-icon>music_note</mat-icon>
     </button>
-    <button class="scroll-to-top-button floating-action-button" (click)="scrollToTop()" matTooltip="Back to top"
+    <button *ngIf="showScrollToTopButton" class="scroll-to-top-button floating-action-button" (click)="scrollToTop()" matTooltip="Back to top"
       matTooltipPosition="left">
       <mat-icon>arrow_upward</mat-icon>
     </button>
