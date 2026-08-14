@@ -143,6 +143,12 @@
   border-color: #ff8a65;
 }
 
+.word-filter-badge.require {
+  background-color: #fff3e0;
+  color: #ef6c00;
+  border-color: #ffb74d;
+}
+
 .word-name {
   cursor: pointer;
   font-weight: 600;

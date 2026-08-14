@@ -42,7 +42,9 @@
               *ngFor="let item of selectedWords | keyvalue"
               [class.include]="item.value === 'include'"
               [class.exclude]="item.value === 'exclude'"
+              [class.require]="item.value === 'require'"
               (click)="toggleWordFilterStatus(item.key)"
+              [matTooltip]="item.value === 'include' ? 'Include this word in search' : (item.value === 'exclude' ? 'Exclude this word from search' : 'Require this word in search')"
               matTooltipPosition="above">
           <span class="word-name">{{ item.key }}</span>
         </span>

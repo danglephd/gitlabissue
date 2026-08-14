@@ -21,7 +21,7 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
   filterType: SongFilterType = SongFilterType.ALL;
   isLoading = false;
   searchQuery = '';
-  selectedWords: { [key: string]: 'include' | 'exclude' } = {};
+  selectedWords: { [key: string]: 'include' | 'exclude' | 'require'} = {};
 
   // Lazy loading properties
   pageSize = 20;
@@ -126,6 +126,11 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Perform filtering
     this.filteredSongs = this.filterBySearch(this.songs);
+    //ghi log searchableText của tất cả các bài hát để debug
+    // console.log('Filtered Songs:', this.filteredSongs.map(song => ({
+    //   title: song.title,
+    //   searchableText: song.searchableText
+    // })));
 
     // Cache the result
     this.filterCache.set(cacheKey, [...this.filteredSongs]);
@@ -169,10 +174,10 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private syncSelectedWordsFromQuery(): void {
     const words = this.getSearchWords();
-    const nextSelectedWords: { [key: string]: 'include' | 'exclude' } = {};
+    const nextSelectedWords: { [key: string]: 'include' | 'exclude' | 'require'} = {};
 
     words.forEach(word => {
-      nextSelectedWords[word] = this.selectedWords[word] || 'include';
+      nextSelectedWords[word] = this.selectedWords[word] || 'include' || 'require';
     });
 
     this.selectedWords = nextSelectedWords;
@@ -183,7 +188,13 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   toggleWordFilterStatus(word: string): void {
     if (this.selectedWords[word]) {
-      this.selectedWords[word] = this.selectedWords[word] === 'include' ? 'exclude' : 'include';
+      if(this.selectedWords[word] === 'include') {
+        this.selectedWords[word] = 'require';
+      } else if(this.selectedWords[word] === 'require') {
+        this.selectedWords[word] = 'exclude';
+      } else {
+        this.selectedWords[word] = 'include';
+      }
     } else {
       this.selectedWords[word] = 'include';
     }
@@ -204,12 +215,18 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const includeWords = Object.keys(this.selectedWords).filter(word => this.selectedWords[word] === 'include');
     const excludeWords = Object.keys(this.selectedWords).filter(word => this.selectedWords[word] === 'exclude');
+    const requireWords = Object.keys(this.selectedWords).filter(word => this.selectedWords[word] === 'require');
 
     return songs.filter(song => {
       const searchableText = (song.searchableText || '').toLowerCase();
 
       if (excludeWords.some(word => searchableText.includes(word.toLowerCase()))) {
         return false;
+      }
+
+      if (requireWords.length > 0) {
+        //searchableText must contain all requireWords
+        return requireWords.every(word => searchableText.includes(word.toLowerCase()));
       }
 
       if (includeWords.length === 0) {

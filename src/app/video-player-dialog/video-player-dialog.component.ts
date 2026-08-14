@@ -172,7 +172,7 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
     }
 
     //ghi log for debugging
-    console.log('Limited video IDs for playlist:', limitedVideoIds);
+    // console.log('Limited video IDs for playlist:', limitedVideoIds);
     return limitedVideoIds;
   } 
 
