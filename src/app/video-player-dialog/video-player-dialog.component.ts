@@ -140,12 +140,8 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
       setTimeout(() => this.initializePlayer(), 500);
     }
   }
-
-  /**
-   * Handle player ready
-   */
-  private onPlayerReady(): void {
-    this.isLoadingVideo = false;
+  private initPlaylist(): string[] {
+    
     const startIndex = this.data.currentIndex;
 
     const videoIds = this.data.songList
@@ -157,14 +153,41 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
     const limitedVideoIds = videoIds.slice(start, end);
     this.songList = this.data.songList.slice(start, end);
 
-    const index = Math.max(0, startIndex - start);
+    // const index = Math.max(0, startIndex - start);
+    //Nếu shuffleEnabled là true thì shuffle playlist trừ current song
+    if (this.shuffleEnabled) {
+      const currentSongId = this.data.songList[startIndex].videoId;
+      const currentIndex = limitedVideoIds.indexOf(currentSongId);
+      if (currentIndex !== -1) {
+        // Remove the current song from the list
+        limitedVideoIds.splice(currentIndex, 1);
+        // Shuffle the remaining songs
+        for (let i = limitedVideoIds.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [limitedVideoIds[i], limitedVideoIds[j]] = [limitedVideoIds[j], limitedVideoIds[i]];
+        }
+        // Add the current song back to the beginning
+        limitedVideoIds.unshift(currentSongId);
+      }
+    }
 
     //ghi log for debugging
-    // console.log('Limited video IDs for playlist:', limitedVideoIds.length);
+    console.log('Limited video IDs for playlist:', limitedVideoIds);
+    return limitedVideoIds;
+  } 
+
+  /**
+   * Handle player ready
+   */
+  private onPlayerReady(): void {
+    this.isLoadingVideo = false;
+
+    // Thêm function để load playlist với giới hạn số lượng video
+    const limitedVideoIds = this.initPlaylist();
 
     this.player.loadPlaylist({
       playlist: limitedVideoIds,
-      index: index, // Adjust index to match the limited playlist
+      index: 0, // Adjust index to match the limited playlist
       startSeconds: 0
     });
     this.applyPlaybackSettings();
@@ -176,7 +199,6 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
     }
 
     try {
-      this.player.setShuffle(this.shuffleEnabled);
       this.player.setLoop(this.loopEnabled);
     } catch (error) {
       console.warn('Unable to apply playback settings to YouTube player:', error);
