@@ -72,19 +72,23 @@
         <mat-icon>close</mat-icon>
       </button>
 
-      <!-- Thumbnail - Clickable to open video player dialog -->
+      <!-- Thumbnail - Clickable to open video player dialog or YouTube link if unavailable -->
       <div class="video-player-wrapper" 
-           (click)="openVideoPlayerDialog(song)"
+           [class.unavailable]="isUnavailable(song)"
+           (click)="isUnavailable(song) ? openYouTubeInNewTab(song, $event) : openVideoPlayerDialog(song)"
            role="button"
            tabindex="0"
-           [attr.aria-label]="'Play ' + song.title + ' by ' + song.channel"
+           [attr.aria-label]="isUnavailable(song) ? 'Unavailable - Open on YouTube' : 'Play ' + song.title + ' by ' + song.channel"
            [attr.data-song-id]="song.id">
         <img [src]="song.largestThumbnail" [alt]="song.title"
           class="thumbnail-image"
           loading="lazy">
-        <!-- Play overlay button -->
-        <div class="play-overlay">
+        <!-- Play overlay button or Unavailable label -->
+        <div class="play-overlay" *ngIf="!isUnavailable(song)">
           <mat-icon class="play-icon">play_circle_outline</mat-icon>
+        </div>
+        <div class="play-overlay unavailable-overlay" *ngIf="isUnavailable(song)">
+          <span class="unavailable-label">Unavailable</span>
         </div>
       </div>
 

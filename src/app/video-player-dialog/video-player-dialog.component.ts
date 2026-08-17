@@ -1,6 +1,7 @@
 import { Component, Inject, OnDestroy, OnInit, ViewChild, ElementRef, NgZone, AfterViewInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Song } from '../shared/models/song.model';
+import { SongRealtimedbService } from '../services/song.realtimedb.service';
 
 export interface VideoPlayerDialogData {
   song: Song;
@@ -39,7 +40,8 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
   constructor(
     public dialogRef: MatDialogRef<VideoPlayerDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: VideoPlayerDialogData,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private songService: SongRealtimedbService
   ) {
     this.autoPlayNext = data.autoPlayNext !== false;
     //load local storage settings
@@ -261,22 +263,41 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
    * This is important for handling errors and moving to the next or previous video correctly
   **/
   private updateNavigation(): void {
-    const newIndex = this.player.getPlaylistIndex();
+    const currentIndex = this.player.getPlaylistIndex();
     // ghi log for debugging
-    // console.log('Current index in playlist:', newIndex, this.data.currentIndex);
-    if (newIndex >= this.data.currentIndex) {
+    // console.log('Current index in playlist:', currentIndex, this.data.currentIndex);
+    if (currentIndex >= this.data.currentIndex) {
       this.navigationDirection = 'next';
-    } else if (newIndex < this.data.currentIndex) {
+    } else if (currentIndex < this.data.currentIndex) {
       this.navigationDirection = 'previous';
     }
-    this.data.currentIndex = newIndex;
+    this.data.currentIndex = currentIndex;
+  }
+
+  //update tags unvailable for current song
+  private updateCurrentSongTags(unavailableSong: Song | null): void {
+    if (unavailableSong && unavailableSong.videoId) {
+      // update tag: unavailable to song in database to prevent future attempts to play it
+      unavailableSong.tags = unavailableSong.tags || [];
+      if (!unavailableSong.tags.includes('unavailable')) {
+        unavailableSong.tags.push('unavailable');
+      }
+      this.songService.updateSong(unavailableSong.id, {
+        tags: unavailableSong.tags
+      }).catch(() => {
+        //ghi log error
+        console.error(`Failed to update tags for unavailable song with ID: ${unavailableSong.id}`);
+      });
+    }else{
+      console.warn('No unavailable song to update tags for.');
+    }
   }
 
   private onPlayerError(event: any): void {
     console.log('YouTube player error:', event.data);
-    // const videoId = this.player.getVideoData()?.video_id;
-    // console.log('Current video ID:', videoId);
-    // console.log('Navigation direction:', this.navigationDirection);
+    const currentIndex = this.player.getPlaylistIndex();
+    const currentSong = this.playingList[currentIndex] || null;
+    this.updateCurrentSongTags(currentSong);
 
     this.updateNavigation();
 

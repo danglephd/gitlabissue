@@ -662,6 +662,23 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
+   * Check if a song is marked as unavailable
+   */
+  isUnavailable(song: Song): boolean {
+    return song.tags?.includes('unavailable') ?? false;
+  }
+
+  /**
+   * Open YouTube video in a new tab
+   */
+  openYouTubeInNewTab(song: Song, event: Event): void {
+    event.stopPropagation();
+    if (song.youtubeLink) {
+      window.open(song.youtubeLink, '_blank');
+    }
+  }
+
+  /**
    * Open Settings Dialog to manage user preferences
    * Allows users to configure: shuffle, loop, and max playlist size
    */
