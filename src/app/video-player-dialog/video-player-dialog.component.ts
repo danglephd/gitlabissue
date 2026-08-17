@@ -31,9 +31,10 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
   shuffleEnabled = false;
   loopEnabled = false;
   currentSong: Song | null = null;
-  songList: Song[] = [];
+  playingList: Song[] = [];
   private readonly maxPlaylistSize: number = 30;
-
+  private playTimeout: ReturnType<typeof setTimeout> | null = null;
+  private navigationDirection: 'next' | 'previous' | null = null;
 
   constructor(
     public dialogRef: MatDialogRef<VideoPlayerDialogComponent>,
@@ -124,6 +125,7 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
           events: {
             onReady: () => this.onPlayerReady(),
             onStateChange: (event: any) => this.onPlayerStateChange(event),
+            onError: (event: any) => this.onPlayerError(event),
           },
           playerVars: {
             autoplay: 1,
@@ -140,10 +142,9 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
       setTimeout(() => this.initializePlayer(), 500);
     }
   }
-  private initPlaylist(): string[] {
-    
-    const startIndex = this.data.currentIndex;
 
+  private initPlaylist(): { videoIds: string[], startIndex: number } {
+    const startIndex = this.data.currentIndex;
     const videoIds = this.data.songList
       .filter(song => !!song.videoId)
       .map(song => song.videoId);
@@ -151,13 +152,14 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
     const start = Math.max(0, startIndex - halfSize);
     const end = Math.min(videoIds.length, this.maxPlaylistSize + start);
     const limitedVideoIds = videoIds.slice(start, end);
-    this.songList = this.data.songList.slice(start, end);
+    this.playingList = this.data.songList.slice(start, end);
+    let adjustedStartIndex = 0;
 
     // const index = Math.max(0, startIndex - start);
     //Nếu shuffleEnabled là true thì shuffle playlist trừ current song
+    const currentSongId = this.data.songList[startIndex].videoId;
+    const currentIndex = limitedVideoIds.indexOf(currentSongId);
     if (this.shuffleEnabled) {
-      const currentSongId = this.data.songList[startIndex].videoId;
-      const currentIndex = limitedVideoIds.indexOf(currentSongId);
       if (currentIndex !== -1) {
         // Remove the current song from the list
         limitedVideoIds.splice(currentIndex, 1);
@@ -169,25 +171,31 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
         // Add the current song back to the beginning
         limitedVideoIds.unshift(currentSongId);
       }
+    } else {
+      adjustedStartIndex = startIndex;
     }
 
     //ghi log for debugging
     // console.log('Limited video IDs for playlist:', limitedVideoIds);
-    return limitedVideoIds;
-  } 
+    return { videoIds: limitedVideoIds, startIndex: adjustedStartIndex };
+  }
 
   /**
    * Handle player ready
    */
   private onPlayerReady(): void {
+    //ghi log for debugging
+    console.log('YouTube player is ready.');
+    this.startPlayTimeout();
+
     this.isLoadingVideo = false;
 
     // Thêm function để load playlist với giới hạn số lượng video
-    const limitedVideoIds = this.initPlaylist();
+    const { videoIds: limitedVideoIds, startIndex } = this.initPlaylist();
 
     this.player.loadPlaylist({
       playlist: limitedVideoIds,
-      index: 0, // Adjust index to match the limited playlist
+      index: startIndex, // Adjust index to match the limited playlist
       startSeconds: 0
     });
     this.applyPlaybackSettings();
@@ -200,6 +208,8 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
 
     try {
       this.player.setLoop(this.loopEnabled);
+      this.navigationDirection = 'next';
+
     } catch (error) {
       console.warn('Unable to apply playback settings to YouTube player:', error);
     }
@@ -223,40 +233,88 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
    * Handle player state change 
    */
   private onPlayerStateChange(event: any): void {
+    //ghi log for debugging
+    // console.log('Player state changed:', event.data);
     this.ngZone.run(() => {
-      //ghi log for debugging
-      // console.log('Player state changed:', event.data);
-      const shufflePlaylist = this.player.getPlaylist();
-      this.data.currentIndex = this.player.getPlaylistIndex();
-      const currentSongId = shufflePlaylist[this.data.currentIndex];
-      this.currentSong = this.songList.find(song => song.videoId === currentSongId) || null;
-      // if(this.shuffleEnabled) {
-      //   //ghi log for debugging
-      //   console.log('Current video ID after shuffle:', this.currentSong?.videoId);
-      //   console.log('Current song title after shuffle:', this.currentSong?.title);
-      //   console.log('Current index after shuffle:', this.data.currentIndex);
-      //   console.log('Current playlist after shuffle:', shufflePlaylist);
-      // }else{
-      //   //ghi log for debugging
-      //   console.log('Current video ID:', this.currentSong?.videoId);
-      //   console.log('Current song title:', this.currentSong?.title);
-      //   // console.log('Current index:', this.data.currentIndex);
-      //   // console.log('Current playlist:', shufflePlaylist);
-      // }
+      if (event.data === window.YT.PlayerState.PLAYING) {
+        this.clearPlayTimeout();
+        const videoData = this.player.getVideoData();
+        const videoId = videoData?.video_id;
+        // console.log('Current video Data:', videoData);
+        // console.log('Current video ID:', videoId);
+
+        // Update currentSong based on the videoId for UI 
+        this.currentSong = this.playingList.find(song => song.videoId === videoId) || null;
+        this.updateNavigation();
+      }
     });
+  }
+
+  private clearPlayTimeout(): void {
+    if (this.playTimeout !== null) {
+      clearTimeout(this.playTimeout);
+      this.playTimeout = null;
+    }
+  }
+  /**
+   * Update the current index in the playlist and determine navigation direction
+   * This is important for handling errors and moving to the next or previous video correctly
+  **/
+  private updateNavigation(): void {
+    const newIndex = this.player.getPlaylistIndex();
+    // ghi log for debugging
+    // console.log('Current index in playlist:', newIndex, this.data.currentIndex);
+    if (newIndex >= this.data.currentIndex) {
+      this.navigationDirection = 'next';
+    } else if (newIndex < this.data.currentIndex) {
+      this.navigationDirection = 'previous';
+    }
+    this.data.currentIndex = newIndex;
+  }
+
+  private onPlayerError(event: any): void {
+    console.log('YouTube player error:', event.data);
+    // const videoId = this.player.getVideoData()?.video_id;
+    // console.log('Current video ID:', videoId);
+    // console.log('Navigation direction:', this.navigationDirection);
+
+    this.updateNavigation();
+
+    if ([100, 101, 150].includes(event.data)) {
+      if (this.navigationDirection === 'next') {
+        this.player.nextVideo();
+      } else if (this.navigationDirection === 'previous') {
+        this.player.previousVideo();
+      }
+    }
+  }
+
+  private startPlayTimeout(): void {
+    this.clearPlayTimeout();
+
+    this.playTimeout = setTimeout(() => {
+      console.log('Video did not start playing within 5000ms. Moving to next song.');
+
+      // close the dialog if the video doesn't start playing within 5 seconds
+      this.closeDialog(this.data.song);
+
+      this.playTimeout = null;
+    }, 5000);
   }
 
   /**
    * Close dialog manually
    */
-  closeDialog(): void {
-    this.dialogRef.close(null);
+  closeDialog(song: Song | null): void {
+    this.dialogRef.close(song);
   }
 
   /**
    * Cleanup on destroy
    */
   ngOnDestroy(): void {
+    this.clearPlayTimeout();
+
     if (this.player && this.isInitialized) {
       try {
         this.player.destroy();

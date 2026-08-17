@@ -645,17 +645,18 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Handle dialog close and auto-open next song
-    dialogRef.afterClosed().subscribe((nextSong: Song | null) => {
-      if (nextSong && nextSong.videoId) {
-        // Show notification if tab is inactive (as fallback for autoplay restriction)
-        if (document.hidden) {
-          this.showEndNotification(nextSong);
+    dialogRef.afterClosed().subscribe((unavailableSong: Song | null) => {
+      if (unavailableSong && unavailableSong.videoId) {
+        // update tag: unavailable to song in database to prevent future attempts to play it
+        unavailableSong.tags = unavailableSong.tags || [];
+        if (!unavailableSong.tags.includes('unavailable')) {
+          unavailableSong.tags.push('unavailable');
         }
-
-        // Attempt to auto-open next song with delay
-        setTimeout(() => {
-          this.openVideoPlayerDialog(nextSong);
-        }, 400);
+        this.songService.updateSong(unavailableSong.id, {
+          tags: unavailableSong.tags
+        }).catch(() => {
+          // Silent fail - tagging is an enhancement, not critical
+        });
       }
     });
   }
