@@ -71,7 +71,10 @@
         matTooltipPosition="below">
         <mat-icon>close</mat-icon>
       </button>
-
+      <button *ngIf="isUnavailable(song)" mat-icon-button class="change-unavailable-button" (click)="changeUnavailableStatus(song)" color="primary" matTooltip="Song Unavailable"
+        matTooltipPosition="below">
+        <mat-icon>check</mat-icon>
+      </button>
       <!-- Thumbnail - Clickable to open video player dialog or YouTube link if unavailable -->
       <div class="video-player-wrapper" 
            [class.unavailable]="isUnavailable(song)"

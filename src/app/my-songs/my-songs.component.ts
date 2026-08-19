@@ -669,6 +669,28 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
+   * Change the unavailable status of a song
+   */
+  changeUnavailableStatus(song: Song): void {
+    if (!song.tags) {
+      song.tags = [];
+    }
+
+    const unavailableIndex = song.tags.indexOf('unavailable');
+    if (unavailableIndex !== -1) {
+      song.tags.splice(unavailableIndex, 1);
+    } else {
+      song.tags.push('unavailable');
+    }
+
+    this.songService.updateSong(song.id, {
+      tags: song.tags
+    }).catch(() => {
+      // Silent fail - tagging is an enhancement, not critical
+    });
+  }
+
+  /**
    * Open YouTube video in a new tab
    */
   openYouTubeInNewTab(song: Song, event: Event): void {
