@@ -157,11 +157,10 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
     this.playingList = this.data.songList.slice(start, end);
     let adjustedStartIndex = 0;
 
-    // const index = Math.max(0, startIndex - start);
-    //Nếu shuffleEnabled là true thì shuffle playlist trừ current song
     const currentSongId = this.data.songList[startIndex].videoId;
     const currentIndex = limitedVideoIds.indexOf(currentSongId);
     if (this.shuffleEnabled) {
+      //Nếu shuffleEnabled là true thì shuffle playlist trừ current song
       if (currentIndex !== -1) {
         // Remove the current song from the list
         limitedVideoIds.splice(currentIndex, 1);
@@ -174,7 +173,8 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
         limitedVideoIds.unshift(currentSongId);
       }
     } else {
-      adjustedStartIndex = startIndex;
+      // Nếu shuffleEnabled là false thì giữ nguyên thứ tự và điều chỉnh startIndex
+      adjustedStartIndex = limitedVideoIds.indexOf(currentSongId);
     }
 
     //ghi log for debugging
