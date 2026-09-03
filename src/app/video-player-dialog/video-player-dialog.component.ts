@@ -288,7 +288,7 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
         //ghi log error
         console.error(`Failed to update tags for unavailable song with ID: ${unavailableSong.id}`);
       });
-    }else{
+    } else {
       console.warn('No unavailable song to update tags for.');
     }
   }
@@ -297,11 +297,11 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
     console.log('YouTube player error:', event.data);
     const currentIndex = this.player.getPlaylistIndex();
     const currentSong = this.playingList[currentIndex] || null;
-    this.updateCurrentSongTags(currentSong);
 
     this.updateNavigation();
 
     if ([100, 101, 150].includes(event.data)) {
+      this.updateCurrentSongTags(currentSong);
       if (this.navigationDirection === 'next') {
         this.player.nextVideo();
       } else if (this.navigationDirection === 'previous') {
