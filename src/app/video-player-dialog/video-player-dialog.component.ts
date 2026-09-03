@@ -282,8 +282,13 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
       if (!unavailableSong.tags.includes('unavailable')) {
         unavailableSong.tags.push('unavailable');
       }
+      const searchableText = unavailableSong.searchableText || '';
+      const updatedSearchableText = searchableText.toLowerCase().includes('unavailable')
+        ? searchableText
+        : `${searchableText} unavailable`.trim();
       this.songService.updateSong(unavailableSong.id, {
-        tags: unavailableSong.tags
+        tags: unavailableSong.tags,
+        searchableText: updatedSearchableText
       }).catch(() => {
         //ghi log error
         console.error(`Failed to update tags for unavailable song with ID: ${unavailableSong.id}`);
@@ -314,13 +319,12 @@ export class VideoPlayerDialogComponent implements OnInit, AfterViewInit, OnDest
     this.clearPlayTimeout();
 
     this.playTimeout = setTimeout(() => {
-      console.log('Video did not start playing within 5000ms. Moving to next song.');
-
-      // close the dialog if the video doesn't start playing within 5 seconds
+      console.log('Video did not start playing within 10000ms. Moving to next song.');
+      // close the dialog if the video doesn't start playing within 10 seconds
       this.closeDialog(this.data.song);
 
       this.playTimeout = null;
-    }, 5000);
+    }, 10000);
   }
 
   /**

@@ -652,8 +652,13 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
         if (!unavailableSong.tags.includes('unavailable')) {
           unavailableSong.tags.push('unavailable');
         }
+        const searchableText = unavailableSong.searchableText || '';
+        const updatedSearchableText = searchableText.toLowerCase().includes('unavailable')
+          ? searchableText
+          : `${searchableText} unavailable`.trim();
         this.songService.updateSong(unavailableSong.id, {
-          tags: unavailableSong.tags
+          tags: unavailableSong.tags,
+          searchableText: updatedSearchableText
         }).catch(() => {
           // Silent fail - tagging is an enhancement, not critical
         });
@@ -679,12 +684,21 @@ export class MySongsComponent implements OnInit, AfterViewInit, OnDestroy {
     const unavailableIndex = song.tags.indexOf('unavailable');
     if (unavailableIndex !== -1) {
       song.tags.splice(unavailableIndex, 1);
+      song.searchableText = (song.searchableText || '')
+        .replace(/\bunavailable\b/gi, '')
+        .replace(/\s+/g, ' ')
+        .trim();
     } else {
       song.tags.push('unavailable');
+      const searchableText = song.searchableText || '';
+      if (!searchableText.toLowerCase().includes('unavailable')) {
+        song.searchableText = `${searchableText} unavailable`.trim();
+      }
     }
 
     this.songService.updateSong(song.id, {
-      tags: song.tags
+      tags: song.tags,
+      searchableText: song.searchableText || ''
     }).catch(() => {
       // Silent fail - tagging is an enhancement, not critical
     });
